@@ -1,0 +1,34 @@
+{
+  "Author": "SENTINELITE",
+  "Name": "StreamDeck Shortcuts",
+  "Description": "Launch Shortcuts straight from your StreamDeck! Features an accessibility mode for vision impaired users.",
+  "Category": "StreamDeck Shortcuts",
+  "Version": "1.0",
+  "Icon": "Icons/ShortcutIcon",
+  "CategoryIcon": "Icons/appIcon",
+  "Software": {
+    "MinimumVersion": "5.0"
+  },
+  "CodePath": "StreamDeck-Shortcuts",
+  "PropertyInspectorPath": "pi/main_pi.html",
+  "SDKVersion": 2,
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "12.0"
+    }
+  ],
+  "Actions": [
+    {
+      "Icon": "Icons/appIcon",
+      "Name": "Launch Shortcut",
+      "UUID": "shortcut.run",
+      "Tooltip": "Launches Shortcut!",
+      "States": [
+        {
+          "Image": "Icons/ShortcutIcon"
+        }
+      ]
+    }
+  ]
+}

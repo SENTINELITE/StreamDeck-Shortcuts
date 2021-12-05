@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>👻🐱👻🐱👻🐱 com.sentinelite.swifttest Property Inspector</title>
+  <link rel="stylesheet" href="sdpi.css" />
+  <script src="main_pi.js"></script>
+</head>
+
+<body>
+  <div class="sdpi-wrapper">
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Shortcut<br> ⚡ Name</div>
+      <input class="sdpi-item-value" id="shortcutName" value="" onchange="changedShortcutInput()"
+        placeholder="Please enter a Shortcut (Case Sensitive)">
+    </div>
+
+    <div class="sdpi-item" id="isFolder">
+      <label class="sdpi-item-label">📁 Folder</label>
+      <select class="sdpi-item-value select" name="shortcuts_folder_list" id="shortcuts_folder_list"
+        onfocus="refreshListOfShortcutsFolders()" onselect="submittedTheNewValue()"
+        onchange="selectedNewIndex(this.selectedIndex, 'shortcutFolder');">
+        <option value="rigatoni">Placeholder Folder</option>
+      </select>
+    </div>
+
+    <div class="sdpi-item">
+      <label class="sdpi-item-label">⚡ Shortcut</label>
+      <select class="sdpi-item-value select" id="shortcut_list" onfocus="refreshListOfShortcuts()"
+        onchange="selectedNewIndex(this.selectedIndex, 'shortcut');">
+        <option value="rigatoni">Placeholder Value</option>
+      </select>
+      <button onclick="toggleMenu()" class="sdpi-item-value" id="customButton"></button>
+    </div>
+
+
+      <div class="search_list_ALT" id="searchMenu">
+        <div class="search_escape_bar" id="customsearchbar">
+          <button class="sdpi-item-value" id="mytestbutton" onclick="toggleMenu()">Close menu</button>
+          <input type="text" placeholder="Search.." id="searchBar" onkeyup="filterSearchResults()">
+        </div>
+
+
+        <div class="search_list" id="search_list_id">
+          <option value="rigatoni">Placeholder Value</option>
+        </div>
+      </div>
+
+
+    <!-- <div class="sdpi-item">
+	  <div class="sdpi-item-label">Shortcut Name</div>
+	  <input id="shortcut_url" class="sdpi-item-value inspector" type="text" value="Input Shortcut"
+		onchange="save(this.value)" /> -->
+    <!--  <input id="webhookurl" class="sdpi-item-value inspector" onclick="save()" type="text" value="https://"onchange="save(this.value)" />  -->
+    <!-- ^ Don't Need the OnClick! -->
+    <!-- </div> -->
+
+
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">🦻 Accessibility</div>
+      <button class="sdpi-item-value" id="save_the_settings" onclick="toggleAccessNew()">NewNAmeForToggle</button>
+    </div>
+
+    <div id="isAccessibility">
+
+      <div class="sdpi-item">
+        <label class="sdpi-item-label">🔊 Voice</label>
+        <select class="sdpi-item-value select" id="sayvoice" onfocus="refreshListOfVoices()"
+          onselect="submittedTheNewValue()" onchange="selectedNewIndex(this.selectedIndex, 'sayvoice');">
+          <option value="rigatoni">Placeholder Folder</option>
+        </select>
+      </div>
+
+      <div class="sdpi-item">
+        <div class="sdpi-item-label">⌛ HoldTime</div>
+        <input class="sdpi-item-value" id="sayvoice_holdtime" value="" placeholder="Enter a floating number ie: 3.75."
+          required>
+      </div>
+
+    </div>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">Override <br> 💬 Title</div>
+      <button class="sdpi-item-value" id="forced_title" onclick="changeForcedTitle()">Dev_Toggle_ShortcutName</button>
+    </div>
+
+    <div class="sdpi-item">
+      <div class="sdpi-item-label">🏁 Save?</div>
+      <button class="sdpi-item-value" id="save_the_settings" onclick="updateSettings()">Save ✅</button>
+    </div>
+
+    <div class="sdpi-item">
+      <details class="message">
+        <summary class="sdpi-item-value"> 🙋 Need Help?
+          <!-- <h4>Information:</h4> -->
+          <p>Question or comments? <b>Join the <a onclick="openPage('sentinelite.com/discord')" target="_blank"
+                rel="noopener noreferrer"> Community Discord! 🚀</a></b></p>
+          <!-- <div class="sdpi-item-child" style="margin-top: -2px"><a onclick="openPage('apple.com')" target="_blank" rel="noopener noreferrer" >Discord</a></div>
+      <div class="sdpi-item-child" style="margin-top: -2px"><a onclick="openPage('apple.com')" target="_blank" rel="noopener noreferrer" >Source Code</a></div> -->
+          <!-- <a class="info" href="https://apple.com" target="_blank" rel="noopener noreferrer" >Click here</a> -->
+          <p class="sdpi-item-child">
+            <span>
+              <a onclick="openPage('github.com/SENTINELITE/StreamDeck-Shortcuts')" target="_blank"
+                rel="noopener noreferrer">💻 Source
+                Code [GitHub]</a></span>
+          </p>
+        </summary>
+      </details>
+    </div>
+
+  </div>
+
+
+  <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
+</body>
+
+</html>
