@@ -8,7 +8,7 @@ We’re all about making sure the software is Fast, Reliable, & Performant, all 
 
 The StreamDeck's been unleashed. Infinite possibilities at the speed of light. All within touch.
 
-If you want to learn more about how & why this was made, take a look at [this Twitter thread!]
+If you want to learn more about how & why this was made, take a look at [this Twitter thread!](https://twitter.com/sentinelite)
 —
 
 ### Backstory
@@ -47,4 +47,4 @@ The Repository is split into two:
 If you experience any bugs, feel free to do any of the following:
 - [open an Issue,](https://github.com/SENTINELITE/StreamDeck-Shortcuts/issues/new)
 - [Tweet Me,](http://sentinelite.com/twitter)
-- ![Join the Discord Community](https://sentinelite.com/discord)
+- [Join the Discord Community](https://sentinelite.com/discord)
