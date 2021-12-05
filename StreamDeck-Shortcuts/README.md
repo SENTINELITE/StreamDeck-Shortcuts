@@ -1,5 +1,5 @@
 ### Welcome to the StreamDeck Shortcuts Repository!
-![GH_Banner](https://user-images.githubusercontent.com/44782976/144743854-a7d2d06a-b268-42cc-912a-af7100789008.png)
+![GH_Banner](https://user-images.githubusercontent.com/44782976/144744255-caae0988-d019-40dd-8264-3b544b97d733.png)
 
 ### About StreamDeck Shortcuts
 Welcome in! This Repo is for all things Shortcuts/StreamDeck!
@@ -45,6 +45,6 @@ The Repository is split into two:
 - If the shortcut name is long, the search field get’s small. We fixed the former, but now we’re Popping out of PI’s regular dimensions…
 
 If you experience any bugs, feel free to do any of the following:
-- [open an Issue,]
-- [Tweet Me]
-- [Join the Discord Community]
+- [open an Issue,](https://github.com/SENTINELITE/StreamDeck-Shortcuts/issues/new)
+- [Tweet Me,](http://sentinelite.com/twitter)
+- ![Join the Discord Community](https://sentinelite.com/discord)
