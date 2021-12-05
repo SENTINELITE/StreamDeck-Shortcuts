@@ -11,6 +11,9 @@ import StreamDeck
 var accessKeysToProcess = [String : Bool]()
 var deviceName = "N/A"
 
+var devicesX = [String : String]()
+//The device is passed into every func, so we know which device the press originated from. This just helps us know the name of the device.
+// ["D1A5DFBEA210B6A82B5E5FB2F4488E6A": "Stream Deck XL", "D1A5DFBEA210B6A82B5E5FB2F4488E6A": "Stream Deck Mobile"]
 
 
 // getSettings calls ->  didReceiveSettings which *should* call -> sendToPropertyInspector?
@@ -24,10 +27,15 @@ class CounterPlugin: StreamDeckPlugin {
     //  | deviceDidConnect: Load the user's settings, create helper deviceName. |
     //  ----------------------------------------------------- -------------------
     
+    //TODO: This is currently performing this 1 x the connected amount of devices!
     override func deviceDidConnect(_ device: String, deviceInfo: DeviceInfo) {
         NSLog("Device: \(device )")
         NSLog("DeviceInfo: \(deviceInfo)")
         deviceName = deviceInfo.name
+        //Log each device that connected.
+        
+        //Add the connected device to the list of known devices
+        devicesX.updateValue(deviceInfo.name, forKey: device)
         
         
         if (!loadedPrefs) {
@@ -35,7 +43,22 @@ class CounterPlugin: StreamDeckPlugin {
                 await loadPrefrences(filePath: keySettingsFilePath)
                 await loadPrefrences(filePath: userSettingsFilePath)
             }
+            
+            if (keySettingsFilePath.isFileURL)
+            {
+                NSLog("FP is Valid: \(keySettingsFilePath)")
+            }
+            else {
+                NSLog("FP Not Valid: \(keySettingsFilePath)")
+            }
+            if (newKeyIds.keys.contains("LoadingErrorKey")) {
+                newKeyIds.removeValue(forKey: "LoadingErrorKey")
+                newKeyIds.removeValue(forKey: "type")
+                savePrefrences(filePath: keySettingsFilePath)
+            }
+
             loadedPrefs = true
+            //TODO: Try to get settings for each known context, if we get an error, this context no longer exists, remove it from the file!
         }
     }
     
@@ -56,7 +79,13 @@ class CounterPlugin: StreamDeckPlugin {
             else {
                 setTitle(in: context, to: "🚨 Canceled")
                 sleep (1)
-                setTitle(in: context, to: "")
+                if (userPrefs.isForcedTitle) {
+                    for key in newKeyIds {
+                        if (key.key == context) {
+                            setTitle(in: context, to: key.value)
+                        }
+                    }
+                }
                 return
             }
         }
@@ -66,7 +95,9 @@ class CounterPlugin: StreamDeckPlugin {
                 if (key.key == context) {
                     Task {
                         async let xxvd =  RunShortcut(shortcutName: key.value)
-                        setTitle(in: context, to: "")
+                        Task {
+                            let delay = await delayedStartup(context: context)
+                        }
                         showOk(in: context)
                     }
                 }
@@ -79,12 +110,8 @@ class CounterPlugin: StreamDeckPlugin {
         
     }
     
-    
-    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
-    //  | OnKey Appears: Check if we need to display the ForcedTitle. TODO: We need to add line breaks, if the text is too big, but I don't think the API allows for that? |
-    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
-    
-    override func willAppear(action: String, context: String, device: String, payload: AppearEvent) {
+    func delayedStartup(context: String) async {
+        await Task.sleep(1 * 1_000_000_000)
         if (userPrefs.isForcedTitle) {
             for key in newKeyIds {
                 if (key.key == context) {
@@ -92,6 +119,33 @@ class CounterPlugin: StreamDeckPlugin {
                 }
             }
         }
+        else {
+            setTitle(in: context, to: "")
+        }
+    }
+    
+    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
+    //  | OnKey Appears: Check if we need to display the ForcedTitle. TODO: We need to add line breaks, if the text is too big, but I don't think the API allows for that? |
+    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
+    
+    override func willAppear(action: String, context: String, device: String, payload: AppearEvent) {
+//        getSettings(in: context)
+//        if (userPrefs.isForcedTitle) {
+//            for key in newKeyIds {
+//                if (key.key == context) {
+//                    setTitle(in: context, to: key.value)
+//                }
+//            }
+//        }
+//        else {
+//            setTitle(in: context, to: "")
+//        }
+        
+        
+        Task {
+            let delay = await delayedStartup(context: context)
+        }
+        
         
         
         //        if (!newKeyIds.keys.contains(context)) {
@@ -154,13 +208,18 @@ class CounterPlugin: StreamDeckPlugin {
         accessKeysToProcess.removeValue(forKey: context) //if SayVoice == false, don't remove?
     }
     
-    override func propertyInspectorDidAppear(action: String, context: String, device: String) {
-        //        sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
-        NSLog("SentData to the PI!")
+    
+    //  🔷---------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --------------------------------
+    //  | didReceiveSettings: Fetch all the shortcuts & their hiearchy. See if the Key's (Elgato) saved settings match that of our custom file .json file. If not correct our file. This was a workaround |
+    //  | /fix for copy/pasting & moving keys around. Maybe rework our method more? We want to keep around the .json file for easy access to the accessbility's needed shortcut namee & TD.               |
+    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- ---------------------------------
+    
+    override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
         
         //Send initial settings!
+        //Get all of the shortcuts & their hiearchy.
         processShortcuts()
-        listOfCuts = listOfCuts.sorted() //Sort From A-Z
+        listOfCuts = listOfCuts.sorted() //Sort From A-Z | Are we still using this? TODO: We should filter more of the search stuff over on the swift side.
         
         for key in newKeyIds {
             if (key.key == context) {
@@ -177,16 +236,48 @@ class CounterPlugin: StreamDeckPlugin {
             savePrefrences(filePath: keySettingsFilePath)
         }
         
-        //TODO: We don't need this anymore???
+        //
+        var toPass = ""
+        for i in payload.settings {
+            NSLog("setting i.value \(i.value)") //Logs: updateSettings | NewSettings
+            NSLog("setting i.key \(i.key)") //Logs:     type           | shortcutName
+            if (i.key == "shortcutName") {
+                toPass = i.value
+            }
+        }
         
-        //        if (newKeyIds.keys.contains(context)) {
+        //Send Key's Data to the PI
         sendToPropertyInspector(in: context, action: action, payload:
-                                    ["type": "updateSettings", "shortcutName": "\(savedShortcut)", "shortcuts": "\(listOfCuts)",
+                                    ["type": "updateSettings", "shortcutName": "\(toPass)", "shortcuts": "\(listOfCuts)",
                                      "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
                                      "mappedDataFromBackend": "\(shortcutsMapped)",
                                      "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
                                      "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
                                     ])
+        
+        //Helper Title for Debuggindg
+//        setTitle(in: context, to: "❄️ \(toPass)")
+        
+        //IF the .json key's value poperty doesn't match, correct that.
+        if (toPass != savedShortcut) {
+            NSLog("🟡 We've updated the shortuct, to match ELGATO's Settings! contexT: \(context), toPass: \(toPass), from staleShortcut: \(savedShortcut)")
+            newKeyIds.updateValue(toPass, forKey: context)
+            savePrefrences(filePath: keySettingsFilePath)
+        }
+    }
+    
+    override func propertyInspectorDidAppear(action: String, context: String, device: String) {
+        //TODO: We don't need this anymore???
+        
+        getSettings(in: context)
+        //        if (newKeyIds.keys.contains(context)) {
+        //        sendToPropertyInspector(in: context, action: action, payload:
+        //                                    ["type": "updateSettings", "shortcutName": "\(savedShortcut)", "shortcuts": "\(listOfCuts)",
+        //                                     "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
+        //                                     "mappedDataFromBackend": "\(shortcutsMapped)",
+        //                                     "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
+        //                                     "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
+        //                                    ])
         //    }
         //        else {
         //            setTitle(in: context, to: "rawSettings")
@@ -213,6 +304,32 @@ class CounterPlugin: StreamDeckPlugin {
     //    override func sendToPlugin(context: String, action: String, payload: [String : String]) {
     //        NSLog("New Payload: \(payload)")
     //    }
+    
+    
+    //  🔷---------------------------------------------------- ----------------------------------------------------- -------------------------------
+    //  | handleForcedTitle: If ForcedTitle is on, then turn on the title for all visble contexts, if not or it get's turned off, remove all text. |
+    //  ----------------------------------------------------- ----------------------------------------------------- --------------------------------
+    
+    func handleForcedTitle() {
+        if(userPrefs.isForcedTitle) {
+            instanceManager.instances.forEach {
+                for key in newKeyIds {
+                    if (key.key == $0.context) {
+                        setTitle(in: $0.context, to: key.value)
+                    }
+                }
+            }
+        }
+        else {
+            instanceManager.instances.forEach {
+                setTitle(in: $0.context, to: "")
+            }
+        }
+        
+        instanceManager.instances.forEach {
+            NSLog("Known Contexts: \($0.context), Count: \(instanceManager.instances.count)")
+        }
+    }
     
     
     //  🔷---------------------------------------------------- ---------------------
@@ -256,7 +373,8 @@ class CounterPlugin: StreamDeckPlugin {
                     shortcutsFolder
                 case "updateSettings":
                     updateSettings(context: context, action: action, payload: payload) //Save User's settings to disk
-                    //                    setSettings(in: context, to: payload) 🟥
+                    setSettings(in: context, to: payload)
+                        handleForcedTitle() //TODO: Move this call & the function outside of CounterPlugin. We should call this from Update Settings? This may not work due to the Instance Manager
                 default:
                     NSLog("❄️ Switch Case that's not covered \(i.value)")
                 }

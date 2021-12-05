@@ -17,11 +17,16 @@ func getDocumentsDirectory() -> URL {
 
 
 //let filename2 = getDocumentsDirectory().appendingPathComponent("keys.json")
-let keySettingsFilePath =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.yetanothertest.sdPlugin/keys.json")
-let userSettingsFilePath =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.yetanothertest.sdPlugin/userSettings.json")
+let keySettingsFilePath =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/keys.json")
+//"/Users/kirkland/Library/Application\ Support/com.elgato.StreamDeck/Plugins/com.sentinelite.yetanothertest.sdPlugin/userSettings.json"
+let userSettingsFilePath =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/userSettings.json")
 
 func savePrefrences(filePath: URL) {
     if (filePath.absoluteString == keySettingsFilePath.absoluteString) {
+        if (newKeyIds.keys.contains("type"))
+        {
+            newKeyIds.removeValue(forKey: "type")
+        }
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: newKeyIds, options: .prettyPrinted)
             try jsonData.write(to: filePath)
@@ -73,10 +78,10 @@ func loadPrefrences(filePath: URL) async {
             NSLog("_SaveTest_ Error 2")
             print(error)
             if (filePath.absoluteString == keySettingsFilePath.absoluteString) {
-                newKeyIds = ["LoadingErrorKey": "Dev Workaround, ignore this key/value"]
+//                newKeyIds = ["LoadingErrorKey": "Dev Workaround, ignore this key/value"]
             }
             else {
-                userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 1.0, accessibilityVoice: "PlaceholderVoice", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
+                userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
 //                accessibilityHoldDownTime = Double(userPrefs.xTime)
 //                accessibilityVoice = userPrefs.xVoice
             }
@@ -121,7 +126,8 @@ func LogData(data: Data, settingsType: String) {
             let dd = decodedData
             newKeyIds = decodedData
             if (newKeyIds.count > 1) {
-                newKeyIds.removeValue(forKey: "LoadingErrorKey")
+//                newKeyIds.removeValue(forKey: "LoadingErrorKey")
+//                newKeyIds.removeValue(forKey: "type")
             }
         } catch {}
     }

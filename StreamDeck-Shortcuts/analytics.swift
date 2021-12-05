@@ -8,6 +8,7 @@
 import Foundation
 import Metal
 import TelemetryClient
+import CryptoKit
 
 //let deviceType = "StreamDeck XL"
 //let modelName = "Macmini9,1"
@@ -16,49 +17,87 @@ import TelemetryClient
 //^ Send the Data, then clear the cache | Need to save the cache, incase the user closes the app instead of firing off the KeyDown event
 
 func initalizeTD () {
-    let configuration = TelemetryManagerConfiguration(appID: "5B503F2B-F673-409E-ACD3-1ADB02FB4A0B")
+    let configuration = TelemetryManagerConfiguration(appID: "0D606580-553F-4148-978A-B367B2A68C04")
     
-    #warning("🟥 🟥 🟥 --- We need to disable test mode when we launch the app!!! --- 🟥 🟥 🟥")
-    configuration.testMode = true
-    configuration.showDebugLogs = true
+#warning("🟥 🟥 🟥 --- We need to disable test mode when we launch the app!!! --- 🟥 🟥 🟥")
+    configuration.testMode = false
+    configuration.showDebugLogs = false
+    
+    Task {
+        async let uuid = getMacSerialNumber()
+        configuration.defaultUser = await uuid
+    }
     
     TelemetryManager.initialize(with: configuration)
 }
 
-func sendSignal () {
-    
-}
-
 //func sendSignal () {
 //
-//    //Await fetchStats...
-//    Task {
-//        await fetchAnalytics()
+//}
+
+func doXy (passedIn: [String:String]) {
+    
+    
+        TelemetryManager.send("cliTestSent", with: //shortcutSignal
+                                passedIn
+                              //        "deviceType": deviceName,
+                              //        "isAccessOn": String(settingX.isX),
+                              //        "accessVoice": String(settingX.xVoice),
+                              //        "accessHoldTime": String(settingX.xTime),
+                              //        "isForcedTitle": String(settingX.isForcedTitle),
+                              //        "modelName": modelName,
+                              //        "shortcutsFolderCount": String(shortcutsMapped.count), //This (shortcutsMapped) is all shortcuts & folders! We only want unique folders...
+                              //        "totalStreamDeckShortcutsKeys": String(newKeyIds.keys.count)
+                              
+                              
+        )
+        NSLog("📶 sent signal...")
+    // Reset the refs, as we've sent their cache
+    userPrefs.searchRefs = 0
+    userPrefs.textFieldRefs = 0
+    userPrefs.dropdownRefs = 0
+    savePrefrences(filePath: userSettingsFilePath)
+    
+}
+func sendSignal () {
+    
+    //Await fetchStats...
+    Task {
+        async let payloadX = fetchAnalytics()
+        signalPayloadToSendTop = await payloadX
+        doXy(passedIn: await payloadX)
+    }
+    
+//    if (!signalPayloadToSendTop.isEmpty) {
+//        TelemetryManager.send("cliTestSent", with:
+//                                signalPayloadToSendTop
+//                              //        "deviceType": deviceName,
+//                              //        "isAccessOn": String(settingX.isX),
+//                              //        "accessVoice": String(settingX.xVoice),
+//                              //        "accessHoldTime": String(settingX.xTime),
+//                              //        "isForcedTitle": String(settingX.isForcedTitle),
+//                              //        "modelName": modelName,
+//                              //        "shortcutsFolderCount": String(shortcutsMapped.count), //This (shortcutsMapped) is all shortcuts & folders! We only want unique folders...
+//                              //        "totalStreamDeckShortcutsKeys": String(newKeyIds.keys.count)
+//
+//
+//        )
+//        NSLog("📶 sent signal...")
 //    }
-//
-//    TelemetryManager.send("cliTestSent", with:
-//        signalPayloadToSend
-////        "deviceType": deviceName,
-//        //        "isAccessOn": String(settingX.isX),
-//        //        "accessVoice": String(settingX.xVoice),
-//        //        "accessHoldTime": String(settingX.xTime),
-//        //        "isForcedTitle": String(settingX.isForcedTitle),
-//        //        "modelName": modelName,
-//        //        "shortcutsFolderCount": String(shortcutsMapped.count), //This (shortcutsMapped) is all shortcuts & folders! We only want unique folders...
-//        //        "totalStreamDeckShortcutsKeys": String(newKeyIds.keys.count)
-//
-//
-//    )
-//    NSLog("📶 sent signal...")
+//    else {
+//        NSLog("📶 Signal was empty??? Not sure why!")
+//    }
 //    // Reset the refs, as we've sent their cache
 //    userPrefs.searchRefs = 0
 //    userPrefs.textFieldRefs = 0
 //    userPrefs.dropdownRefs = 0
 //    savePrefrences(filePath: userSettingsFilePath)
-//}
+}
 
 var signalPayloadToSend = [String:String]()
-func fetchAnalytics() async {
+var signalPayloadToSendTop = [String:String]()
+
+func fetchAnalytics() async -> [String:String]{
     let listOfFolders_ = analyticFunc(args: ["list", "--folders"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input StringanalyticFunc
     
     var modelName = modelIdentifier()! // Macmini 9,1
@@ -75,7 +114,7 @@ func fetchAnalytics() async {
     let defaultGpuName = MTLCopyAllDevices()[0].name //Name of the Default GPU
     
     //-----------------------------  Fetch Shortcut Info  -----------------------------
-
+    
     
     fetchCount() //Gathers the Shortcut with the longest amount of Actions
     //Get Shortcut's longest Actions
@@ -95,6 +134,15 @@ func fetchAnalytics() async {
     let duplicateKeysCount = (totalStreamDeckShortcutsKeys - uniques.count)
     
     
+//    for d in devicesX {
+//        if (d.key == device) {
+//            deviceName = d.value
+//            NSLog("XOD  New Device Name: \(deviceName)")
+//        }
+//        NSLog("XOD Device payloads: \(d)")
+//        NSLog("XOD Device Debvug |||| Device: \(device), deviceName\(deviceName)")
+//    }
+    
     signalPayloadToSend.updateValue(modelName, forKey: "modelName")
     signalPayloadToSend.updateValue(cpuName, forKey: "cpuName")
     signalPayloadToSend.updateValue(ram, forKey: "ram")
@@ -107,6 +155,7 @@ func fetchAnalytics() async {
     signalPayloadToSend.updateValue(String(longestAction), forKey: "longestAction")
     signalPayloadToSend.updateValue(String(userPrefs.isAccessibility), forKey: "isAccessOn")
     signalPayloadToSend.updateValue(String(userPrefs.isForcedTitle), forKey: "isForcedTitle")
+    signalPayloadToSend.updateValue(String(devicesX.count), forKey: "deviceCount")
     signalPayloadToSend.updateValue(deviceName, forKey: "deviceType")
     
     
@@ -127,6 +176,7 @@ func fetchAnalytics() async {
         signalPayloadToSend.updateValue(String(userPrefs.dropdownRefs), forKey: "dropdownRefs")
     }
     //Signlat....  SearchRefs
+    return signalPayloadToSend
 }
 
 
@@ -223,8 +273,8 @@ func analyticFunc(args: [String]) -> String {
 var actionSize: [Int] = []
 
 func fetchCount() {
-
-
+    
+    
     
     let script = """
     tell application "Shortcuts Events"
@@ -254,4 +304,30 @@ func fetchCount() {
     }
     
     actionSize = actionSize.sorted { $0 > $1 } //Sorts Array from high -> Low.
+}
+
+
+
+func getMacSerialNumber() async -> String {
+    var serialNumber: String? {
+        let platformExpert = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice") )
+        
+        guard platformExpert > 0 else {
+            return nil
+        }
+        
+        guard let serialNumber = (IORegistryEntryCreateCFProperty(platformExpert, kIOPlatformSerialNumberKey as CFString, kCFAllocatorDefault, 0).takeUnretainedValue() as? String)?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) else {
+            return nil
+        }
+        
+        IOObjectRelease(platformExpert)
+        
+        let serialAsData = Data(serialNumber.utf8)
+        let hashedSerialNum = SHA256.hash(data: serialAsData)
+        let hashSerialNumAsString = hashedSerialNum.compactMap { String(format: "%02x", $0) }.joined()
+
+        return hashSerialNumAsString
+    }
+    
+    return serialNumber ?? "Unknown"
 }

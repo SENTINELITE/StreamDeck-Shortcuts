@@ -7,26 +7,26 @@ import StreamDeck
 //  ----------------------------------------------------- ----------------------------------------------------- ------------------
 
 let manifest = PluginManifest(
-    name: "YetAnotherTest",
-    description: "Launch Shortcuts straight from your StreamDeck!",
+    name: "StreamDeck Shortcuts",
+    description: "Launch Shortcuts straight from your StreamDeck! Features an accessibility mode for vision impaired users.",
     author: "SENTINELITE",
-    icon: "counter",
-    version: "0.5",
+    icon: "Icons/shortcut",
+    version: "1.0",
     os: [
         .mac(minimumVersion: "12.0")
     ],
-    software: .minimumVersion("4.1"),
+    software: .minimumVersion("5.0"),
     sdkVersion: 2,
-    codePath: "streamdeck-WS-Test",
+    codePath: "StreamDeck-Shortcuts",
     actions: [
         PluginAction(
-            name: "addStuff",
-            uuid: "yat.increment",
+            name: "Launch Shortcut",
+            uuid: "shortcut.run",
             icon: "Icons/plus",
             states: [
                 PluginActionState(image: "Icons/plus")
             ],
-            tooltip: "Increment the count."),
+            tooltip: "Launches Shortcut!"),
     ])
 
 
