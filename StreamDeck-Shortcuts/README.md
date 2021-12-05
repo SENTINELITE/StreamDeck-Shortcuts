@@ -9,6 +9,10 @@ Of course I wasn’t going to make a simple thing. No, I had to do it the justic
 
 What started as a simple: “Let’s run Shortcuts on the StreamDeck”, turned into a fun learning process!
 
+### Repo Structure
+We’ve got the main code (this repo), & the Property Inspector’s
+[Property Inspector’s](https://github.com/SENTINELITE/StreamDeck-Shortcuts-PropertyInspector)
+
 ### Lost, but not forgotten features:
 - Set Discord/Github image/logo beside their description text?
 - isPrivateAnalytics Bool. Allow user’s to toggle Analytics.
