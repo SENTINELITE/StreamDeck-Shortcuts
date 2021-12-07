@@ -67,7 +67,7 @@ class CounterPlugin: StreamDeckPlugin {
     //  | accessKeyProcess: The main logic behind the Accessbility feature... |
     //  ----------------------------------------------------- -----------------
     
-    func accessKeyProcess (context: String) {
+    func accessKeyProcess (context: String, action: String) {
 #warning("Allow for floating Numbers!     |     We also need to check/mark extra calls of the same context as stale!")
         var curTime = Int(userPrefs.accessibilityHoldDownTime)
         for _ in 0..<Int(userPrefs.accessibilityHoldDownTime) {
@@ -96,7 +96,7 @@ class CounterPlugin: StreamDeckPlugin {
                     Task {
                         async let xxvd =  RunShortcut(shortcutName: key.value)
                         Task {
-                            let delay = await delayedStartup(context: context)
+                            let delay = await delayedStartup(context: context, action: action)
                         }
                         showOk(in: context)
                     }
@@ -110,7 +110,7 @@ class CounterPlugin: StreamDeckPlugin {
         
     }
     
-    func delayedStartup(context: String) async {
+    func delayedStartup(context: String, action: String) async {
         await Task.sleep(1 * 1_000_000_000)
         if (userPrefs.isForcedTitle) {
             for key in newKeyIds {
@@ -143,7 +143,7 @@ class CounterPlugin: StreamDeckPlugin {
         
         
         Task {
-            let delay = await delayedStartup(context: context)
+            let delay = await delayedStartup(context: context, action: action)
         }
         
         
@@ -174,7 +174,7 @@ class CounterPlugin: StreamDeckPlugin {
                         Task {
                             async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "\(key.value)") //Bugs out & causes the program to crash, after the 2nd action?
                             accessKeysToProcess.updateValue(true, forKey: context)
-                            accessKeyProcess(context: context)
+                            accessKeyProcess(context: context, action: action)
                         }
                     }
                     else {
