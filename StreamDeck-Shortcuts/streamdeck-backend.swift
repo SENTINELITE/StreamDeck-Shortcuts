@@ -86,6 +86,9 @@ class CounterPlugin: StreamDeckPlugin {
                         }
                     }
                 }
+                else {
+                    setTitle(in: context, to: "")
+                }
                 return
             }
         }
