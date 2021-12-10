@@ -16,6 +16,8 @@ I wanted to run my Shortcuts on my StreamDeck, but the go-to solution bricked on
 
 Of course, I wasn’t going to make a simple thing. No, I had to do it the justice it so rightly deserved. 😝
 
+---
+
 ### Repo Structure
 - The backend (this one)
 - & the [Property Inspector’s](https://github.com/SENTINELITE/StreamDeck-Shortcuts-PropertyInspector)
