@@ -12,13 +12,9 @@ If you want to learn more about how & why this was made, take a look at [this Tw
 ---
 
 ### Backstory
-I wanted to run my shortcuts on my StreamDeck, was using another plugin, but ended up bricking said plugin, on the first day. After multiple uninstalls & & computer restarts, it just wouldn’t work. That was the start…
+I wanted to run my Shortcuts on my StreamDeck, but the go-to solution bricked on me, on the first day. Whatever I did, I couldn’t get it working again. That was the start of this project…
 
-Of course, I wasn’t going to make a simple thing. No, I had to do it the justice it so rightly deserved.
-
-What started as a simple: “Let’s run Shortcuts on the StreamDeck”, turned into a fun learning process!
-
----
+Of course, I wasn’t going to make a simple thing. No, I had to do it the justice it so rightly deserved. 😝
 
 ### Repo Structure
 - The backend (this one)
