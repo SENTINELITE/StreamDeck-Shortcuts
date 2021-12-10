@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "StreamDeck",
+        "repositoryURL": "https://github.com/emorydunn/StreamDeckPlugin.git",
+        "state": {
+          "branch": "main",
+          "revision": "adc0ae5bc7447ee8a2a8e4dc1b8d0e902240deea",
+          "version": null
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
+        "state": {
+          "branch": null,
+          "revision": "6b2aa2748a7881eebb9f84fb10c01293e15b52ca",
+          "version": "0.5.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
