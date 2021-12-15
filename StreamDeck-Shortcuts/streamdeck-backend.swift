@@ -15,6 +15,7 @@ var devicesX = [String : String]()
 //The device is passed into every func, so we know which device the press originated from. This just helps us know the name of the device.
 // ["D1A5DFBEA210B6A82B5E5FB2F4488E6A": "Stream Deck XL", "D1A5DFBEA210B6A82B5E5FB2F4488E6A": "Stream Deck Mobile"]
 
+var WebSocketDelayForcePIEvent = false
 
 // getSettings calls ->  didReceiveSettings which *should* call -> sendToPropertyInspector?
 
@@ -114,7 +115,7 @@ class CounterPlugin: StreamDeckPlugin {
     }
     
     func delayedStartup(context: String, action: String) async {
-        await Task.sleep(1 * 1_000_000_000)
+        await Task.sleep(250_000_000)
         if (userPrefs.isForcedTitle) {
             for key in newKeyIds {
                 if (key.key == context) {
@@ -270,6 +271,7 @@ class CounterPlugin: StreamDeckPlugin {
     }
     
     override func propertyInspectorDidAppear(action: String, context: String, device: String) {
+        WebSocketDelayForcePIEvent = true
         //TODO: We don't need this anymore???
         
         getSettings(in: context)
@@ -370,6 +372,12 @@ class CounterPlugin: StreamDeckPlugin {
                     if (newKeyIds.keys.contains(context) == false) {
                         newKeyIds.updateValue(i.value, forKey: i.key)
                         updateSettings(context: context, action: action, payload: payload)
+                    }
+                    
+                    //If the WebSocket is still loading, we need to force-the propertyInspectorDidAppear event.
+                    if(WebSocketDelayForcePIEvent == false) {
+                        NSLog("  ⚠️ 🚨 150 : delayed Startup. Checking for X")
+                        propertyInspectorDidAppear(action: action, context: context, device: "")
                     }
                     
                 case "shortcutsOfFolder":
@@ -515,17 +523,16 @@ func updateSettings(context: String, action: String, payload: [String: String]) 
         }
     }
     
-    
 }
 
 
 func requestShortcutsFromFolder() {
-    NSLog("❄️ requestShortcutsFromFolder")
+    NSLog("❄️ requestShortcutsFromFolder | Not Implemented")
 }
 
 // Func inside of PI
 func requestSettings() {
-    NSLog("❄️ Fetching the Requested settings")
+    NSLog("❄️ Fetching the Requested settings  | Not Implemented")
     
 }
 
