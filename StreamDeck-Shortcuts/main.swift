@@ -36,3 +36,10 @@ let manifest = PluginManifest(
 
 initalizeTD() //Starts TD...
 PluginManager.main(plugin: CounterPlugin.self, manifest: manifest)
+
+//Task {
+//    async let xxvd =  RunShortcut(shortcutName: "Test's Delete")
+//}
+//["-e", "do shell script \"shortcuts run Test\'s\\\\ Delete\""]
+//sleep(5)
+//print("ea")

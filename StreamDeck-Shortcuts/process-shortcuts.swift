@@ -54,9 +54,9 @@ func processShortcuts() {
         let listOfAllShortcutsSet = Set(listOfAllShortcuts)
         let shortcutsWithFoldersSet = Set(shortcutsWithFolders)
         let diff2 = listOfAllShortcutsSet.symmetricDifference(shortcutsWithFoldersSet)
-        //    print("XSET: \(shortcutsWithFolders.count)")
-        //    print("OGSet: \(listOfAllShortcuts.count)")
-        //    print("OGSet: \(diff2.count)")
+            print("XSET: \(shortcutsWithFolders.count)")
+            print("OGSet: \(listOfAllShortcuts.count)")
+            print("OGSet: \(diff2.count)")
         print("Shortcuts without a folder:", diff2)
         
         for i in diff2 { //if the key's folder is nil, set it tall "all"
@@ -69,5 +69,23 @@ func processShortcuts() {
     print("MappedOut: \(shortcutsMapped)")
     
 //    for key in shortcutsMapped
+    
+    for folder in listOfFolders {
+        for nestedFolder in shortcutsMapped {
+            if (folder == nestedFolder.value) {
+                NSLog("❄️ This matches!!!!!")
+            }
+        }
+    }
+    
+    for folder in shortcutsMapped {
+        let x = shortcutsMapped.index(forKey: "All")
+        NSLog("\(x)")
+        NSLog("\(folder.value)")
+        
+    }
+    
+    NSLog("LOF \(listOfFolders), LOCs \(listOfAllShortcuts)")
+    NSLog("ListOfMapped \(shortcutsMapped)")
     
 }

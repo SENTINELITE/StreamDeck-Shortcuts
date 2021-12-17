@@ -20,6 +20,13 @@ var WebSocketDelayForcePIEvent = false
 // getSettings calls ->  didReceiveSettings which *should* call -> sendToPropertyInspector?
 
 
+
+//⚠️ Unknown Payload: ["nil", "", "updateSettings", "true", "0.0", "Samantha", "true"]
+//⚠️ Unknown Payload: nil
+
+//⚠️ Unknown Payload: ["true", "Samantha", "Open Apps Bundle", "nil", "0.0", "true", "updateSettings"]
+//⚠️ Unknown Payload: true
+
 // SelectedFolder -> Func SendNewShortcuts() -> SendToPI!
 class CounterPlugin: StreamDeckPlugin {
     
@@ -342,6 +349,10 @@ class CounterPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- ----------------------
     
     override func sentToPlugin(context: String, action: String, payload: [String : String]) {
+        
+        processShortcuts()
+        listOfCuts = listOfCuts.sorted() //Sort From A-Z | Are we still using this? TODO: We should filter more of the search stuff over on the swift side.
+        
         NSLog("We got sent something from the PI!")
         NSLog("""
                 We got sent something from the PI,
@@ -421,25 +432,25 @@ class CounterPlugin: StreamDeckPlugin {
         //        NSLog("payload stuff \(decodedPayload[0]) \(decodedPayload[1])")
         
         //        theValueToTrade = decodedPayload[0]
-        if (decodedPayload[0] == "requestSettings") {
-            requestSettings()
-            let json = """
-            {
-                "event": inRegisterEvent,
-                "uuid": inPluginUUID
-            }
-            """
-            
-            
-            //Whole JSON Message: {"action":"yat.increment","event":"sendToPropertyInspector","context":"89C7482603E12CA379788EFB1A6349DD","payload":{"shortcutName":"efgwe","type":"updateSettings"}}
-            // PAYLOAD: {shortcutName: "efgwe", type: "updateSettings"}
-            //            sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
-            
-        }
-        else {
-            NSLog("⚠️ Unknown Payload: \(decodedPayload)")
-            NSLog("⚠️ Unknown Payload: \(decodedPayload[0])")
-        }
+//        if (decodedPayload[0] == "requestSettings") {
+//            requestSettings()
+//            let json = """
+//            {
+//                "event": inRegisterEvent,
+//                "uuid": inPluginUUID
+//            }
+//            """
+//            
+//            
+//            //Whole JSON Message: {"action":"yat.increment","event":"sendToPropertyInspector","context":"89C7482603E12CA379788EFB1A6349DD","payload":{"shortcutName":"efgwe","type":"updateSettings"}}
+//            // PAYLOAD: {shortcutName: "efgwe", type: "updateSettings"}
+//            //            sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
+//            
+//        }
+//        else {
+//            NSLog("⚠️ Unknown Payload: \(decodedPayload)")
+//            NSLog("⚠️ Unknown Payload: \(decodedPayload[0])")
+//        }
         //"shortcutsOfFolder"
         if (decodedPayload[0] == "shortcutsOfFolder") {
             requestShortcutsFromFolder()
