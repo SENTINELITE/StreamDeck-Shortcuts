@@ -19,6 +19,7 @@ var listOfSayVoices = ["Samantha", "Victoria", "Alex", "Fred"]
 var shortcutsMapped = [String:String]() //Creates an Dictionary, with each Shortcut & whether they have a folder.
 
 var listOfCuts = ["List of Shortcuts from Backend"]
+var listOfFoldersWithShortcuts = [String]()
 
 var loadedPrefs = false
 

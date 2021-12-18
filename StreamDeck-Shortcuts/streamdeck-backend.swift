@@ -64,7 +64,7 @@ class CounterPlugin: StreamDeckPlugin {
                 newKeyIds.removeValue(forKey: "type")
                 savePrefrences(filePath: keySettingsFilePath)
             }
-
+            
             loadedPrefs = true
             //TODO: Try to get settings for each known context, if we get an error, this context no longer exists, remove it from the file!
         }
@@ -82,10 +82,18 @@ class CounterPlugin: StreamDeckPlugin {
             if (accessKeysToProcess.keys.contains(context)) {
                 curTime -= 1
                 setTitle(in: context, to: "cur: \(curTime)")
+                //TODO: We want to skip the first second or two, so we don't overload the audio with too much speech...
+                //                Task {
+                //                    let timer_X = await accessDelayHelper(timeLeft: 3)
+                //                    async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "\(timer_X) remaining") //Bugs out & causes the program to crash, after the 2nd action?
+                //                }
                 sleep(1)
             }
             else {
                 setTitle(in: context, to: "🚨 Canceled")
+                Task {
+                    async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "Canceled shortcut!") //Bugs out & causes the program to crash, after the 2nd action?
+                }
                 sleep (1)
                 if (userPrefs.isForcedTitle) {
                     for key in newKeyIds {
@@ -105,7 +113,10 @@ class CounterPlugin: StreamDeckPlugin {
             for key in newKeyIds {
                 if (key.key == context) {
                     Task {
+                        async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "Running Shortcut!") //Bugs out & causes the program to crash, after the 2nd action?
                         async let xxvd =  RunShortcut(shortcutName: key.value)
+                        //TODO: Say when shortcut has been ran. We want this to be on a toggle, as we don't want to overlap a Shortcuts audio, if the user has such a thing.
+//                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         Task {
                             let delay = await delayedStartup(context: context, action: action)
                         }
@@ -121,12 +132,31 @@ class CounterPlugin: StreamDeckPlugin {
         
     }
     
+    //    var timeLeft = 0
+    //    func accessDelayHelper(timeLeft: Int) async -> Int{
+    //        await Task.sleep(1_000_000_000)
+    ////        curTime -= 1
+    //        var x = timeLeft
+    //        x -= 1
+    //        return x
+    //    }
+    
     func delayedStartup(context: String, action: String) async {
-        await Task.sleep(250_000_000)
+        await Task.sleep(1_250_000_000)
         if (userPrefs.isForcedTitle) {
             for key in newKeyIds {
                 if (key.key == context) {
-                    setTitle(in: context, to: key.value)
+                    //if (listOfCuts.contains(key.value)) {
+                    if (key.value == "" || !listOfCuts.contains(key.value)) { //The
+                        showAlert(in: context)
+                        await Task.sleep(2_250_000_000)
+                        setTitle(in: context, to: "🚨🚨🚨\nMissing!\n⚠️")
+                        NSLog("We're Missing the Value for Context: \(context), with value: \(key.value)")
+                    }
+                    else {
+                        setTitle(in: context, to: key.value)
+                        NSLog("We have the title for cote3xt: \(context), with value: \(key.value)")
+                    }
                 }
             }
         }
@@ -140,17 +170,17 @@ class CounterPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
     
     override func willAppear(action: String, context: String, device: String, payload: AppearEvent) {
-//        getSettings(in: context)
-//        if (userPrefs.isForcedTitle) {
-//            for key in newKeyIds {
-//                if (key.key == context) {
-//                    setTitle(in: context, to: key.value)
-//                }
-//            }
-//        }
-//        else {
-//            setTitle(in: context, to: "")
-//        }
+        //        getSettings(in: context)
+        //        if (userPrefs.isForcedTitle) {
+        //            for key in newKeyIds {
+        //                if (key.key == context) {
+        //                    setTitle(in: context, to: key.value)
+        //                }
+        //            }
+        //        }
+        //        else {
+        //            setTitle(in: context, to: "")
+        //        }
         
         
         Task {
@@ -191,6 +221,7 @@ class CounterPlugin: StreamDeckPlugin {
                     else {
                         Task {
                             async let xxvd =  RunShortcut(shortcutName: key.value)
+                            //                            async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         }
                     }
                 }
@@ -227,6 +258,7 @@ class CounterPlugin: StreamDeckPlugin {
     
     override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
         
+        var isExist = true
         //Send initial settings!
         //Get all of the shortcuts & their hiearchy.
         processShortcuts()
@@ -234,7 +266,17 @@ class CounterPlugin: StreamDeckPlugin {
         
         for key in newKeyIds {
             if (key.key == context) {
-                savedShortcut = key.value
+                //Check if the user still has this shortcut in their library! | TODO: We should move this to another function & check everywhere. For instance, we're not checking when the key appears, resulting in the old key's name being displayed to the user!
+                if (listOfCuts.contains(key.value)) {
+                    savedShortcut = key.value
+                    NSLog("🚀 The Shortcuts Exists! \(key.value)")
+                }
+                else {
+                    isExist = false
+                    NSLog("🌻 This key has changed names!")
+//                    savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
+//                    setTitle(in: context, to: savedShortcut)
+                }
             }
         }
         
@@ -257,24 +299,59 @@ class CounterPlugin: StreamDeckPlugin {
             }
         }
         
+        var jsToSend = ""
+        do {
+            let r = try JSONEncoder().encode(shortcutsMapped)
+            let jsonString = String(decoding: r, as: UTF8.self)
+            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString)")
+            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString.debugDescription)")
+            jsToSend = jsonString
+        } catch {
+            NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
+        }
+        
+        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "shortcuts": "\(listOfCuts)",
+                            "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
+                            "mappedDataFromBackend": "\(jsToSend)",
+                            "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
+                            "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
+                           ]
         //Send Key's Data to the PI
-        sendToPropertyInspector(in: context, action: action, payload:
-                                    ["type": "updateSettings", "shortcutName": "\(toPass)", "shortcuts": "\(listOfCuts)",
-                                     "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
-                                     "mappedDataFromBackend": "\(shortcutsMapped)",
-                                     "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
-                                     "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
-                                    ])
+        sendToPropertyInspector(in: context, action: action, payload: payloadToSend)
         
         //Helper Title for Debuggindg
-//        setTitle(in: context, to: "❄️ \(toPass)")
+        //        setTitle(in: context, to: "❄️ \(toPass)")
         
         //IF the .json key's value poperty doesn't match, correct that.
+        //        if (listOfCuts.contains(<#T##element: String##String#>)) {
         if (toPass != savedShortcut) {
             NSLog("🟡 We've updated the shortuct, to match ELGATO's Settings! contexT: \(context), toPass: \(toPass), from staleShortcut: \(savedShortcut)")
-            newKeyIds.updateValue(toPass, forKey: context)
-            savePrefrences(filePath: keySettingsFilePath)
+            if (listOfCuts.contains(toPass)) {
+                newKeyIds.updateValue(toPass, forKey: context)
+                savePrefrences(filePath: keySettingsFilePath)
+                //            savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
+                setTitle(in: context, to: toPass)
+            } else {
+                NSLog("🌚 The shortcut doens't exist! We're setting it to [0] & saving this to the SD API & save!")
+                savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
+                newKeyIds.updateValue(savedShortcut, forKey: context)
+                savePrefrences(filePath: keySettingsFilePath)
+                setTitle(in: context, to: savedShortcut)
+                payloadToSend.updateValue(savedShortcut, forKey: "shortcutName")
+                setSettings(in: context, to: payloadToSend)
+            }
         }
+        //        }
+        //        else {
+        //            NSLog("🌚 The shortcut doens't exist! We're setting it to [0] & saving this to the SD API & save!")
+        //            savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
+        //            newKeyIds.updateValue(savedShortcut, forKey: context)
+//            savePrefrences(filePath: keySettingsFilePath)
+//            setTitle(in: context, to: savedShortcut)
+//            payloadToSend.updateValue(savedShortcut, forKey: "shortcutName")
+//            setSettings(in: context, to: payloadToSend)
+//        }
+        
     }
     
     override func propertyInspectorDidAppear(action: String, context: String, device: String) {
@@ -396,7 +473,7 @@ class CounterPlugin: StreamDeckPlugin {
                 case "updateSettings":
                     updateSettings(context: context, action: action, payload: payload) //Save User's settings to disk
                     setSettings(in: context, to: payload)
-                        handleForcedTitle() //TODO: Move this call & the function outside of CounterPlugin. We should call this from Update Settings? This may not work due to the Instance Manager
+                    handleForcedTitle() //TODO: Move this call & the function outside of CounterPlugin. We should call this from Update Settings? This may not work due to the Instance Manager
                 default:
                     NSLog("❄️ Switch Case that's not covered \(i.value)")
                 }
@@ -432,25 +509,25 @@ class CounterPlugin: StreamDeckPlugin {
         //        NSLog("payload stuff \(decodedPayload[0]) \(decodedPayload[1])")
         
         //        theValueToTrade = decodedPayload[0]
-//        if (decodedPayload[0] == "requestSettings") {
-//            requestSettings()
-//            let json = """
-//            {
-//                "event": inRegisterEvent,
-//                "uuid": inPluginUUID
-//            }
-//            """
-//            
-//            
-//            //Whole JSON Message: {"action":"yat.increment","event":"sendToPropertyInspector","context":"89C7482603E12CA379788EFB1A6349DD","payload":{"shortcutName":"efgwe","type":"updateSettings"}}
-//            // PAYLOAD: {shortcutName: "efgwe", type: "updateSettings"}
-//            //            sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
-//            
-//        }
-//        else {
-//            NSLog("⚠️ Unknown Payload: \(decodedPayload)")
-//            NSLog("⚠️ Unknown Payload: \(decodedPayload[0])")
-//        }
+        //        if (decodedPayload[0] == "requestSettings") {
+        //            requestSettings()
+        //            let json = """
+        //            {
+        //                "event": inRegisterEvent,
+        //                "uuid": inPluginUUID
+        //            }
+        //            """
+        //
+        //
+        //            //Whole JSON Message: {"action":"yat.increment","event":"sendToPropertyInspector","context":"89C7482603E12CA379788EFB1A6349DD","payload":{"shortcutName":"efgwe","type":"updateSettings"}}
+        //            // PAYLOAD: {shortcutName: "efgwe", type: "updateSettings"}
+        //            //            sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
+        //
+        //        }
+        //        else {
+        //            NSLog("⚠️ Unknown Payload: \(decodedPayload)")
+        //            NSLog("⚠️ Unknown Payload: \(decodedPayload[0])")
+        //        }
         //"shortcutsOfFolder"
         if (decodedPayload[0] == "shortcutsOfFolder") {
             requestShortcutsFromFolder()

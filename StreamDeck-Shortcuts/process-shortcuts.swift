@@ -13,6 +13,12 @@ import Foundation
 //  ----------------------------------------------------- ----------------------------------------------------- -----------------
 
 func processShortcuts() {
+    
+    listOfCuts.removeAll()
+    shortcutsFolder.removeAll()
+    shortcutsMapped.removeAll()
+    listOfFoldersWithShortcuts.removeAll()
+    
     func findFolders(args: [String]) -> String {
         let shortcutsCLI = Process()
         let pipe = Pipe()
@@ -43,8 +49,15 @@ func processShortcuts() {
         let splitsUp = findFolders(args: ["list", "--folder-name", "\(name)"]).split(whereSeparator: \.isNewline).map(String.init) //Fetch each shortcut from every folder, & create an array.
         for shortcut in splitsUp {
             shortcutsMapped.updateValue(name, forKey: shortcut) //Add all Shortcuts & their folderName to Dictionary.
+            if(!listOfFoldersWithShortcuts.contains(name)) {
+                listOfFoldersWithShortcuts.append(name)
+            }
         }
     }
+//    listOfFoldersWithShortcuts.append("All")
+//    listOfFoldersWithShortcuts.sort()
+    listOfFoldersWithShortcuts.insert("All", at: listOfFoldersWithShortcuts.startIndex)
+    shortcutsFolder = listOfFoldersWithShortcuts
     
     func findDiff() {
         var shortcutsWithFolders = [String]() //Make a temp array to compare shortcuts that have folders with all shortcuts.
@@ -70,22 +83,22 @@ func processShortcuts() {
     
 //    for key in shortcutsMapped
     
-    for folder in listOfFolders {
-        for nestedFolder in shortcutsMapped {
-            if (folder == nestedFolder.value) {
-                NSLog("❄️ This matches!!!!!")
-            }
-        }
-    }
-    
-    for folder in shortcutsMapped {
-        let x = shortcutsMapped.index(forKey: "All")
-        NSLog("\(x)")
-        NSLog("\(folder.value)")
-        
-    }
-    
-    NSLog("LOF \(listOfFolders), LOCs \(listOfAllShortcuts)")
-    NSLog("ListOfMapped \(shortcutsMapped)")
+//    for folder in listOfFolders {
+//        for nestedFolder in shortcutsMapped {
+//            if (folder == nestedFolder.value) {
+//                NSLog("❄️ This matches!!!!!")
+//            }
+//        }
+//    }
+//    
+//    for folder in shortcutsMapped {
+//        let x = shortcutsMapped.index(forKey: "All")
+//        NSLog("\(x)")
+//        NSLog("\(folder.value)")
+//        
+//    }
+//    
+//    NSLog("LOF \(listOfFolders), LOCs \(listOfAllShortcuts)")
+//    NSLog("ListOfMapped \(shortcutsMapped)")
     
 }

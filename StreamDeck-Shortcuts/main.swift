@@ -11,7 +11,7 @@ let manifest = PluginManifest(
     description: "Launch Shortcuts straight from your StreamDeck! Features an accessibility mode for vision impaired users.",
     author: "SENTINELITE",
     icon: "Icons/shortcut",
-    version: "1.0",
+    version: "1.0.1",
     os: [
         .mac(minimumVersion: "12.0")
     ],
@@ -35,11 +35,5 @@ let manifest = PluginManifest(
 //  ----------------------
 
 initalizeTD() //Starts TD...
+processShortcuts()
 PluginManager.main(plugin: CounterPlugin.self, manifest: manifest)
-
-//Task {
-//    async let xxvd =  RunShortcut(shortcutName: "Test's Delete")
-//}
-//["-e", "do shell script \"shortcuts run Test\'s\\\\ Delete\""]
-//sleep(5)
-//print("ea")
