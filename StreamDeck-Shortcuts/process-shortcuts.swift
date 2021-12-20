@@ -13,6 +13,7 @@ import Foundation
 //  ----------------------------------------------------- ----------------------------------------------------- -----------------
 
 func processShortcuts() {
+    NSLog("DEBUG: Starting processShortcuts()!")
     
     listOfCuts.removeAll()
     shortcutsFolder.removeAll()
@@ -39,6 +40,12 @@ func processShortcuts() {
     
     let listOfAllShortcuts = findFolders(args: ["list"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
     let listOfFolders = findFolders(args: ["list", "--folders"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
+  
+    //Maybe used on the future, to "heartbeat" the JS front-end. This is useful, if the user's library is super big.
+//    for i in 1...10 {
+//        initalShortcutsMapped.updateValue("All", forKey: listOfAllShortcuts[i])
+//    }
+//    NSLog("Mapped out initial settings \(initalShortcutsMapped)")
     
     #warning("We need to add 'All' here.")
     shortcutsFolder = listOfFolders
@@ -81,6 +88,8 @@ func processShortcuts() {
     findDiff()
     print("MappedOut: \(shortcutsMapped)")
     
+//    savePrefrences(filePath: debugShortcuts)
+    
 //    for key in shortcutsMapped
     
 //    for folder in listOfFolders {
@@ -101,4 +110,5 @@ func processShortcuts() {
 //    NSLog("LOF \(listOfFolders), LOCs \(listOfAllShortcuts)")
 //    NSLog("ListOfMapped \(shortcutsMapped)")
     
+    NSLog("DEBUG: Finished Running processShortcuts()!")
 }

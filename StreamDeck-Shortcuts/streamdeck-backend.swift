@@ -12,10 +12,12 @@ var accessKeysToProcess = [String : Bool]()
 var deviceName = "N/A"
 
 var devicesX = [String : String]()
+var devices = [String : String]()
 //The device is passed into every func, so we know which device the press originated from. This just helps us know the name of the device.
 // ["D1A5DFBEA210B6A82B5E5FB2F4488E6A": "Stream Deck XL", "D1A5DFBEA210B6A82B5E5FB2F4488E6A": "Stream Deck Mobile"]
 
 var WebSocketDelayForcePIEvent = false
+//var firstLaunch = true
 
 // getSettings calls ->  didReceiveSettings which *should* call -> sendToPropertyInspector?
 
@@ -39,11 +41,16 @@ class CounterPlugin: StreamDeckPlugin {
     override func deviceDidConnect(_ device: String, deviceInfo: DeviceInfo) {
         NSLog("Device: \(device )")
         NSLog("DeviceInfo: \(deviceInfo)")
+        NSLog("DeviceInfo.type: \(deviceInfo.type)")
+        NSLog("DeviceInfo.type: \(deviceInfo.type.self)")
+        NSLog("DeviceInfo.type: \(deviceInfo.type.rawValue)")
         deviceName = deviceInfo.name
         //Log each device that connected.
         
         //Add the connected device to the list of known devices
         devicesX.updateValue(deviceInfo.name, forKey: device)
+        devices.updateValue("\(deviceInfo.type)", forKey: device)
+        
         
         
         if (!loadedPrefs) {
@@ -116,7 +123,7 @@ class CounterPlugin: StreamDeckPlugin {
                         async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "Running Shortcut!") //Bugs out & causes the program to crash, after the 2nd action?
                         async let xxvd =  RunShortcut(shortcutName: key.value)
                         //TODO: Say when shortcut has been ran. We want this to be on a toggle, as we don't want to overlap a Shortcuts audio, if the user has such a thing.
-//                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
+                        //                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         Task {
                             let delay = await delayedStartup(context: context, action: action)
                         }
@@ -201,7 +208,7 @@ class CounterPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------
     
     override func keyDown(action: String, context: String, device: String, payload: KeyEvent) {
-        NSLog("Key was pressed down!")
+        NSLog("DEBUG: keyDown() was pressed down!")
         sendSignal()
         
         //        sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
@@ -239,6 +246,7 @@ class CounterPlugin: StreamDeckPlugin {
         //        setTitle(in: context, to: "TestNewTitle")
         //Data that's being pushed to the WS.
         //["context": "F4C0705EB6078CBFF14F46088C0FB726", "event": "setTitle", "payload": ["title": "TestNewTitle"]]
+        NSLog("DEBUG: keyDown() finshed being running!")
     }
     
     
@@ -258,6 +266,7 @@ class CounterPlugin: StreamDeckPlugin {
     
     override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
         
+        NSLog("DEBUG: Starting didRecieveSettings()!")
         var isExist = true
         //Send initial settings!
         //Get all of the shortcuts & their hiearchy.
@@ -274,8 +283,8 @@ class CounterPlugin: StreamDeckPlugin {
                 else {
                     isExist = false
                     NSLog("🌻 This key has changed names!")
-//                    savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
-//                    setTitle(in: context, to: savedShortcut)
+                    //                    savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
+                    //                    setTitle(in: context, to: savedShortcut)
                 }
             }
         }
@@ -310,12 +319,47 @@ class CounterPlugin: StreamDeckPlugin {
             NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
         }
         
-        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "shortcuts": "\(listOfCuts)",
-                            "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
-                            "mappedDataFromBackend": "\(jsToSend)",
-                            "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
-                            "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
-                           ]
+        
+        //Older payload
+        //        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "shortcuts": "\(listOfCuts)",
+        //                            "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
+        //                            "mappedDataFromBackend": "\(jsToSend)",
+        //                            "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
+        //                            "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
+        //                           ]
+        
+        //        initalShortcutsMapped
+//        var jsToSend_initial = ""
+//        do {
+//            let r = try JSONEncoder().encode(initalShortcutsMapped)
+//            let jsonString = String(decoding: r, as: UTF8.self)
+//            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString)")
+//            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString.debugDescription)")
+//            jsToSend_initial = jsonString
+//        } catch {
+//            NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
+//        }
+        
+        
+        //            NSLog(" XO XO About to send init payload")
+        //        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "isInitPayload": "true",
+        //                                "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
+        //                                "mappedDataFromBackend": "\(jsToSend_initial)",
+        //                                "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
+        //                                "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
+        //                               ]
+        //        sendToPropertyInspector(in: context, action: action, payload: payloadToSend)
+        //        sleep(2)
+        NSLog(" XO XO Sent init payload")
+        NSLog(" XO XO About to send Whole payload")
+        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "isInitPayload": "false",
+                             "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
+                             "mappedDataFromBackend": "\(jsToSend)",
+                             "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
+                             "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
+        ]
+        NSLog(" XO XO Sent Whole payload")
+        
         //Send Key's Data to the PI
         sendToPropertyInspector(in: context, action: action, payload: payloadToSend)
         
@@ -346,15 +390,22 @@ class CounterPlugin: StreamDeckPlugin {
         //            NSLog("🌚 The shortcut doens't exist! We're setting it to [0] & saving this to the SD API & save!")
         //            savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
         //            newKeyIds.updateValue(savedShortcut, forKey: context)
-//            savePrefrences(filePath: keySettingsFilePath)
-//            setTitle(in: context, to: savedShortcut)
-//            payloadToSend.updateValue(savedShortcut, forKey: "shortcutName")
-//            setSettings(in: context, to: payloadToSend)
-//        }
-        
+        //            savePrefrences(filePath: keySettingsFilePath)
+        //            setTitle(in: context, to: savedShortcut)
+        //            payloadToSend.updateValue(savedShortcut, forKey: "shortcutName")
+        //            setSettings(in: context, to: payloadToSend)
+        //        }
+        NSLog("DEBUG: Finished running didRecieveSettings()!")
     }
     
     override func propertyInspectorDidAppear(action: String, context: String, device: String) {
+        NSLog("DEBUG: Starting propertyInspectorDidAppear()!")
+        
+//        // Simulate the hard crash/Slow loading...
+//        if (firstLaunch == true) {
+//            sleep(20)
+//            firstLaunch = false
+//        }
         WebSocketDelayForcePIEvent = true
         //TODO: We don't need this anymore???
         
@@ -372,6 +423,7 @@ class CounterPlugin: StreamDeckPlugin {
         //            setTitle(in: context, to: "rawSettings")
         //            getSettings(in: context)
         //        }
+        NSLog("DEBUG: Finished Running propertyInspectorDidAppear()!")
     }
     
     //    override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
@@ -426,6 +478,7 @@ class CounterPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- ----------------------
     
     override func sentToPlugin(context: String, action: String, payload: [String : String]) {
+        NSLog("DEBUG: Starting sentToPlugin()!")
         
         processShortcuts()
         listOfCuts = listOfCuts.sorted() //Sort From A-Z | Are we still using this? TODO: We should filter more of the search stuff over on the swift side.
@@ -457,9 +510,12 @@ class CounterPlugin: StreamDeckPlugin {
                 switch i.value {
                 case "requestSettings":
                     requestSettings() // Send settings to the PI!
+                    NSLog("DEBUG: sentToPlugin() Check #1!")
                     if (newKeyIds.keys.contains(context) == false) {
                         newKeyIds.updateValue(i.value, forKey: i.key)
+                        NSLog("DEBUG: sentToPlugin() Check #2!")
                         updateSettings(context: context, action: action, payload: payload)
+                        NSLog("DEBUG: sentToPlugin() Check #3!")
                     }
                     
                     //If the WebSocket is still loading, we need to force-the propertyInspectorDidAppear event.
@@ -532,6 +588,7 @@ class CounterPlugin: StreamDeckPlugin {
         if (decodedPayload[0] == "shortcutsOfFolder") {
             requestShortcutsFromFolder()
         }
+        NSLog("DEBUG: Finished Running sentToPlugin()!")
     }
     
 }
@@ -548,6 +605,7 @@ class CounterPlugin: StreamDeckPlugin {
 // Func inside of PI
 func updateSettings(context: String, action: String, payload: [String: String]) {
     //    theValueToTrade = payload
+    NSLog("DEBUG: Starting updateSettings()!")
     NSLog("❄️ Updating the settings with \(payload)")
     let decodedPayload = payload.map { $0.value} //["TestCut_New1", "Samantha", "updateSettings"]
     let decodedPayloadKey = payload.map { $0.key} //["shortcutName", "sayvoice", "type"]
@@ -611,6 +669,7 @@ func updateSettings(context: String, action: String, payload: [String: String]) 
         }
     }
     
+    NSLog("DEBUG: Finished Running updateSettings()!")
 }
 
 

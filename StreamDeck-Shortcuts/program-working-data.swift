@@ -17,6 +17,7 @@ var listOfSayVoices = ["Samantha", "Victoria", "Alex", "Fred"]
 //Send the object of this, to minimize crosstalk.
 // shortcuts = [String: String] // [ShortcutName : ShortcutFolder]
 var shortcutsMapped = [String:String]() //Creates an Dictionary, with each Shortcut & whether they have a folder.
+//var initalShortcutsMapped = [String:String]() //Creates an Dictionary, with each Shortcut & whether they have a folder.
 
 var listOfCuts = ["List of Shortcuts from Backend"]
 var listOfFoldersWithShortcuts = [String]()

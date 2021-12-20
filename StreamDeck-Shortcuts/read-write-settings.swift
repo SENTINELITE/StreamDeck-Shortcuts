@@ -16,10 +16,11 @@ func getDocumentsDirectory() -> URL {
 }
 
 
-//let filename2 = getDocumentsDirectory().appendingPathComponent("keys.json")
 let keySettingsFilePath =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/keys.json")
-//"/Users/kirkland/Library/Application\ Support/com.elgato.StreamDeck/Plugins/com.sentinelite.yetanothertest.sdPlugin/userSettings.json"
 let userSettingsFilePath =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/userSettings.json")
+
+//Used for debugging their stats
+let debugShortcuts =  FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/debugShortcuts.json")
 
 func savePrefrences(filePath: URL) {
     if (filePath.absoluteString == keySettingsFilePath.absoluteString) {
@@ -34,7 +35,7 @@ func savePrefrences(filePath: URL) {
             NSLog("📓 Failed to write file to location \(filePath), because of error: \(error)")
         }
     }
-    else {
+    else if (filePath.absoluteString == userSettingsFilePath.absoluteString){
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         //        settingX = mySettings(isX: false, xTime: 8.21, xVoice: "TestDebug")
@@ -43,6 +44,14 @@ func savePrefrences(filePath: URL) {
             let jsonData = try encoder.encode(userPrefs)
             try jsonData.write(to: filePath)
             NSLog("   📓 Encoded new settings! \(userPrefs)")
+        } catch {
+            NSLog("📓 Failed to write file to location \(filePath), because of error: \(error)")
+        }
+    }
+    else {
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: shortcutsMapped, options: .prettyPrinted)
+            try jsonData.write(to: filePath)
         } catch {
             NSLog("📓 Failed to write file to location \(filePath), because of error: \(error)")
         }
