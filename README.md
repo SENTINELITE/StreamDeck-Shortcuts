@@ -26,10 +26,10 @@ Of course, I wasn’t going to make a simple thing. No, I had to do it the justi
 
 ### Lost, But Not Forgotten Features:
 - Set Discord/GitHub image/logo beside their description text?
-- isPrivateAnalytics Bool. Allow user’s to toggle Analytics.
+- isPrivateAnalytics Bool, to allow user’s to toggle Analytics.
 - Move settings into a popup window? See Elgato PI Demo.
 - Don’t send a payload, if settings haven’t changed. Only send what *has* changed. Show if settings changed by showing an “X” on the save box, instead of the green box.
-- We shouldn’t send all the shortcuts, only a limited few. The payload is probably too big, for bigger libraries.
+- We shouldn’t send all the shortcuts, only a limited few. The payload is probably too big, for larger libraries.
 - Allow user to switch Accessibility speed. Only some voices support this…
 - Allow for accessibility toggle. Ie, some people may not/want to hold down for x amount of time. Create an option to tap, starting the timer, then another tap confirm or cancel, when the timer finishes.
 - 🚀 Create Shortcut from Button Press?
@@ -38,11 +38,12 @@ Of course, I wasn’t going to make a simple thing. No, I had to do it the justi
 ---
 
 ### ⚠️ Known Issues & Bugs
+- 🐞Rare: Kilo-One | Sometimes the app fails to startup correctly. Need to dig into this. | v 1.0.1 includes a new "Debug:" console.app logging message.
 - 🐞Potential: App becomes unresponsive after computer wakes up from sleep???
-- 🐞Rare: Sometimes the app fails to startup correctly. Need to dig into this.
+- Some user's may experience issues with certain special characters. We've done our best to handle most of these, but other languages may vary! 
 - We’re only fetching/getting the first discovered StreamDeck. We need to get all the user’s connected StreamDeck Devices
 	- We’re getting the connected count, but we still need to fetch the unique IDs.
-- If the shortcut name is long, the search field gets small. We fixed the former, but now we’re Popping out of PI’s regular dimensions…
+- ~~If the shortcut name is long, the search field gets small. We fixed the former, but now we’re Popping out of PI’s regular dimensions…~~ should be fixed.
 
 ---
 
