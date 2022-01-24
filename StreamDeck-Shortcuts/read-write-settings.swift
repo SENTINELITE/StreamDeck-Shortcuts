@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Sentry
 
 var newKeyIds = [String:String]()
 #warning("Need to Redo the settings saving/loading!")
@@ -32,6 +33,7 @@ func savePrefrences(filePath: URL) {
             let jsonData = try JSONSerialization.data(withJSONObject: newKeyIds, options: .prettyPrinted)
             try jsonData.write(to: filePath)
         } catch {
+            SentrySDK.capture(error: error)
             NSLog("📓 Failed to write file to location \(filePath), because of error: \(error)")
         }
     }
@@ -45,6 +47,7 @@ func savePrefrences(filePath: URL) {
             try jsonData.write(to: filePath)
             NSLog("   📓 Encoded new settings! \(userPrefs)")
         } catch {
+            SentrySDK.capture(error: error)
             NSLog("📓 Failed to write file to location \(filePath), because of error: \(error)")
         }
     }
@@ -53,6 +56,7 @@ func savePrefrences(filePath: URL) {
             let jsonData = try JSONSerialization.data(withJSONObject: shortcutsMapped, options: .prettyPrinted)
             try jsonData.write(to: filePath)
         } catch {
+            SentrySDK.capture(error: error)
             NSLog("📓 Failed to write file to location \(filePath), because of error: \(error)")
         }
     }
@@ -62,6 +66,7 @@ private func loadJsonPrefs(fromURLString urlString: String, completion: @escapin
     if let url = URL(string: urlString) {
         let urlSession = URLSession(configuration: .ephemeral).dataTask(with: url) { (data, response, error) in
             if let error = error {
+                SentrySDK.capture(error: error)
                 NSLog("_SaveTest_ Error")
                 completion(.failure(error))
             }
@@ -84,6 +89,7 @@ func loadPrefrences(filePath: URL) async {
             LogData(data: data, settingsType: filePath.absoluteString)
             //        NSLog("DATA: ", data)
         case .failure(let error):
+            SentrySDK.capture(error: error)
             NSLog("_SaveTest_ Error 2")
             print(error)
             if (filePath.absoluteString == keySettingsFilePath.absoluteString) {
@@ -101,6 +107,7 @@ func loadPrefrences(filePath: URL) async {
         //            .data(withJSONObject: newKeyIds, options: .prettyPrinted)
         //        try jsonData.write(to: filename2)
     } catch {
+        SentrySDK.capture(error: error)
         NSLog("_SaveTest_ Error 3 ")
     }
 }
@@ -138,7 +145,9 @@ func LogData(data: Data, settingsType: String) {
 //                newKeyIds.removeValue(forKey: "LoadingErrorKey")
 //                newKeyIds.removeValue(forKey: "type")
             }
-        } catch {}
+        } catch {
+            SentrySDK.capture(error: error)
+        }
     }
     else {
         NSLog("   📓 About to DECODE new mySettings!")
@@ -151,6 +160,7 @@ func LogData(data: Data, settingsType: String) {
 //            accessibilityHoldDownTime = Double(userPrefs.xTime)
 //            accessibilityVoice = userPrefs.xVoice
         } catch {
+            SentrySDK.capture(error: error)
             print(error)
         }
     }

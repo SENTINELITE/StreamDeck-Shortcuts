@@ -7,6 +7,7 @@
 
 import Foundation
 import StreamDeck
+import Sentry
 
 var accessKeysToProcess = [String : Bool]()
 var deviceName = "N/A"
@@ -30,7 +31,7 @@ var WebSocketDelayForcePIEvent = false
 //⚠️ Unknown Payload: true
 
 // SelectedFolder -> Func SendNewShortcuts() -> SendToPI!
-class CounterPlugin: StreamDeckPlugin {
+class ShortcutsPlugin: StreamDeckPlugin {
     
     
     //  🔷----------------------------------------------------- -----------------
@@ -316,6 +317,8 @@ class CounterPlugin: StreamDeckPlugin {
             NSLog("Mapped from backed, verifying JSON Structure: \(jsonString.debugDescription)")
             jsToSend = jsonString
         } catch {
+            SentrySDK.capture(error: error)
+            SentrySDK.capture(message: "Failed to encode shortcutsMapped as json, on line 321 of streamdeck-backend.swift")
             NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
         }
         
@@ -529,7 +532,7 @@ class CounterPlugin: StreamDeckPlugin {
                 case "updateSettings":
                     updateSettings(context: context, action: action, payload: payload) //Save User's settings to disk
                     setSettings(in: context, to: payload)
-                    handleForcedTitle() //TODO: Move this call & the function outside of CounterPlugin. We should call this from Update Settings? This may not work due to the Instance Manager
+                    handleForcedTitle() //TODO: Move this call & the function outside of ShortcutsPlugin. We should call this from Update Settings? This may not work due to the Instance Manager
                 default:
                     NSLog("❄️ Switch Case that's not covered \(i.value)")
                 }

@@ -6,15 +6,13 @@
 //
 
 import Foundation
-
+import Sentry
 
 //  🔷----------------------------------------------------- --------------------------------------------------
 //  | Runs the specified shortcut. TODO: Drop support for Applescript, & use the Shortcuts CLI excluseivly.  |
 //  ----------------------------------------------------- ----------------------------------------------------
 
-func RunShortcut(shortcutName: String) async -> Int32 {
-    
-    let shortcutNameParsed = shortcutName.replacingOccurrences(of: " ", with: "\\\\ ", options: .literal, range: nil) //Handle whitespace in a shortcut's name.
+func newX(shortcutName: String) async -> Int32 {
     //Older method of running, it didn't work with single quotes, like: "Joe's playlist"
     //    let args: [String] = ["-e", #"do shell script "shortcuts run \#(shortcutNameParsed)""#] //Pass in the arguments for the AppleScript
     
@@ -32,6 +30,7 @@ func RunShortcut(shortcutName: String) async -> Int32 {
         try task.run()
     }
     catch {
+        SentrySDK.capture(error: error)
         NSLog("\(error)")
     }
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
@@ -40,9 +39,50 @@ func RunShortcut(shortcutName: String) async -> Int32 {
     NSLog("Finshed running With: \(args)")
     NSLog("❄️ Finshed running output With: \(output)")
     
+    
+    //If the Applescript String Parsing fails, try running the Shortcut with the W.I.P backend...
+    if output.contains("execution error:") {
+//        let argumentsError = "Finshed running With: \(args)"
+//        SentrySDK.capture(message: argumentsError)
+//        SentrySDK.capture(message: shortcutName)
+        NSLog("❄️ The shortcut failed from the old AS Function. This error means major work needs to be done!")
+        SentrySDK.capture(message: output)
+//        newX(shortcutName: shortcutName)
+    }
+    
     return task.terminationStatus
 }
 
+//MARK: 🏃🏼‍♀️RunShortcut Fallover Function
+//TODO: We need to run the shortcuts via their UUID, that way we don't have to re-link Shortcuts to each key! Unforutnetlay, there doesn't appear to be a way to fetch the UUIDs outside of an Applescript. 😔
+func RunShortcut(shortcutName: String) async -> Int32 {
+    var status: Int32 = 0
+    if let encoded = shortcutName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+        NSLog("📙: ", shortcutName, "📙: ", encoded)
+        
+        let inputURL = "shortcuts://run-shortcut?name=\(encoded)"
+        print(inputURL)
+        if let inputURLX = URL(string: inputURL) {
+            NSLog("✅ 🚀 -> Running shortcuts with options: \(inputURLX)")
+            NSWorkspace.shared.open(inputURLX)
+        }
+        else {
+            SentrySDK.capture(message: "Could not run encoded URL: \(inputURL)")
+            print("Could not run encoded URL! | We're Attempting to run with the AS Function!")
+            Task {
+            await newX(shortcutName: shortcutName)
+            }
+        }
+    }
+    else  {
+        SentrySDK.capture(message: "Could not percent encode the ShortcutName: \(shortcutName)")
+        NSLog("Could not percent encode the ShortcutName! | We're Attempting to run with the AS Function!")
+        Task {
+        await newX(shortcutName: shortcutName)
+        }
+    }
+    return status
+}
 
 
 //  🔷---------------------------------------------------- -----------------------------------
