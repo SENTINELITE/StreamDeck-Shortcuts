@@ -7,7 +7,7 @@ We’re all about making sure the software is Fast, Reliable, & Performant, all 
 
 The StreamDeck's been unleashed. Infinite possibilities at the speed of light. All within touch.
 
-If you want to learn more about how & why this was made, take a look at [this Twitter thread!](https://twitter.com/sentinelite)
+If you want to learn more about how & why this was made, take a look at [this Twitter thread!](https://twitter.com/sentinelite/status/1477716577533325312?s=21)
 
 ---
 
@@ -40,7 +40,7 @@ Of course, I wasn’t going to make a simple thing. No, I had to do it the justi
 ### ⚠️ Known Issues & Bugs
 - 🐞Rare: Kilo-One | Sometimes the app fails to startup correctly. Need to dig into this. | v 1.0.1 includes a new "Debug:" console.app logging message.
 - 🐞Potential: App becomes unresponsive after computer wakes up from sleep???
-- Some user's may experience issues with certain special characters. We've done our best to handle most of these, but other languages may vary! 
+- Some user's may experience issues with certain special characters. We've done our best to handle most of these, but other languages may vary! **This should be mostly fixed now. Let us know if you have any issues!**
 - We’re only fetching/getting the first discovered StreamDeck. We need to get all the user’s connected StreamDeck Devices
 	- We’re getting the connected count, but we still need to fetch the unique IDs.
 - ~~If the shortcut name is long, the search field gets small. We fixed the former, but now we’re Popping out of PI’s regular dimensions…~~ should be fixed.
