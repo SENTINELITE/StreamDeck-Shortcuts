@@ -12,7 +12,7 @@ let manifest = PluginManifest(
     description: "Launch Shortcuts straight from your StreamDeck! Features an accessibility mode for vision impaired users.",
     author: "SENTINELITE",
     icon: "Icons/shortcut",
-    version: "1.0.2",
+    version: "1.0.3",
     os: [
         .mac(minimumVersion: "12.0")
     ],
@@ -41,7 +41,8 @@ initalizeTD() //Starts TD...
 SentrySDK.start { options in
     options.dsn  = "https://e5b7ab3d23b04542818cc7bbd4a9dc0a@o1114114.ingest.sentry.io/6145162"
     options.debug = false // Enabled debug when first installing is always helpful
-    options.tracesSampleRate = 1.0
+    options.tracesSampleRate = 0.1
+//    options.
     options.enableSwizzling = false
 }
 

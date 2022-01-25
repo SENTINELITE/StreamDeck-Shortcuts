@@ -39,7 +39,7 @@ struct mySettings: Codable {
     var dropdownRefs: Int
 }
 
-var userPrefs = mySettings(isAccessibility: true, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
+var userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
 
 func checkIfKeyExits(keyToLookFor: String) -> String {
     var keyStatus: String = ""

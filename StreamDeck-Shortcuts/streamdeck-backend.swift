@@ -56,22 +56,23 @@ class ShortcutsPlugin: StreamDeckPlugin {
         
         if (!loadedPrefs) {
             Task {
-                await loadPrefrences(filePath: keySettingsFilePath)
-                await loadPrefrences(filePath: userSettingsFilePath)
+                NSLog("📂 About to load files")
+                await loadFiles(fileName: keysFile) //(filePath: keySettingsFilePath)
+                await loadFiles(fileName: settingsFile) //(filePath: userSettingsFilePath)
             }
             
-            if (keySettingsFilePath.isFileURL)
-            {
-                NSLog("FP is Valid: \(keySettingsFilePath)")
-            }
-            else {
-                NSLog("FP Not Valid: \(keySettingsFilePath)")
-            }
-            if (newKeyIds.keys.contains("LoadingErrorKey")) {
-                newKeyIds.removeValue(forKey: "LoadingErrorKey")
-                newKeyIds.removeValue(forKey: "type")
-                savePrefrences(filePath: keySettingsFilePath)
-            }
+//            if (keySettingsFilePath.isFileURL)
+//            {
+//                NSLog("FP is Valid: \(keySettingsFilePath)")
+//            }
+//            else {
+//                NSLog("FP Not Valid: \(keySettingsFilePath)")
+//            }
+//            if (newKeyIds.keys.contains("LoadingErrorKey")) {
+//                newKeyIds.removeValue(forKey: "LoadingErrorKey")
+//                newKeyIds.removeValue(forKey: "type")
+//                savePrefrences(filePath: keySettingsFilePath)
+//            }
             
             loadedPrefs = true
             //TODO: Try to get settings for each known context, if we get an error, this context no longer exists, remove it from the file!
@@ -126,7 +127,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
                         //TODO: Say when shortcut has been ran. We want this to be on a toggle, as we don't want to overlap a Shortcuts audio, if the user has such a thing.
                         //                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         Task {
-                            let delay = await delayedStartup(context: context, action: action)
+                            let delay = try await delayedStartup(context: context, action: action)
                         }
                         showOk(in: context)
                     }
@@ -149,15 +150,15 @@ class ShortcutsPlugin: StreamDeckPlugin {
     //        return x
     //    }
     
-    func delayedStartup(context: String, action: String) async {
-        await Task.sleep(1_250_000_000)
+    func delayedStartup(context: String, action: String) async throws {
+        try await Task.sleep(nanoseconds: 1_250_000_000)
         if (userPrefs.isForcedTitle) {
             for key in newKeyIds {
                 if (key.key == context) {
                     //if (listOfCuts.contains(key.value)) {
                     if (key.value == "" || !listOfCuts.contains(key.value)) { //The
                         showAlert(in: context)
-                        await Task.sleep(2_250_000_000)
+                        try await Task.sleep(nanoseconds: 2_250_000_000)
                         setTitle(in: context, to: "🚨🚨🚨\nMissing!\n⚠️")
                         NSLog("We're Missing the Value for Context: \(context), with value: \(key.value)")
                     }
@@ -192,7 +193,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
         
         
         Task {
-            let delay = await delayedStartup(context: context, action: action)
+            let delay = try await delayedStartup(context: context, action: action)
         }
         
         
@@ -296,7 +297,9 @@ class ShortcutsPlugin: StreamDeckPlugin {
         else {
             NSLog(" 🌚 This needs to be handled. We copied?.... ContexT: \(context) With new Shortcut: \(savedShortcut)")
             newKeyIds.updateValue(savedShortcut, forKey: context)
-            savePrefrences(filePath: keySettingsFilePath)
+            Task {
+            async let x =  saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
+            }
         }
         
         //
@@ -375,14 +378,18 @@ class ShortcutsPlugin: StreamDeckPlugin {
             NSLog("🟡 We've updated the shortuct, to match ELGATO's Settings! contexT: \(context), toPass: \(toPass), from staleShortcut: \(savedShortcut)")
             if (listOfCuts.contains(toPass)) {
                 newKeyIds.updateValue(toPass, forKey: context)
-                savePrefrences(filePath: keySettingsFilePath)
+                Task {
+                async let x = saveFile(fileName: keysFile) //(filePath: keySettingsFilePath)
+                }
                 //            savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
                 setTitle(in: context, to: toPass)
             } else {
                 NSLog("🌚 The shortcut doens't exist! We're setting it to [0] & saving this to the SD API & save!")
                 savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
                 newKeyIds.updateValue(savedShortcut, forKey: context)
-                savePrefrences(filePath: keySettingsFilePath)
+                Task {
+                async let x = saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
+                }
                 setTitle(in: context, to: savedShortcut)
                 payloadToSend.updateValue(savedShortcut, forKey: "shortcutName")
                 setSettings(in: context, to: payloadToSend)
@@ -515,7 +522,11 @@ class ShortcutsPlugin: StreamDeckPlugin {
                     requestSettings() // Send settings to the PI!
                     NSLog("DEBUG: sentToPlugin() Check #1!")
                     if (newKeyIds.keys.contains(context) == false) {
-                        newKeyIds.updateValue(i.value, forKey: i.key)
+                        NSLog("MARKTODO value: \(i.value), KEY: \(i.key)")
+                        if !(String(i.value) == "requestSettings") {
+                            NSLog("MARKTODO value was not RSettings")
+                            newKeyIds.updateValue(i.value, forKey: i.key)
+                        }
                         NSLog("DEBUG: sentToPlugin() Check #2!")
                         updateSettings(context: context, action: action, payload: payload)
                         NSLog("DEBUG: sentToPlugin() Check #3!")
@@ -618,7 +629,9 @@ func updateSettings(context: String, action: String, payload: [String: String]) 
         case "shortcutName":
             NSLog("Key's value found \(i.value)")
             newKeyIds.updateValue(i.value, forKey: context)
-            savePrefrences(filePath: keySettingsFilePath)
+            Task {
+                async let x = saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
+            }
             
             //            for key in newKeyIds {
             //                if (key.key == context) {
@@ -646,12 +659,16 @@ func updateSettings(context: String, action: String, payload: [String: String]) 
         case "isForcedTitle":
             userPrefs.isForcedTitle = Bool(i.value)!
             NSLog("isForcedTitle: \(i.value)")
-            savePrefrences(filePath: userSettingsFilePath)
+            Task {
+                async let x =  saveFile(fileName: settingsFile) //(filePath: userSettingsFilePath)
+            }
         case "sayHoldTime":
             //            accessibilityHoldDownTime = Double(i.value)!
             userPrefs.accessibilityHoldDownTime = Float(i.value)!
             NSLog("   👻 HoldTime: \(userPrefs.accessibilityHoldDownTime)")
-            savePrefrences(filePath: userSettingsFilePath)
+            Task {
+                async let x = saveFile(fileName: settingsFile) //(filePath: userSettingsFilePath)
+            }
         case "refType":
             if(i.value == "textFieldRefs") {
                 userPrefs.textFieldRefs += 1
