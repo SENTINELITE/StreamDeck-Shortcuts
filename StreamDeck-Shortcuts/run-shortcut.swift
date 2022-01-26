@@ -12,7 +12,9 @@ import Sentry
 //  | Runs the specified shortcut. TODO: Drop support for Applescript, & use the Shortcuts CLI excluseivly.  |
 //  ----------------------------------------------------- ----------------------------------------------------
 
+//MARK: 🏃🏼‍♀️Old RunShortcut Fallover Function
 func newX(shortcutName: String) async -> Int32 {
+    SentrySDK.capture(message: "We've needed to run the old ShortcutsRun() function!")
     //Older method of running, it didn't work with single quotes, like: "Joe's playlist"
     //    let args: [String] = ["-e", #"do shell script "shortcuts run \#(shortcutNameParsed)""#] //Pass in the arguments for the AppleScript
     
@@ -53,8 +55,7 @@ func newX(shortcutName: String) async -> Int32 {
     return task.terminationStatus
 }
 
-//MARK: 🏃🏼‍♀️RunShortcut Fallover Function
-//TODO: We need to run the shortcuts via their UUID, that way we don't have to re-link Shortcuts to each key! Unforutnetlay, there doesn't appear to be a way to fetch the UUIDs outside of an Applescript. 😔
+//TODO: We need to run the shortcuts via their UUID, that way we don't have to re-link Shortcuts to each key! Unfortunately, there doesn't appear to be a way to fetch the UUIDs outside of an Applescript. 😔
 func RunShortcut(shortcutName: String) async -> Int32 {
     var status: Int32 = 0
     if let encoded = shortcutName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {

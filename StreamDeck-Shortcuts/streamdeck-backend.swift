@@ -39,6 +39,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- -------------------
     
     //TODO: This is currently performing this 1 x the connected amount of devices!
+    //TODO: Try to get settings for each known context, if we get an error, this context no longer exists, remove it from the file!
     override func deviceDidConnect(_ device: String, deviceInfo: DeviceInfo) {
         NSLog("Device: \(device )")
         NSLog("DeviceInfo: \(deviceInfo)")
@@ -52,30 +53,13 @@ class ShortcutsPlugin: StreamDeckPlugin {
         devicesX.updateValue(deviceInfo.name, forKey: device)
         devices.updateValue("\(deviceInfo.type)", forKey: device)
         
-        
-        
         if (!loadedPrefs) {
             Task {
                 NSLog("📂 About to load files")
                 await loadFiles(fileName: keysFile) //(filePath: keySettingsFilePath)
                 await loadFiles(fileName: settingsFile) //(filePath: userSettingsFilePath)
+                loadedPrefs = true
             }
-            
-//            if (keySettingsFilePath.isFileURL)
-//            {
-//                NSLog("FP is Valid: \(keySettingsFilePath)")
-//            }
-//            else {
-//                NSLog("FP Not Valid: \(keySettingsFilePath)")
-//            }
-//            if (newKeyIds.keys.contains("LoadingErrorKey")) {
-//                newKeyIds.removeValue(forKey: "LoadingErrorKey")
-//                newKeyIds.removeValue(forKey: "type")
-//                savePrefrences(filePath: keySettingsFilePath)
-//            }
-            
-            loadedPrefs = true
-            //TODO: Try to get settings for each known context, if we get an error, this context no longer exists, remove it from the file!
         }
     }
     

@@ -24,11 +24,6 @@ var listOfFoldersWithShortcuts = [String]()
 
 var loadedPrefs = false
 
-//var isAccessibility = true
-//isSayvoice
-//var accessibilityHoldDownTime = 5.0
-//var accessibilityVoice = "Samantha"
-
 struct mySettings: Codable {
     var isAccessibility: Bool //isAccessibility
     var accessibilityHoldDownTime: Float //accessibilityHoldDownTime
@@ -41,15 +36,14 @@ struct mySettings: Codable {
 
 var userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
 
+
+//Currently unused function. We should replace the many key checks with this simple return func.
 func checkIfKeyExits(keyToLookFor: String) -> String {
     var keyStatus: String = ""
     for key in newKeyIds {
         if (key.key == keyToLookFor) {
             keyStatus = key.value
         }
-    }
-    if (keyStatus.isEmpty) {
-        
     }
     return keyStatus
 }
