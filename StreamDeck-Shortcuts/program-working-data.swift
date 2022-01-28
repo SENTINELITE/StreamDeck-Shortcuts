@@ -29,12 +29,13 @@ struct mySettings: Codable {
     var accessibilityHoldDownTime: Float //accessibilityHoldDownTime
     var accessibilityVoice: String //accessibilityVoice
     var isForcedTitle: Bool
+    var isDeprecatedRunner: Bool
     var searchRefs: Int
     var textFieldRefs: Int
     var dropdownRefs: Int
 }
 
-var userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
+var userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, isDeprecatedRunner: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
 
 
 //Currently unused function. We should replace the many key checks with this simple return func.

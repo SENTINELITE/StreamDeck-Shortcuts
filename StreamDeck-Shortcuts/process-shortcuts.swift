@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Sentry
 
 
 //  🔷----------------------------------------------------- ----------------------------------------------------- ---------------
@@ -13,6 +14,10 @@ import Foundation
 //  ----------------------------------------------------- ----------------------------------------------------- -----------------
 
 func processShortcuts() {
+    let transaction = SentrySDK.startTransaction(
+      name: "transaction-processShortcuts",
+      operation: "processShortcuts"
+    )
     NSLog("DEBUG: Starting processShortcuts()!")
     
     listOfCuts.removeAll()
@@ -31,11 +36,16 @@ func processShortcuts() {
         shortcutsCLI.launch()
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)!
+        let output = String(data: data, encoding: .utf8)
+        
+        guard let safeOutput = output else {
+            SentrySDK.capture(message: "Couldn't unwrap optinal string: output from findFolders()... Outputs: \(output)")
+            return "nil"
+        }
         
         shortcutsCLI.waitUntilExit()
         //    NSLog("Finshed running With:  \(shortcutsCLI.arguments)")
-        return output
+        return safeOutput
     }
     
     let listOfAllShortcuts = findFolders(args: ["list"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
@@ -111,4 +121,5 @@ func processShortcuts() {
 //    NSLog("ListOfMapped \(shortcutsMapped)")
     
     NSLog("DEBUG: Finished Running processShortcuts()!")
+    transaction.finish(); // Finishing the transaction will send it to Sentry
 }

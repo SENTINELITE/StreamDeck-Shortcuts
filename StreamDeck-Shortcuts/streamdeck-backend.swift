@@ -107,7 +107,12 @@ class ShortcutsPlugin: StreamDeckPlugin {
                 if (key.key == context) {
                     Task {
                         async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "Running Shortcut!") //Bugs out & causes the program to crash, after the 2nd action?
+                        if userPrefs.isDeprecatedRunner {
+                            async let _ = try await newX(shortcutName: key.value)
+                        }
+                        else {
                         async let xxvd =  RunShortcut(shortcutName: key.value)
+                        }
                         //TODO: Say when shortcut has been ran. We want this to be on a toggle, as we don't want to overlap a Shortcuts audio, if the user has such a thing.
                         //                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         Task {
@@ -195,7 +200,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
     
     override func keyDown(action: String, context: String, device: String, payload: KeyEvent) {
         NSLog("DEBUG: keyDown() was pressed down!")
-        sendSignal()
+//        sendSignal()
         
         //        sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
         //        NSLog("About to send PI data in a loop! :)")
@@ -213,7 +218,12 @@ class ShortcutsPlugin: StreamDeckPlugin {
                     }
                     else {
                         Task {
-                            async let xxvd =  RunShortcut(shortcutName: key.value)
+                            if userPrefs.isDeprecatedRunner {
+                                async let _ = try await newX(shortcutName: key.value)
+                            }
+                            else {
+                                async let xxvd =  RunShortcut(shortcutName: key.value)
+                            }
                             //                            async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         }
                     }
@@ -633,16 +643,29 @@ func updateSettings(context: String, action: String, payload: [String: String]) 
             NSLog("Say Voice: \(i.value)")
             userPrefs.accessibilityVoice = i.value
         case "isSayvoice":
-            NSLog("isSayvoice, not doing anything with it though")
-            userPrefs.isAccessibility = Bool(i.value)!
+            if let boolToRead = Bool(i.value) {
+                NSLog("isSayvoice, not doing anything with it though \(i.value)")
+                userPrefs.isAccessibility = boolToRead
+            }
+            else {
+                SentrySDK.capture(message: "Error recieving & updating the Accessibility bool... \(i.value)")
+                NSLog("Error recieving & updating the Accessibility bool... \(i.value)")
+            }
             //        case "isAccessibility":
             //            isAccessibility = Bool(i.value)!
             //            settingX.isX = Bool(i.value)!
             //            NSLog("   👻 isSay: \(isAccessibility)")
 #warning("Need to convert String > Bool | Could Crash App from force unwarp!")
         case "isForcedTitle":
-            userPrefs.isForcedTitle = Bool(i.value)!
-            NSLog("isForcedTitle: \(i.value)")
+            if let boolToRead = Bool(i.value) {
+                NSLog("isForcedTitle: \(i.value)")
+                userPrefs.isForcedTitle = boolToRead
+            }
+            else {
+                SentrySDK.capture(message: "Error recieving & updating the ForcedTitle bool... \(i.value)")
+                NSLog("Error recieving & updating the Accessibility bool... \(i.value)")
+            }
+            
             Task {
                 async let x =  saveFile(fileName: settingsFile) //(filePath: userSettingsFilePath)
             }
