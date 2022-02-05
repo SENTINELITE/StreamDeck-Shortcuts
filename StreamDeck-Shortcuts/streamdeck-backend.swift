@@ -379,7 +379,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
                 setTitle(in: context, to: toPass)
             } else {
                 NSLog("🌚 The shortcut doens't exist! We're setting it to [0] & saving this to the SD API & save!")
-                savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
+                savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.      | TODO: ⚠️ Sentry: STREAMDECK-SHORTCUTS-Y | If the users has no Shortcuts, this causes this field ot be out of range!
                 newKeyIds.updateValue(savedShortcut, forKey: context)
                 Task {
                 async let x = saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
