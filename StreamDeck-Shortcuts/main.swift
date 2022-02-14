@@ -12,7 +12,7 @@ let manifest = PluginManifest(
     description: "Launch Shortcuts straight from your StreamDeck! Features an accessibility mode for vision impaired users.",
     author: "SENTINELITE",
     icon: "Icons/shortcut",
-    version: "1.0.4",
+    version: "1.0.5",
     os: [
         .mac(minimumVersion: "12.0")
     ],
@@ -45,13 +45,6 @@ SentrySDK.start { options in
 //    options.
     options.enableSwizzling = false
 }
-
-//SentrySDK.capture(message: "My first test message")
-//let error = NSError(domain: "YourErrorDomain", code: 0, userInfo: nil)
-//SentrySDK.capture(error: error)
-
-//print("E: ", error)
-//sleep(20)
 
 processShortcuts()
 PluginManager.main(plugin: ShortcutsPlugin.self, manifest: manifest)

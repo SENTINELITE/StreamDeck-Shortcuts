@@ -410,8 +410,11 @@ class ShortcutsPlugin: StreamDeckPlugin {
 //            sleep(20)
 //            firstLaunch = false
 //        }
+        //MARK: We need to check for MA here!
         WebSocketDelayForcePIEvent = true
         //TODO: We don't need this anymore???
+        
+        
         
         getSettings(in: context)
         //        if (newKeyIds.keys.contains(context)) {
