@@ -11,6 +11,6 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Allows the use of appleEvents</string>
+	<string>Allows StreamDeck-Shortcuts to run Apple Events, which is a vital function of this app.</string>
 </dict>
 </plist>

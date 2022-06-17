@@ -60,6 +60,14 @@ class ShortcutsPlugin: StreamDeckPlugin {
                 await loadFiles(fileName: settingsFile) //(filePath: userSettingsFilePath)
                 loadedPrefs = true
             }
+            //            sleep(2)
+            
+            //MARK: Force MATest
+            //            let toPush = ["refType": "dropdownRefs", "isForcedTitle": "false", "isSayvoice": "false", "type": "updateSettings", "sayHoldTime": "0.0", "shortcutName": "Create Twitch Sub Badges", "sayvoice": "Samantha"]
+            //            NSLog("Pushed our custom Settings, to force MA fix!")
+            //            setSettings(in: "C39D498FFE6743E3506F9C436BC025CC", to: toPush)
+            
+            //            NSLog("Pushed our custom Settings, to force MA fix! 2 -> Finish, \(toPush)")
         }
     }
     
@@ -107,12 +115,9 @@ class ShortcutsPlugin: StreamDeckPlugin {
                 if (key.key == context) {
                     Task {
                         async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "Running Shortcut!") //Bugs out & causes the program to crash, after the 2nd action?
-                        if userPrefs.isDeprecatedRunner {
-                            async let _ = try await newX(shortcutName: key.value)
-                        }
-                        else {
-                        async let xxvd =  RunShortcut(shortcutName: key.value)
-                        }
+                        //                        async let xxvd =  RunShortcut(shortcutName: key.value)
+                        async let dtsRunner = runShortcutDTS(inputShortcut: key.value)
+                        
                         //TODO: Say when shortcut has been ran. We want this to be on a toggle, as we don't want to overlap a Shortcuts audio, if the user has such a thing.
                         //                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         Task {
@@ -181,8 +186,13 @@ class ShortcutsPlugin: StreamDeckPlugin {
         //        }
         
         
-        Task {
-            let delay = try await delayedStartup(context: context, action: action)
+        if payload.isInMultiAction {
+            NSLog("🐻 This is inside a MA! | Will Appear Event")
+        }
+        else {
+            Task {
+                let delay = try await delayedStartup(context: context, action: action)
+            }
         }
         
         
@@ -199,8 +209,10 @@ class ShortcutsPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------
     
     override func keyDown(action: String, context: String, device: String, payload: KeyEvent) {
+        let x = instanceManager.instances(with: "shortcut.run")
+        NSLog("This is all the Contexts: \(x.count)")
         NSLog("DEBUG: keyDown() was pressed down!")
-//        sendSignal()
+        //        sendSignal()
         
         //        sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
         //        NSLog("About to send PI data in a loop! :)")
@@ -218,12 +230,8 @@ class ShortcutsPlugin: StreamDeckPlugin {
                     }
                     else {
                         Task {
-                            if userPrefs.isDeprecatedRunner {
-                                async let _ = try await newX(shortcutName: key.value)
-                            }
-                            else {
-                                async let xxvd =  RunShortcut(shortcutName: key.value)
-                            }
+                            //                                async let xxvd =  RunShortcut(shortcutName: key.value) //MARK: Disabled, to test new DTS Runner
+                            async let dtsRunner = runShortcutDTS(inputShortcut: key.value)
                             //                            async let iea =  runFromNewPackage(shortcutToRun: key.value)
                         }
                     }
@@ -232,6 +240,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
         }
         else {
             showAlert(in: context)
+            NSLog("This is an injected point #Zebra-Lion")
         }
         
         
@@ -261,8 +270,16 @@ class ShortcutsPlugin: StreamDeckPlugin {
     //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- ---------------------------------
     
     override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
+        NSLog("❔❗❔❗❔❗ //#0003")
         
         NSLog("DEBUG: Starting didRecieveSettings()!")
+        NSLog("DEBUG: Settings fetched, Data: \(payload)")
+        
+        if payload.isInMultiAction {
+            NSLog("❄️ This is inside of a Multi-Action! Can we do logic here!?")
+        }
+        
+        
         var isExist = true
         //Send initial settings!
         //Get all of the shortcuts & their hiearchy.
@@ -292,7 +309,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
             NSLog(" 🌚 This needs to be handled. We copied?.... ContexT: \(context) With new Shortcut: \(savedShortcut)")
             newKeyIds.updateValue(savedShortcut, forKey: context)
             Task {
-            async let x =  saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
+                async let x =  saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
             }
         }
         
@@ -329,16 +346,16 @@ class ShortcutsPlugin: StreamDeckPlugin {
         //                           ]
         
         //        initalShortcutsMapped
-//        var jsToSend_initial = ""
-//        do {
-//            let r = try JSONEncoder().encode(initalShortcutsMapped)
-//            let jsonString = String(decoding: r, as: UTF8.self)
-//            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString)")
-//            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString.debugDescription)")
-//            jsToSend_initial = jsonString
-//        } catch {
-//            NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
-//        }
+        //        var jsToSend_initial = ""
+        //        do {
+        //            let r = try JSONEncoder().encode(initalShortcutsMapped)
+        //            let jsonString = String(decoding: r, as: UTF8.self)
+        //            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString)")
+        //            NSLog("Mapped from backed, verifying JSON Structure: \(jsonString.debugDescription)")
+        //            jsToSend_initial = jsonString
+        //        } catch {
+        //            NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
+        //        }
         
         
         //            NSLog(" XO XO About to send init payload")
@@ -373,7 +390,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
             if (listOfCuts.contains(toPass)) {
                 newKeyIds.updateValue(toPass, forKey: context)
                 Task {
-                async let x = saveFile(fileName: keysFile) //(filePath: keySettingsFilePath)
+                    async let x = saveFile(fileName: keysFile) //(filePath: keySettingsFilePath)
                 }
                 //            savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.
                 setTitle(in: context, to: toPass)
@@ -382,7 +399,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
                 savedShortcut = listOfCuts[0] //Set it to the first shortcut in the array.      | TODO: ⚠️ Sentry: STREAMDECK-SHORTCUTS-Y | If the users has no Shortcuts, this causes this field ot be out of range!
                 newKeyIds.updateValue(savedShortcut, forKey: context)
                 Task {
-                async let x = saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
+                    async let x = saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
                 }
                 setTitle(in: context, to: savedShortcut)
                 payloadToSend.updateValue(savedShortcut, forKey: "shortcutName")
@@ -405,18 +422,19 @@ class ShortcutsPlugin: StreamDeckPlugin {
     override func propertyInspectorDidAppear(action: String, context: String, device: String) {
         NSLog("DEBUG: Starting propertyInspectorDidAppear()!")
         
-//        // Simulate the hard crash/Slow loading...
-//        if (firstLaunch == true) {
-//            sleep(20)
-//            firstLaunch = false
-//        }
-        //MARK: We need to check for MA here!
+        //        // Simulate the hard crash/Slow loading...
+        //        if (firstLaunch == true) {
+        //            sleep(20)
+        //            firstLaunch = false
+        //        }
+        //MARK: We need to check for MA
         WebSocketDelayForcePIEvent = true
         //TODO: We don't need this anymore???
         
         
-        
+        NSLog("❔❗❔❗❔❗ //#0001")
         getSettings(in: context)
+        NSLog("❔❗❔❗❔❗ //#0002")
         //        if (newKeyIds.keys.contains(context)) {
         //        sendToPropertyInspector(in: context, action: action, payload:
         //                                    ["type": "updateSettings", "shortcutName": "\(savedShortcut)", "shortcuts": "\(listOfCuts)",
@@ -516,15 +534,16 @@ class ShortcutsPlugin: StreamDeckPlugin {
             if (i.key == "type") {
                 switch i.value {
                 case "requestSettings":
-                    requestSettings() // Send settings to the PI!
+                    requestSettings() // Send settings to the PI! | Not Implemented!
                     NSLog("DEBUG: sentToPlugin() Check #1!")
                     if (newKeyIds.keys.contains(context) == false) {
                         NSLog("MARKTODO value: \(i.value), KEY: \(i.key)")
                         if !(String(i.value) == "requestSettings") {
-                            NSLog("MARKTODO value was not RSettings")
-                            newKeyIds.updateValue(i.value, forKey: i.key)
+                            NSLog("MARKTODO value was not RSettings, Val: \(i.value)") //MARK: Could be a new bug...
+                            //                            newKeyIds.updateValue(i.value, forKey: i.key)
                         }
                         NSLog("DEBUG: sentToPlugin() Check #2!")
+                        NSLog("❔❗❔❗❔❗ //#0008 | This is the Extra Data Pass: i: \(i)")
                         updateSettings(context: context, action: action, payload: payload)
                         NSLog("DEBUG: sentToPlugin() Check #3!")
                     }
@@ -540,6 +559,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
                 case "updateSettings":
                     updateSettings(context: context, action: action, payload: payload) //Save User's settings to disk
                     setSettings(in: context, to: payload)
+                    NSLog("❔❗❔❗❔❗ //#0005 | Updating settings with Payload: \(payload)")
                     handleForcedTitle() //TODO: Move this call & the function outside of ShortcutsPlugin. We should call this from Update Settings? This may not work due to the Instance Manager
                 default:
                     NSLog("❄️ Switch Case that's not covered \(i.value)")
@@ -704,12 +724,12 @@ func updateSettings(context: String, action: String, payload: [String: String]) 
 
 
 func requestShortcutsFromFolder() {
-    NSLog("❄️ requestShortcutsFromFolder | Not Implemented")
+    NSLog("☃️ -> ❄️ requestShortcutsFromFolder | Not Implemented")
 }
 
 // Func inside of PI
 func requestSettings() {
-    NSLog("❄️ Fetching the Requested settings  | Not Implemented")
+    NSLog("☃️ -> ❄️ Fetching the Requested settings  | Not Implemented")
     
 }
 
