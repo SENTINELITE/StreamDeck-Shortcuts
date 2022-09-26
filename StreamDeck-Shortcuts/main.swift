@@ -12,7 +12,7 @@ let manifest = PluginManifest(
     description: "Launch Shortcuts straight from your StreamDeck! Features an accessibility mode for vision impaired users.",
     author: "SENTINELITE",
     icon: "Icons/shortcut",
-    version: "1.0.6",
+    version: "1.0.7",
     os: [
         .mac(minimumVersion: "12.0")
     ],

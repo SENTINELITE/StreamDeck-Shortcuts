@@ -23,6 +23,7 @@ func runShortcutDTS(inputShortcut: String) async {
     shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
     
     shortcutsCLI.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
+//    let xo = #"inputShortcut"#
     shortcutsCLI.arguments = ["run", "\(inputShortcut)"]
     
     do {

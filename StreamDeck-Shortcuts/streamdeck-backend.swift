@@ -212,7 +212,7 @@ class ShortcutsPlugin: StreamDeckPlugin {
         let x = instanceManager.instances(with: "shortcut.run")
         NSLog("This is all the Contexts: \(x.count)")
         NSLog("DEBUG: keyDown() was pressed down!")
-        //        sendSignal()
+        sendSignal()
         
         //        sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
         //        NSLog("About to send PI data in a loop! :)")
