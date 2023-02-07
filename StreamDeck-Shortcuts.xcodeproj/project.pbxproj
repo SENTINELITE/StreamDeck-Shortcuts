@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		A129DE53278EB2A60024DAE6 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = A129DE52278EB2A60024DAE6 /* Sentry */; };
 		A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */; };
-		A19675832767C1C4003AB8DD /* StreamDeck in Frameworks */ = {isa = PBXBuildFile; productRef = A19675822767C1C4003AB8DD /* StreamDeck */; };
-		A1F29E052753653900AA43C6 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E042753653900AA43C6 /* main.swift */; };
+		A17AD013298EA1F90084D3EE /* StreamDeck in Frameworks */ = {isa = PBXBuildFile; productRef = A17AD012298EA1F90084D3EE /* StreamDeck */; };
+		A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AD014298EA2990084D3EE /* IncrementAction.swift */; };
+		A1F29E052753653900AA43C6 /* entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E042753653900AA43C6 /* entry.swift */; };
 		A1F29E0D2753656E00AA43C6 /* TelemetryClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1F29E0C2753656E00AA43C6 /* TelemetryClient */; };
 		A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E2D275366AC00AA43C6 /* analytics.swift */; };
 		A1F29E30275366C500AA43C6 /* process-shortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */; };
@@ -34,9 +35,9 @@
 
 /* Begin PBXFileReference section */
 		A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
-		A19675852767D242003AB8DD /* StreamDeckPlugin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = StreamDeckPlugin; path = ../../Packages/StreamDeckPlugin; sourceTree = "<group>"; };
+		A17AD014298EA2990084D3EE /* IncrementAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementAction.swift; sourceTree = "<group>"; };
 		A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "StreamDeck-Shortcuts"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1F29E042753653900AA43C6 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		A1F29E042753653900AA43C6 /* entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = entry.swift; sourceTree = "<group>"; };
 		A1F29E2D275366AC00AA43C6 /* analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = analytics.swift; sourceTree = "<group>"; };
 		A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "process-shortcuts.swift"; sourceTree = "<group>"; };
 		A1F29E31275366E300AA43C6 /* program-working-data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "program-working-data.swift"; sourceTree = "<group>"; };
@@ -52,8 +53,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A17AD013298EA1F90084D3EE /* StreamDeck in Frameworks */,
 				A1F29E0D2753656E00AA43C6 /* TelemetryClient in Frameworks */,
-				A19675832767C1C4003AB8DD /* StreamDeck in Frameworks */,
 				A129DE53278EB2A60024DAE6 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -90,7 +91,8 @@
 			isa = PBXGroup;
 			children = (
 				A1F29E2D275366AC00AA43C6 /* analytics.swift */,
-				A1F29E042753653900AA43C6 /* main.swift */,
+				A17AD014298EA2990084D3EE /* IncrementAction.swift */,
+				A1F29E042753653900AA43C6 /* entry.swift */,
 				A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */,
 				A1F29E31275366E300AA43C6 /* program-working-data.swift */,
 				A1F29E332753670200AA43C6 /* read-write-settings.swift */,
@@ -105,7 +107,6 @@
 		A1F29E0F2753658600AA43C6 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				A19675852767D242003AB8DD /* StreamDeckPlugin */,
 				A1F29E402754AACC00AA43C6 /* SwiftClient */,
 			);
 			path = Packages;
@@ -130,8 +131,8 @@
 			name = "StreamDeck-Shortcuts";
 			packageProductDependencies = (
 				A1F29E0C2753656E00AA43C6 /* TelemetryClient */,
-				A19675822767C1C4003AB8DD /* StreamDeck */,
 				A129DE52278EB2A60024DAE6 /* Sentry */,
+				A17AD012298EA1F90084D3EE /* StreamDeck */,
 			);
 			productName = "StreamDeck-Shortcuts";
 			productReference = A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */;
@@ -163,8 +164,8 @@
 			mainGroup = A1F29DF82753653900AA43C6;
 			packageReferences = (
 				A1F29E0B2753656E00AA43C6 /* XCRemoteSwiftPackageReference "SwiftClient" */,
-				A1F29E39275367E200AA43C6 /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */,
 				A129DE51278EB2A60024DAE6 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				A17AD011298EA1F90084D3EE /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */,
 			);
 			productRefGroup = A1F29E022753653900AA43C6 /* Products */;
 			projectDirPath = "";
@@ -192,7 +193,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which sentry-cli >/dev/null; then --force-foreground\nexport SENTRY_ORG=sentinelite\nexport SENTRY_PROJECT=streamdeck-shortcuts\nexport SENTRY_AUTH_TOKEN=9f5968c7b6694b3285757ba940dd40ddfbb27f7c976f4b38a6fb4104f28e010d\nERROR=$(sentry-cli upload-dif \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"RUN TEST\"\necho \"warning: sentry-cli XoXo - $ERROR\"\nfi\nelse\necho \"RUN TEST #E 001\"\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi  \n";
+			shellScript = "
+";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -201,11 +203,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */,
 				A1F29E342753670200AA43C6 /* read-write-settings.swift in Sources */,
 				A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */,
 				A1F29E382753679400AA43C6 /* streamdeck-backend.swift in Sources */,
 				A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */,
-				A1F29E052753653900AA43C6 /* main.swift in Sources */,
+				A1F29E052753653900AA43C6 /* entry.swift in Sources */,
 				A1F29E32275366E300AA43C6 /* program-working-data.swift in Sources */,
 				A1F29E30275366C500AA43C6 /* process-shortcuts.swift in Sources */,
 				A1F29E362753670F00AA43C6 /* run-shortcut.swift in Sources */,
@@ -401,19 +404,19 @@
 				minimumVersion = 7.0.0;
 			};
 		};
-		A1F29E0B2753656E00AA43C6 /* XCRemoteSwiftPackageReference "SwiftClient" */ = {
+		A17AD011298EA1F90084D3EE /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/TelemetryDeck/SwiftClient";
+			repositoryURL = "https://github.com/emorydunn/StreamDeckPlugin";
 			requirement = {
 				branch = main;
 				kind = branch;
 			};
 		};
-		A1F29E39275367E200AA43C6 /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */ = {
+		A1F29E0B2753656E00AA43C6 /* XCRemoteSwiftPackageReference "SwiftClient" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/emorydunn/StreamDeckPlugin.git";
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftClient";
 			requirement = {
-				branch = uncombined;
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -425,9 +428,9 @@
 			package = A129DE51278EB2A60024DAE6 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
 			productName = Sentry;
 		};
-		A19675822767C1C4003AB8DD /* StreamDeck */ = {
+		A17AD012298EA1F90084D3EE /* StreamDeck */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A1F29E39275367E200AA43C6 /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */;
+			package = A17AD011298EA1F90084D3EE /* XCRemoteSwiftPackageReference "StreamDeckPlugin" */;
 			productName = StreamDeck;
 		};
 		A1F29E0C2753656E00AA43C6 /* TelemetryClient */ = {
