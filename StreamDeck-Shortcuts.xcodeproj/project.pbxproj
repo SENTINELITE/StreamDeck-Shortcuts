@@ -6,11 +6,30 @@
 	objectVersion = 55;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		A17E6C402993086D00BCFA72 /* StreamDeckShortcuts-Bundled */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A17E6C412993086D00BCFA72 /* Build configuration list for PBXAggregateTarget "StreamDeckShortcuts-Bundled" */;
+			buildPhases = (
+			);
+			dependencies = (
+				A17E6C472993088700BCFA72 /* PBXTargetDependency */,
+				A17E6C452993088100BCFA72 /* PBXTargetDependency */,
+			);
+			name = "StreamDeckShortcuts-Bundled";
+			productName = "StreamDeckShortcuts-Bundled";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		A129DE53278EB2A60024DAE6 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = A129DE52278EB2A60024DAE6 /* Sentry */; };
 		A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */; };
 		A17AD013298EA1F90084D3EE /* StreamDeck in Frameworks */ = {isa = PBXBuildFile; productRef = A17AD012298EA1F90084D3EE /* StreamDeck */; };
 		A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AD014298EA2990084D3EE /* IncrementAction.swift */; };
+		A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */; };
+		A17E6C38299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */; };
+		A17E6C3A299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C39299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift */; };
+		A1CFD91C29932A1C00D2D207 /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */; };
 		A1F29E052753653900AA43C6 /* entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E042753653900AA43C6 /* entry.swift */; };
 		A1F29E0D2753656E00AA43C6 /* TelemetryClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1F29E0C2753656E00AA43C6 /* TelemetryClient */; };
 		A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E2D275366AC00AA43C6 /* analytics.swift */; };
@@ -20,6 +39,30 @@
 		A1F29E362753670F00AA43C6 /* run-shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E352753670F00AA43C6 /* run-shortcut.swift */; };
 		A1F29E382753679400AA43C6 /* streamdeck-backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E372753679400AA43C6 /* streamdeck-backend.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A17E6C442993088100BCFA72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1F29DF92753653900AA43C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1F29E002753653900AA43C6;
+			remoteInfo = "StreamDeck-Shortcuts";
+		};
+		A17E6C462993088700BCFA72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1F29DF92753653900AA43C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A17E6C34299303A700BCFA72;
+			remoteInfo = "StreamDeck-Shortcuts-AppIntents";
+		};
+		A17E6C48299308B100BCFA72 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1F29DF92753653900AA43C6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A17E6C34299303A700BCFA72;
+			remoteInfo = "StreamDeck-Shortcuts-AppIntents";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		A1F29DFF2753653900AA43C6 /* CopyFiles */ = {
@@ -36,6 +79,15 @@
 /* Begin PBXFileReference section */
 		A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		A17AD014298EA2990084D3EE /* IncrementAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementAction.swift; sourceTree = "<group>"; };
+		A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shortcuts.swift; sourceTree = "<group>"; };
+		A17E6C35299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = "StreamDeck-Shortcuts-AppIntents.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDeck_Shortcuts_AppIntentsExtension.swift; sourceTree = "<group>"; };
+		A17E6C39299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDeck_Shortcuts_AppIntents.swift; sourceTree = "<group>"; };
+		A17E6C3B299303A700BCFA72 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A17E6C3C299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StreamDeck_Shortcuts_AppIntents.entitlements; sourceTree = "<group>"; };
+		A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
+		A1CFD9202993488B00D2D207 /* ShortcutPI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = ShortcutPI.html; sourceTree = "<group>"; };
+		A1CFD921299348E400D2D207 /* ShortcutPI.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = ShortcutPI.js; sourceTree = "<group>"; };
 		A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "StreamDeck-Shortcuts"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F29E042753653900AA43C6 /* entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = entry.swift; sourceTree = "<group>"; };
 		A1F29E2D275366AC00AA43C6 /* analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = analytics.swift; sourceTree = "<group>"; };
@@ -49,6 +101,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A17E6C32299303A700BCFA72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F29DFE2753653900AA43C6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -62,6 +121,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A17E6C36299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */,
+				A17E6C39299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift */,
+				A17E6C3B299303A700BCFA72 /* Info.plist */,
+				A17E6C3C299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.entitlements */,
+			);
+			path = "StreamDeck-Shortcuts-AppIntents";
+			sourceTree = "<group>";
+		};
 		A19675812767C1C4003AB8DD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -69,11 +139,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A1CFD91F299347DC00D2D207 /* PropertyInspectorViews */ = {
+			isa = PBXGroup;
+			children = (
+				A1CFD9202993488B00D2D207 /* ShortcutPI.html */,
+				A1CFD921299348E400D2D207 /* ShortcutPI.js */,
+			);
+			path = PropertyInspectorViews;
+			sourceTree = "<group>";
+		};
 		A1F29DF82753653900AA43C6 = {
 			isa = PBXGroup;
 			children = (
 				A1F29E0F2753658600AA43C6 /* Packages */,
+				A1CFD91F299347DC00D2D207 /* PropertyInspectorViews */,
 				A1F29E032753653900AA43C6 /* StreamDeck-Shortcuts */,
+				A17E6C36299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents */,
 				A1F29E022753653900AA43C6 /* Products */,
 				A19675812767C1C4003AB8DD /* Frameworks */,
 			);
@@ -83,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */,
+				A17E6C35299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,6 +172,7 @@
 		A1F29E032753653900AA43C6 /* StreamDeck-Shortcuts */ = {
 			isa = PBXGroup;
 			children = (
+				A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */,
 				A1F29E2D275366AC00AA43C6 /* analytics.swift */,
 				A17AD014298EA2990084D3EE /* IncrementAction.swift */,
 				A1F29E042753653900AA43C6 /* entry.swift */,
@@ -98,6 +181,7 @@
 				A1F29E332753670200AA43C6 /* read-write-settings.swift */,
 				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
+				A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */,
 				A1F29E372753679400AA43C6 /* streamdeck-backend.swift */,
 				A1F29E412754B9EA00AA43C6 /* Info.plist */,
 			);
@@ -115,6 +199,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A17E6C34299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A17E6C3D299303A700BCFA72 /* Build configuration list for PBXNativeTarget "StreamDeck-Shortcuts-AppIntents" */;
+			buildPhases = (
+				A17E6C31299303A700BCFA72 /* Sources */,
+				A17E6C32299303A700BCFA72 /* Frameworks */,
+				A17E6C33299303A700BCFA72 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "StreamDeck-Shortcuts-AppIntents";
+			productName = "StreamDeck-Shortcuts-AppIntents";
+			productReference = A17E6C35299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 		A1F29E002753653900AA43C6 /* StreamDeck-Shortcuts */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1F29E082753653900AA43C6 /* Build configuration list for PBXNativeTarget "StreamDeck-Shortcuts" */;
@@ -127,6 +228,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A17E6C49299308B100BCFA72 /* PBXTargetDependency */,
 			);
 			name = "StreamDeck-Shortcuts";
 			packageProductDependencies = (
@@ -145,9 +247,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1310;
+				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1310;
 				TargetAttributes = {
+					A17E6C34299303A700BCFA72 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					A17E6C402993086D00BCFA72 = {
+						CreatedOnToolsVersion = 14.2;
+					};
 					A1F29E002753653900AA43C6 = {
 						CreatedOnToolsVersion = 13.1;
 					};
@@ -172,9 +280,21 @@
 			projectRoot = "";
 			targets = (
 				A1F29E002753653900AA43C6 /* StreamDeck-Shortcuts */,
+				A17E6C34299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents */,
+				A17E6C402993086D00BCFA72 /* StreamDeckShortcuts-Bundled */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A17E6C33299303A700BCFA72 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		A13E9062279D378B00D8B422 /* Run Script */ = {
@@ -199,6 +319,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A17E6C31299303A700BCFA72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A17E6C3A299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift in Sources */,
+				A17E6C38299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1F29DFD2753653900AA43C6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -210,6 +339,8 @@
 				A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */,
 				A1F29E052753653900AA43C6 /* entry.swift in Sources */,
 				A1F29E32275366E300AA43C6 /* program-working-data.swift in Sources */,
+				A1CFD91C29932A1C00D2D207 /* ShortcutAction.swift in Sources */,
+				A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */,
 				A1F29E30275366C500AA43C6 /* process-shortcuts.swift in Sources */,
 				A1F29E362753670F00AA43C6 /* run-shortcut.swift in Sources */,
 			);
@@ -217,7 +348,99 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A17E6C452993088100BCFA72 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1F29E002753653900AA43C6 /* StreamDeck-Shortcuts */;
+			targetProxy = A17E6C442993088100BCFA72 /* PBXContainerItemProxy */;
+		};
+		A17E6C472993088700BCFA72 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A17E6C34299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents */;
+			targetProxy = A17E6C462993088700BCFA72 /* PBXContainerItemProxy */;
+		};
+		A17E6C49299308B100BCFA72 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A17E6C34299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents */;
+			targetProxy = A17E6C48299308B100BCFA72 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A17E6C3E299303A700BCFA72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = "StreamDeck-Shortcuts-AppIntents/StreamDeck_Shortcuts_AppIntents.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9JJ9796LNX;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "StreamDeck-Shortcuts-AppIntents/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "StreamDeck-Shortcuts-AppIntents";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Kirkland.StreamDeck-Shortcuts-AppIntents";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A17E6C3F299303A700BCFA72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = "StreamDeck-Shortcuts-AppIntents/StreamDeck_Shortcuts_AppIntents.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9JJ9796LNX;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "StreamDeck-Shortcuts-AppIntents/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "StreamDeck-Shortcuts-AppIntents";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Kirkland.StreamDeck-Shortcuts-AppIntents";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A17E6C422993086D00BCFA72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9JJ9796LNX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A17E6C432993086D00BCFA72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9JJ9796LNX;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		A1F29E062753653900AA43C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -339,13 +562,13 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 9JJ9796LNX;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/StreamDeck-Shortcuts/Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0.7;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "StreamDeck-Shortcuts";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -359,12 +582,12 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 9JJ9796LNX;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/StreamDeck-Shortcuts/Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0.7;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "StreamDeck-Shortcuts";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -375,6 +598,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A17E6C3D299303A700BCFA72 /* Build configuration list for PBXNativeTarget "StreamDeck-Shortcuts-AppIntents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A17E6C3E299303A700BCFA72 /* Debug */,
+				A17E6C3F299303A700BCFA72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A17E6C412993086D00BCFA72 /* Build configuration list for PBXAggregateTarget "StreamDeckShortcuts-Bundled" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A17E6C422993086D00BCFA72 /* Debug */,
+				A17E6C432993086D00BCFA72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A1F29DFC2753653900AA43C6 /* Build configuration list for PBXProject "StreamDeck-Shortcuts" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

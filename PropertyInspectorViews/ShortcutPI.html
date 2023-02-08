@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8" />
+      <meta name="viewport"
+         content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+      <title>⛄🔥⛄🔥⛄🔥 com.sentinelite.sds Property Inspector V2</title>
+      <script src="https://unpkg.com/json5@~2/dist/index.min.js"></script>
+      <link rel="stylesheet" href="sdpi.css" />
+      <script src="main_pi.js"></script>
+   </head>
+   
+   <body>
+      <div class="sdpi-wrapper">
+         <div type="textarea" class="sdpi-item" id="message_only">
+            <div class="sdpi-item-label">Message</div>
+            <span class="sdpi-item-value textarea">
+            <textarea type="textarea" id="mytextarea"></textarea>
+            </span>
+         </div>
+         <div id="PI_Shortcuts">
+            <div class="sdpi-item" id="isFolder">
+               <label class="sdpi-item-label">📁 Folder</label>
+               <select class="sdpi-item-value select" name="shortcuts_folder_list" id="shortcuts_folder_list"
+                  onfocus="refreshListOfShortcutsFolders()"
+                  onchange="selectedNewIndex(this.selectedIndex, 'shortcutFolder');">
+                  <option value="rigatoni">Loading...</option>
+               </select>
+            </div>
+         </div>
+      </div>
+      </div>
+      <div class="sdpi-info-label hidden" style="top: -1000" value=""></div>
+   </body>
+</html>

@@ -249,7 +249,7 @@ class CounterPluginXYZ: PluginDelegate { //Type 'CounterPluginXYZ' does not conf
     static var codePathWin: String?
     
     static var actions: [any Action.Type] = [
-        TestAction.self
+        ShortcutAction.self
 ////        DecrementAction.self
     ]
     
@@ -262,6 +262,7 @@ class CounterPluginXYZ: PluginDelegate { //Type 'CounterPluginXYZ' does not conf
     required init() {
         NSLog("Nemesis-One CounterPlugin initiated!")
         count = Int.random(in: 0...100)
+        processShortcuts()
     }
     
     func willAppear(action: String, context: String, device: String, payload: AppearEvent<Settings>) {
@@ -274,6 +275,13 @@ class CounterPluginXYZ: PluginDelegate { //Type 'CounterPluginXYZ' does not conf
         NSLog("Nemesis-One-Three Payload \(payload)")
         
     }
+    
+    func sentToPlugin(context: String, action: String, payload: [String : String]) {
+        NSLog("Nemesis-One-Four sentToPlguin \(payload), action: \(action)")
+    }
+    
+    
+
 }
 
 
