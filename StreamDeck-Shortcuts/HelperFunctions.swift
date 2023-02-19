@@ -106,3 +106,31 @@ struct PluginCount: EnvironmentKey {
 }
 
 
+///A new Struct for the core back-end data, for version 2.
+struct ShortcutDataTwo {
+    let shortcutName: String
+    
+    let shortcutFolder: String
+    
+    /// The UUID of the Shortcut.
+    /// - Important: This property is only available on macOS 13.0 or later.
+    let shortcutUUID: UUID? = UUID(uuidString: "nil")
+    
+    /// The UUID of the Folder.
+    /// - Important: This property is only available on macOS 13.0 or later.
+    let shortcutFolderUUID: UUID? = UUID(uuidString: "nil")
+}
+
+
+//  `shortcuts list --show-identifiers` prints: `Restart Marker Timer (64B1D7F6-CBE4-445A-8715-6E1255A06857)`
+//  `shortcuts list --folders --show-identifiers` -> `Marker-Dev (F42D664E-9750-446B-BD61-D5B6E2CCC58B)`
+
+/*
+ On start/PI open, refresh list of:
+ • Fetch All Shortcuts
+ • Find Their Folder & assign an "Unsorted" faux folder to shortcuts without folders
+    • The User could've moved the Shortcut to another folder, so the Shortcut's UUID is the source of truth.
+ • Find each Shortcut & each Folder's UUID's (If applicable (macOS 13.0+) if not, then assign some *other* tag to identify that we don't have UUIDs!
+ 
+ When The user opens The PI, we should have a func that looks up the Shortcut's UUID &/or name, & looks for it's parent folder, before sending the intial payload to the PI
+ */

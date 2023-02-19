@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "StreamDeck",
-        "repositoryURL": "https://github.com/emorydunn/StreamDeckPlugin",
-        "state": {
-          "branch": "main",
-          "revision": "b93738fbb441ba66449e0e6838a5d8b258f036b2",
-          "version": null
-        }
-      },
-      {
         "package": "swift-argument-parser",
         "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
         "state": {

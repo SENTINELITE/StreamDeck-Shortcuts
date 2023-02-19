@@ -9,10 +9,7 @@ import Foundation
 import Sentry
 
 
-//  🔷----------------------------------------------------- ----------------------------------------------------- ---------------
-//  | Fetch all of the user's shortcuts, their folders, & generate an "all" folder. TODO: Process the search on the swift side. |
-//  ----------------------------------------------------- ----------------------------------------------------- -----------------
-
+///Fetches all the available Shortcuts & folders. Creates an array of `ShortcutDataTwo`, which contains each Shortcut's name, folder, & UUID
 func processShortcuts() {
     let transaction = SentrySDK.startTransaction(
       name: "transaction-processShortcuts",
@@ -25,7 +22,7 @@ func processShortcuts() {
     shortcutsMapped.removeAll()
     listOfFoldersWithShortcuts.removeAll()
     
-    func findFolders(args: [String]) -> String {
+    func shortcutsCLIProcessor(args: [String]) -> String {
         let shortcutsCLI = Process()
         let pipe = Pipe()
         shortcutsCLI.standardOutput = pipe
@@ -48,22 +45,18 @@ func processShortcuts() {
         return safeOutput
     }
     
-    let listOfAllShortcuts = findFolders(args: ["list"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
-    let listOfFolders = findFolders(args: ["list", "--folders"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
-  
-    //Maybe used on the future, to "heartbeat" the JS front-end. This is useful, if the user's library is super big.
-//    for i in 1...10 {
-//        initalShortcutsMapped.updateValue("All", forKey: listOfAllShortcuts[i])
-//    }
-//    NSLog("Mapped out initial settings \(initalShortcutsMapped)")
-    
-    #warning("We need to add 'All' here.")
+    let listOfAllShortcuts = shortcutsCLIProcessor(args: ["list"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
+    let listOfFolders = shortcutsCLIProcessor(args: ["list", "--folders"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
+
+
     shortcutsFolder = listOfFolders
+    
+    //
     shortcutsFolder.insert("All", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
     listOfCuts = listOfAllShortcuts
     
     for name in listOfFolders {
-        let splitsUp = findFolders(args: ["list", "--folder-name", "\(name)"]).split(whereSeparator: \.isNewline).map(String.init) //Fetch each shortcut from every folder, & create an array.
+        let splitsUp = shortcutsCLIProcessor(args: ["list", "--folder-name", "\(name)"]).split(whereSeparator: \.isNewline).map(String.init) //Fetch each shortcut from every folder, & create an array.
         for shortcut in splitsUp {
             shortcutsMapped.updateValue(name, forKey: shortcut) //Add all Shortcuts & their folderName to Dictionary.
             if(!listOfFoldersWithShortcuts.contains(name)) {
@@ -71,8 +64,6 @@ func processShortcuts() {
             }
         }
     }
-//    listOfFoldersWithShortcuts.append("All")
-//    listOfFoldersWithShortcuts.sort()
     listOfFoldersWithShortcuts.insert("All", at: listOfFoldersWithShortcuts.startIndex)
     shortcutsFolder = listOfFoldersWithShortcuts
     
@@ -97,28 +88,6 @@ func processShortcuts() {
     
     findDiff()
     print("MappedOut: \(shortcutsMapped)")
-    
-//    savePrefrences(filePath: debugShortcuts)
-    
-//    for key in shortcutsMapped
-    
-//    for folder in listOfFolders {
-//        for nestedFolder in shortcutsMapped {
-//            if (folder == nestedFolder.value) {
-//                NSLog("❄️ This matches!!!!!")
-//            }
-//        }
-//    }
-//    
-//    for folder in shortcutsMapped {
-//        let x = shortcutsMapped.index(forKey: "All")
-//        NSLog("\(x)")
-//        NSLog("\(folder.value)")
-//        
-//    }
-//    
-//    NSLog("LOF \(listOfFolders), LOCs \(listOfAllShortcuts)")
-//    NSLog("ListOfMapped \(shortcutsMapped)")
     
     NSLog("DEBUG: Finished Running processShortcuts()!")
     transaction.finish(); // Finishing the transaction will send it to Sentry

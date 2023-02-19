@@ -17,6 +17,8 @@ import Sentry
 //MARK: Shortcut Runner | Fix thanks to  Apple's DTS Team! 🎉
 //TODO: Make Task?
 
+///Spins up a seperate CLI process that executes a Shortcut.
+/// - inputShortcut can be either a name or a UUID. UUID is the preferred method of running, though
 func runShortcutDTS(inputShortcut: String) async {
     NSLog("Running with DTS Fix...")
     let shortcutsCLI = Process()

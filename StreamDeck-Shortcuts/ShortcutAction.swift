@@ -44,9 +44,36 @@ class ShortcutAction: Action {
     
     @Environment(PluginCount.self) var count: Int
     
+    var shortcutToRun = ""
+    
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         NSLog("MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown count: \(count)")
         count += 2
+        
+//        Task {
+//            NSLog("About to execute Shortcut V2")
+//            async let dtsRunner = runShortcutDTS(inputShortcut: shortcutToRun)
+//            NSLog("Executed Shortcut V2")
+//        }
+        
+//        Accessibility Test (51194254-37BC-4209-864A-34888ACDD0C7)
+        
+//        func runShortcutDTS(inputShortcut: String) async {
+            NSLog("Running with DTS Fix...")
+            let shortcutsCLI = Process()
+            shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
+            
+            shortcutsCLI.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
+        //    let xo = #"inputShortcut"#
+            shortcutsCLI.arguments = ["run", "51194254-37BC-4209-864A-34888ACDD0C7"]
+            
+            do {
+                try shortcutsCLI.run()
+            } catch {
+                NSLog("\(error)")
+            }
+            NSLog("Should've ran the shortcut...")
+//        }
         
         let images = [
             "/Users/kirkland/Downloads/SDS-Tests/1.png",
@@ -66,6 +93,10 @@ class ShortcutAction: Action {
 //        setImage(in: context, to: image)
         setTitle(to: randomImage)
         setImage(to: image)
+        
+        NSLog("mapped Shortcuts: \(shortcutsMapped)")
+        
+
     }
     
     func updateText() { //contextStr: String
@@ -79,9 +110,14 @@ class ShortcutAction: Action {
     
     func propertyInspectorDidAppear(device: String) {
         NSLog("MRVN-Two PI Did Appear")
-//        var listOfSayVoices = ["Samantha", "Victoria", "Alex", "Fred"]
-        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
-        sendToPropertyInspector(payload: payloadToSend)
+//        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
+        
+        let finalPayload: [String: Any] = [
+            "sdsEvt": SdsEventSendType.initialPayload.rawValue,
+            "folders": shortcutsFolder
+        ]
+        
+        sendToPropertyInspector(payload: finalPayload)
 
         getSettings() //
     }
@@ -89,10 +125,94 @@ class ShortcutAction: Action {
     #warning("Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅")
     func sentToPlugin(payload: [String : String]) {
         NSLog("MRVN-Three SendToPlugin - \(payload)")
+        
+        //The PI has requested X to be done. Delegate to that...
+        
+        //Folder Selection changed...
+        
+        for i in payload {
+            if i.key == "type" {
+                NSLog("MRVN-Five-One i.key == type")
+                let evt = i.value
+                switch evt {
+                    
+                case SdsEventRecieveType.newShortcutSelected.rawValue:
+                    print("New Shortcut Selected... ", payload["data"])
+                    
+                    
+                case "newFolderSelected":
+                    NSLog("MRVN-Five-Two newFolderSelected")
+                    //                    if i.key == "data" {
+                    NSLog("MRVN-Five-Three data")
+                    let folder = payload["data"]
+                    let newShortcutsPayload = FilterMappedFolder(folderName: folder!)
+//                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder, "filteredShortcuts": "\(newShortcutsPayload)"]
+                    
+//                    let newPayload: [String: Any] = [
+//                        "sdsEvt": SdsEventRecieveType.folderSelected.rawValue,
+//                        "filteredShortcuts": newShortcutsPayload
+//                    ]
+                    
+                    let finalPayload: [String: Any] = [
+                        "sdsEvt": SdsEventSendType.filteredFolder.rawValue,
+                        "filteredShortcuts": newShortcutsPayload
+                    ]
+                    
+                    #warning("The `folderSelected` event is wrong! We need to send the *other* event!")
+//                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder.rawValue, "filteredShortcuts": "\(newShortcutsPayload)"]
+                    
+                    sendToPropertyInspector(payload: finalPayload)
+                    NSLog("MRVN-Five-One \(newShortcutsPayload)")
+                    NSLog("MRVN-Five-Two Sending Payload \(finalPayload)")
+                    //                    }
+                default:
+                    NSLog("This case has defualted")
+                }
+                //Switch on the eventType
+            }
+        }
+        
+        //Send Sorted Shortcuts
+//        sendToPropertyInspector(payload: <#T##[String : Any]#>)
     }
     
     func didReceiveSettings(device: String, payload: SettingsEvent<NoSettings>.Payload) {
         NSLog("MRVN-Four didReceiveSettings")
     }
 
+}
+
+func FilterMappedFolder(folderName: String) -> [String] {
+    var filteredShortcuts = [String]()
+    for (shortcut, folder) in shortcutsMapped {
+        if folder == folderName {
+            filteredShortcuts.append(shortcut)
+        }
+    }
+    return filteredShortcuts
+}
+
+
+
+//Send Types
+enum SdsEventSendType: String {
+    case initialPayload
+    case filteredFolder //filteredFolder from Js
+    case shortcuts
+}
+
+extension SdsEventSendType: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .initialPayload: return "ip"
+        case .filteredFolder: return "south"
+        case .shortcuts: return "s"
+        }
+    }
+}
+
+//JS/PI -> Swift
+enum SdsEventRecieveType: String, Codable {
+    case newShortcutSelected //A Shortcut has been selected
+    case newFolderSelected // A Folder has been selected
 }
