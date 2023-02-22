@@ -7,6 +7,8 @@
 
 import Foundation
 
+var newData = [ShortcutDataTwo]()
+
 var savedShortcut = "TheDefaultTradedValue"
 var theValueToTradeVoice = "TheDefaultTradedValueVoice_DevX"
 

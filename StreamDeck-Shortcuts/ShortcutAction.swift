@@ -9,6 +9,8 @@ import Foundation
 import StreamDeck
 import AppKit
 
+var shortcutToRun = ""
+
 class ShortcutAction: Action {
 
 //    struct Settings: Codable, Hashable {
@@ -44,8 +46,6 @@ class ShortcutAction: Action {
     
     @Environment(PluginCount.self) var count: Int
     
-    var shortcutToRun = ""
-    
     func keyDown(device: String, payload: KeyEvent<NoSettings>) {
         NSLog("MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown count: \(count)")
         count += 2
@@ -59,14 +59,18 @@ class ShortcutAction: Action {
 //        Accessibility Test (51194254-37BC-4209-864A-34888ACDD0C7)
         
 //        func runShortcutDTS(inputShortcut: String) async {
-            NSLog("Running with DTS Fix...")
+        
+            NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRun)")
+            shortcutToRun = shortcutNameToUUID(inputShortcutName: shortcutToRun)
+            NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRun)")
+        
             let shortcutsCLI = Process()
             shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
-            
+
             shortcutsCLI.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
         //    let xo = #"inputShortcut"#
-            shortcutsCLI.arguments = ["run", "51194254-37BC-4209-864A-34888ACDD0C7"]
-            
+            shortcutsCLI.arguments = ["run", shortcutToRun]
+
             do {
                 try shortcutsCLI.run()
             } catch {
@@ -110,11 +114,12 @@ class ShortcutAction: Action {
     
     func propertyInspectorDidAppear(device: String) {
         NSLog("MRVN-Two PI Did Appear")
+//        processShortcuts()
 //        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
         
         let finalPayload: [String: Any] = [
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
-            "folders": shortcutsFolder
+            "folders": ["SE", "All", "DEV", "Shortcuts Demo"]//shortcutsFolder
         ]
         
         sendToPropertyInspector(payload: finalPayload)
@@ -132,20 +137,26 @@ class ShortcutAction: Action {
         
         for i in payload {
             if i.key == "type" {
-                NSLog("MRVN-Five-One i.key == type")
+                NSLog("MRVN-Five-One i.key == type, evt: \(i.value)")
                 let evt = i.value
                 switch evt {
                     
-                case SdsEventRecieveType.newShortcutSelected.rawValue:
-                    print("New Shortcut Selected... ", payload["data"])
+                case "newShortcutSelected":
+                    NSLog("New Shortcut Selected As Event String... \(payload["data"])")
                     
+                case SdsEventRecieveType.newShortcutSelected.rawValue:
+                    NSLog("New Shortcut Selected... \(payload["data"])")
+                    shortcutToRun = payload["data"] ?? "nil"
+//                    print("New Shortcut Selected... ", payload["data"])
+                    
+//                case SdsEventRecieveType.re
                     
                 case "newFolderSelected":
                     NSLog("MRVN-Five-Two newFolderSelected")
                     //                    if i.key == "data" {
                     NSLog("MRVN-Five-Three data")
                     let folder = payload["data"]
-                    let newShortcutsPayload = FilterMappedFolder(folderName: folder!)
+                    let newShortcutsPayload = filterMappedFolder(folderName: folder!)
 //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder, "filteredShortcuts": "\(newShortcutsPayload)"]
                     
 //                    let newPayload: [String: Any] = [
@@ -166,7 +177,7 @@ class ShortcutAction: Action {
                     NSLog("MRVN-Five-Two Sending Payload \(finalPayload)")
                     //                    }
                 default:
-                    NSLog("This case has defualted")
+                    NSLog("This case has defualted with: \(payload)")
                 }
                 //Switch on the eventType
             }
@@ -182,15 +193,13 @@ class ShortcutAction: Action {
 
 }
 
-func FilterMappedFolder(folderName: String) -> [String] {
-    var filteredShortcuts = [String]()
-    for (shortcut, folder) in shortcutsMapped {
-        if folder == folderName {
-            filteredShortcuts.append(shortcut)
-        }
-    }
-    return filteredShortcuts
+
+///Retutrns an array of shortcuts, that match the passed in folder String.
+func filterMappedFolder(folderName: String) -> [String] {
+    return newData.filter { $0.shortcutFolder == folderName }
+        .map { $0.shortcutName }
 }
+
 
 
 

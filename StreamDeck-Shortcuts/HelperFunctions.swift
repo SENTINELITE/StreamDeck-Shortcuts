@@ -8,6 +8,7 @@
 import StreamDeck
 import Foundation
 import AppKit
+import RegexBuilder
 
 func preformShortcutRun() {
     
@@ -110,11 +111,11 @@ struct PluginCount: EnvironmentKey {
 struct ShortcutDataTwo {
     let shortcutName: String
     
-    let shortcutFolder: String
+    var shortcutFolder: String
     
     /// The UUID of the Shortcut.
     /// - Important: This property is only available on macOS 13.0 or later.
-    let shortcutUUID: UUID? = UUID(uuidString: "nil")
+    var shortcutUUID: UUID?// = UUID(uuidString: "nil")
     
     /// The UUID of the Folder.
     /// - Important: This property is only available on macOS 13.0 or later.
@@ -134,3 +135,55 @@ struct ShortcutDataTwo {
  
  When The user opens The PI, we should have a func that looks up the Shortcut's UUID &/or name, & looks for it's parent folder, before sending the intial payload to the PI
  */
+
+
+let uuidRegex = Regex {
+    /^/
+    Capture {
+        OneOrMore(.reluctant) {
+            /./
+        }
+    }
+    Optionally(One(.whitespace))
+    "("
+    Capture {
+        Regex {
+            Repeat(count: 8) {
+                CharacterClass(
+                    ("A"..."F"),
+                    ("0"..."9")
+                )
+            }
+            "-"
+            Repeat(count: 4) {
+                CharacterClass(
+                    ("A"..."F"),
+                    ("0"..."9")
+                )
+            }
+            "-"
+            Repeat(count: 4) {
+                CharacterClass(
+                    ("A"..."F"),
+                    ("0"..."9")
+                )
+            }
+            "-"
+            Repeat(count: 4) {
+                CharacterClass(
+                    ("A"..."F"),
+                    ("0"..."9")
+                )
+            }
+            "-"
+            Repeat(count: 12) {
+                CharacterClass(
+                    ("A"..."F"),
+                    ("0"..."9")
+                )
+            }
+        }
+    }
+    ")"
+}
+    .anchorsMatchLineEndings()
