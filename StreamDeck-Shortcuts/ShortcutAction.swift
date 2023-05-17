@@ -70,9 +70,15 @@ class ShortcutAction: Action {
             shortcutsCLI.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
         //    let xo = #"inputShortcut"#
             shortcutsCLI.arguments = ["run", shortcutToRun]
+        
+        //MARK: This runs fine. So executing a Shortcut works...
+        //shortcutsCLI.arguments = ["run", "51194254-37BC-4209-864A-34888ACDD0C7"]
 
             do {
+                NSLog("About to run the shortcut...")
                 try shortcutsCLI.run()
+                NSLog("Should've ran the shortcut... \(shortcutToRun)")
+                NSLog("Ran? --- \(shortcutsCLI.arguments)")
             } catch {
                 NSLog("\(error)")
             }
@@ -110,6 +116,7 @@ class ShortcutAction: Action {
     
     func willAppear(device: String, payload: AppearEvent<NoSettings>) {
         NSLog("MRVN-One Payload \(payload)")
+        NSLog("MRVN-One Load Instance Settings here")
     }
     
     func propertyInspectorDidAppear(device: String) {
@@ -142,11 +149,18 @@ class ShortcutAction: Action {
                 switch evt {
                     
                 case "newShortcutSelected":
-                    NSLog("New Shortcut Selected As Event String... \(payload["data"])")
+                    NSLog("Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
+                    shortcutToRun = payload["data"] ?? "nil"
+                    NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
+                    
+                    //TODO: Move to updateSettings func, Set settings.
+                    let customJSON = sdsSettings(shortcut: shortcutToRun)
+//                    setSettings(to: ["x":"yz"])
+//                    Settings.encode(customJSON)
+                    
                     
                 case SdsEventRecieveType.newShortcutSelected.rawValue:
-                    NSLog("New Shortcut Selected... \(payload["data"])")
-                    shortcutToRun = payload["data"] ?? "nil"
+                    NSLog("New Shortcut Selected //Raw Event... \(payload["data"])")
 //                    print("New Shortcut Selected... ", payload["data"])
                     
 //                case SdsEventRecieveType.re
@@ -224,4 +238,9 @@ extension SdsEventSendType: CustomStringConvertible {
 enum SdsEventRecieveType: String, Codable {
     case newShortcutSelected //A Shortcut has been selected
     case newFolderSelected // A Folder has been selected
+}
+
+
+struct sdsSettings: Codable {
+    var shortcut: String
 }
