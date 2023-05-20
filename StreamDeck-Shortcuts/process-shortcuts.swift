@@ -149,3 +149,7 @@ func shortcutNameToUUID (inputShortcutName: String) -> String {
     
     return id
 }
+
+func listFoldersNew() {
+    
+}

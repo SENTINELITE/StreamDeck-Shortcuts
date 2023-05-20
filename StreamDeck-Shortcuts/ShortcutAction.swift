@@ -12,12 +12,17 @@ import AppKit
 var shortcutToRun = ""
 
 class ShortcutAction: Action {
-
-//    struct Settings: Codable, Hashable {
-//        let someKey: String
-//    }
+    static var controllers: [StreamDeck.ControllerType] = [.keypad]
     
-//    var settings: Settings = NoS
+    static var encoder: StreamDeck.RotaryEncoder?
+    
+
+    struct Settings: Codable, Hashable {
+        let shortcutToRun: String
+        let updatedInt: Int
+    }
+    
+//    static var settings: Settings = Settings
 
     static var name: String = "Launch Shortcut V2"
     
@@ -46,7 +51,8 @@ class ShortcutAction: Action {
     
     @Environment(PluginCount.self) var count: Int
     
-    func keyDown(device: String, payload: KeyEvent<NoSettings>) {
+    func keyDown(device: String, payload: KeyEvent<Settings>) {
+        getSettings()
         NSLog("MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown count: \(count)")
         count += 2
         
@@ -85,6 +91,13 @@ class ShortcutAction: Action {
             NSLog("Should've ran the shortcut...")
 //        }
         
+        NSLog("mapped Shortcuts: \(shortcutsMapped)")
+        
+
+    }
+    
+    //TODO: Change SD Key Image | Not implemented
+    func updateImage() {
         let images = [
             "/Users/kirkland/Downloads/SDS-Tests/1.png",
             "/Users/kirkland/Downloads/SDS-Tests/2.png",
@@ -103,10 +116,6 @@ class ShortcutAction: Action {
 //        setImage(in: context, to: image)
         setTitle(to: randomImage)
         setImage(to: image)
-        
-        NSLog("mapped Shortcuts: \(shortcutsMapped)")
-        
-
     }
     
     func updateText() { //contextStr: String
@@ -114,9 +123,8 @@ class ShortcutAction: Action {
         setTitle(to: int.description)
     }
     
-    func willAppear(device: String, payload: AppearEvent<NoSettings>) {
-        NSLog("MRVN-One Payload \(payload)")
-        NSLog("MRVN-One Load Instance Settings here")
+    func willAppear(device: String, payload: AppearEvent<Settings>) {
+        getSettings()
     }
     
     func propertyInspectorDidAppear(device: String) {
@@ -126,12 +134,24 @@ class ShortcutAction: Action {
         
         let finalPayload: [String: Any] = [
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
-            "folders": ["SE", "All", "DEV", "Shortcuts Demo"]//shortcutsFolder
+            "folders": ["SE", "All", "DEV", "Shortcuts Demo", "StreamDeck Shortcuts"]//shortcutsFolder
+            
+            //TODO: Fix. Something isn't working right. Elgato's PI debugging tool is broken as of 6.3 Beta.
+//            "folders": shortcutsFolder //shortcutsFolder
         ]
         
         sendToPropertyInspector(payload: finalPayload)
 
         getSettings() //
+    }
+    
+    func propertyInspectorDidDisappear(device: String) {
+        let xy = Settings(shortcutToRun: shortcutToRun, updatedInt: Int.random(in: 0...100))
+        
+        NSLog("Gibby One | New Settings saved, with: \(xy)")
+        setSettings(to: xy) // Save the updated settings
+        
+        getSettings() // Retrieve the saved settings
     }
     
     #warning("Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅")
@@ -153,7 +173,18 @@ class ShortcutAction: Action {
                     shortcutToRun = payload["data"] ?? "nil"
                     NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
                     
+                    setTitle(to: shortcutToRun)
+                    
+//                    struct SettingsX: Codable, Hashable {
+//                        let someKey: String
+//                    }
+                    
+//                    let xy = Settings(shortcutToRun: "shortcutToRun_BravoZero", updatedInt: 3)
+//                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
                     //TODO: Move to updateSettings func, Set settings.
+                    
+//                    setSettings(to: xy)
+//                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
                     let customJSON = sdsSettings(shortcut: shortcutToRun)
 //                    setSettings(to: ["x":"yz"])
 //                    Settings.encode(customJSON)
@@ -201,8 +232,9 @@ class ShortcutAction: Action {
 //        sendToPropertyInspector(payload: <#T##[String : Any]#>)
     }
     
-    func didReceiveSettings(device: String, payload: SettingsEvent<NoSettings>.Payload) {
-        NSLog("MRVN-Four didReceiveSettings")
+    func didReceiveSettings(device: String, payload: SettingsEvent<Settings>.Payload) {
+        NSLog("MRVN-Four didReceiveSettings \(payload.settings)")
+        shortcutToRun = payload.settings.shortcutToRun
     }
 
 }
