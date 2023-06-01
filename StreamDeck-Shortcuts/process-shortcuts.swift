@@ -76,7 +76,7 @@ func processShortcuts() {
             }
         }
         listOfFoldersWithShortcuts.insert("All", at: listOfFoldersWithShortcuts.startIndex)
-        shortcutsFolder = listOfFoldersWithShortcuts
+        //shortcutsFolder = listOfFoldersWithShortcuts
     }
     
     ///Fetches all of the user's shortcuts & their respective UUID's.
@@ -90,7 +90,7 @@ func processShortcuts() {
                 if let match = i.wholeMatch(of: uuidRegex) {
                     let uuid = UUID(uuidString: String(match.2))!
                     print("Shortcut \(match.1) has UUID of: \(uuid)")
-                    newData.append(ShortcutDataTwo(shortcutName: String(match.1), shortcutFolder: "unsorted", shortcutUUID: uuid))
+                    newData.append(ShortcutDataTwo(shortcutName: String(match.1), shortcutFolder: "Unsorted", shortcutUUID: uuid))
                 }
             }
         } else {
