@@ -82,7 +82,7 @@ class ShortcutAction: Action {
             NSLog("👀 Press count \(pressCount)")
             clicked()
         }
-
+        
         
     }
     
@@ -98,8 +98,8 @@ class ShortcutAction: Action {
                 NSLog("Horizon-Audio | Accessibility Shortcut failed to execute due to the user letting go early")
             }
         }
-
-
+        
+        
     }
     
     func vTwoRunShortcut() {
@@ -182,22 +182,40 @@ class ShortcutAction: Action {
         
         switch pressCount {
         case 1:
-            if !tmpIsAccess {
-                vTwoRunShortcut()
-            } else {
-                NSLog("Horizon-Audio | Soft-releasing shortcutRun, due to accessbility-mode being on.")
-            }
+            executeShortcut()
         case 2:
+            NSLog("☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
+
+            var components = URLComponents()
+            components.scheme = "shortcuts"
+            components.host = "open-shortcut"
+            components.queryItems = [URLQueryItem(name: "name", value: shortcutToRun)]
+
+            guard let encodedURL = components.url else {
+                NSLog("🚨 Bloodhound-Two | Failed to encode shortcut. Not opening & exiting loop. Shortcut: \(shortcutToRun)")
+                return
+            }
+
+            NSLog("🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)")
+            NSWorkspace.shared.open(encodedURL)
+
+        case 3:
             if let url = URL(string: "shortcuts://create-shortcut") {
                 NSWorkspace.shared.open(url)
             }
-        case 3:
-            NSLog("☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
         default:
             NSLog("Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways...")
-            vTwoRunShortcut()
+            executeShortcut()
         }
         pressCount = 0
+    }
+    
+    func executeShortcut () {
+        if !tmpIsAccess {
+            vTwoRunShortcut()
+        } else {
+            NSLog("Horizon-Audio | Soft-releasing shortcutRun, due to accessbility-mode being on.")
+        }
     }
     
     
