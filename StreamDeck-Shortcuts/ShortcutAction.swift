@@ -10,6 +10,7 @@ import StreamDeck
 import AppKit
 
 var shortcutToRun = ""
+var shortcutToRunUUID = ""
 
 class ShortcutAction: Action {
     static var controllers: [StreamDeck.ControllerType] = [.keypad]
@@ -20,6 +21,7 @@ class ShortcutAction: Action {
     struct Settings: Codable, Hashable {
         let shortcutToRun: String
         let updatedInt: Int
+//        let shortcutUUID: String
     }
     
     //    static var settings: Settings = Settings
@@ -118,23 +120,24 @@ class ShortcutAction: Action {
         //        func runShortcutDTS(inputShortcut: String) async {
         
         NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRun)")
-        shortcutToRun = shortcutNameToUUID(inputShortcutName: shortcutToRun)
-        NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRun)")
+        shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
+        NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRunUUID)")
         
         let shortcutsCLI = Process()
         shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
         
         shortcutsCLI.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
         //    let xo = #"inputShortcut"#
-        shortcutsCLI.arguments = ["run", shortcutToRun]
+        shortcutsCLI.arguments = ["run", shortcutToRunUUID]
         
         //MARK: This runs fine. So executing a Shortcut works...
         //shortcutsCLI.arguments = ["run", "51194254-37BC-4209-864A-34888ACDD0C7"]
         
         do {
             NSLog("About to run the shortcut...")
+//            let shortcutName - uuidToShortcut(inputUUID: <#T##UUID#>)
             try shortcutsCLI.run()
-            NSLog("Should've ran the shortcut... \(shortcutToRun)")
+            NSLog("Should've ran the shortcut with UUID: \(shortcutToRunUUID) with name: \(shortcutToRun)")
             NSLog("Ran? --- \(shortcutsCLI.arguments)")
         } catch {
             NSLog("\(error)")
@@ -225,6 +228,8 @@ class ShortcutAction: Action {
     
     //TODO: Change SD Key Image | Not implemented
     func updateImage() {
+        
+        //Oops, I left my name here! 😅
         let images = [
             "/Users/kirkland/Downloads/SDS-Tests/1.png",
             "/Users/kirkland/Downloads/SDS-Tests/2.png",
@@ -251,11 +256,21 @@ class ShortcutAction: Action {
     }
     
     func willAppear(device: String, payload: AppearEvent<Settings>) {
+        NSLog("🛡️ DomeOfProtection With: \(payload)")
+        SDVersion = StreamDeckPlugin.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
+        NSLog("Nemesis-Zero-Init with count: \(SDVersion)")
+        
         getSettings()
     }
     
+    //TODO: Get the settings first, loading the previous state & use that to fill the PI!
     func propertyInspectorDidAppear(device: String) {
+        getSettings() //
         NSLog("MRVN-Two PI Did Appear")
+        NSLog("🤖 MRVN-Five PI Did Appear before sending init payload: \(shortcutToRun)")
+        
+        findFolderFromShortcut() //Send the folder //TODO: Send the init selected folder with the init payload, that way we're already filtering instead of showing All.
+        
         //        processShortcuts()
         //        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
         
@@ -264,23 +279,35 @@ class ShortcutAction: Action {
             //            "folders": ["SE", "All", "DEV", "Shortcuts Demo", "StreamDeck Shortcuts"]//shortcutsFolder
             
             "folders": shortcutsFolder //shortcutsFolder
+//            "": listOfCuts
+            //TODO: Add all shortcuts here?
         ]
         
         sendToPropertyInspector(payload: finalPayload)
         
-        getSettings() //
+        //Check for folder here first!
+        
+        sendNewFolderAndShortcuts(folder: "All")
+        NSLog("🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
+        
     }
     
+    
+    
     func propertyInspectorDidDisappear(device: String) {
-        let xy = Settings(shortcutToRun: shortcutToRun, updatedInt: Int.random(in: 0...100))
-        
-        NSLog("Gibby One | New Settings saved, with: \(xy)")
-        setSettings(to: xy) // Save the updated settings
-        
+        saveSettingsHelper()
         getSettings() // Retrieve the saved settings
     }
     
+    ///A Generalized helper function to save settings.
+    func saveSettingsHelper() {
+        let xy = Settings(shortcutToRun: shortcutToRun, updatedInt: Int.random(in: 0...100))
+        NSLog("Gibby One | New Settings saved, with: \(xy)")
+        setSettings(to: xy) // Save the updated settings
+    }
+    
 #warning("Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅")
+    //TODO: Make an Alias called SentFromSteamDeckApp?
     func sentToPlugin(payload: [String : String]) {
         NSLog("MRVN-Three SendToPlugin - \(payload)")
         
@@ -298,6 +325,7 @@ class ShortcutAction: Action {
                     NSLog("Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
                     shortcutToRun = payload["data"] ?? "nil"
                     NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
+                    shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
                     
                     setTitle(to: shortcutToRun)
                     
@@ -314,6 +342,7 @@ class ShortcutAction: Action {
                     let customJSON = sdsSettings(shortcut: shortcutToRun)
                     //                    setSettings(to: ["x":"yz"])
                     //                    Settings.encode(customJSON)
+                    saveSettingsHelper()
                     
                     
                 case SdsEventRecieveType.newShortcutSelected.rawValue:
@@ -323,32 +352,11 @@ class ShortcutAction: Action {
                     //                case SdsEventRecieveType.re
                     
                 case "newFolderSelected":
-                    NSLog("MRVN-Five-Two newFolderSelected")
-                    //                    if i.key == "data" {
-                    NSLog("MRVN-Five-Three data")
-                    let folder = payload["data"]
-                    let newShortcutsPayload = filterMappedFolder(folderName: folder!)
-                    shortcutToRun = newShortcutsPayload.first ?? "nil"
-                    NSLog("Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
-                    //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder, "filteredShortcuts": "\(newShortcutsPayload)"]
-                    
-                    //                    let newPayload: [String: Any] = [
-                    //                        "sdsEvt": SdsEventRecieveType.folderSelected.rawValue,
-                    //                        "filteredShortcuts": newShortcutsPayload
-                    //                    ]
-                    
-                    let finalPayload: [String: Any] = [
-                        "sdsEvt": SdsEventSendType.filteredFolder.rawValue,
-                        "filteredShortcuts": newShortcutsPayload
-                    ]
-                    
-#warning("The `folderSelected` event is wrong! We need to send the *other* event!")
-                    //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder.rawValue, "filteredShortcuts": "\(newShortcutsPayload)"]
-                    
-                    sendToPropertyInspector(payload: finalPayload)
-                    NSLog("MRVN-Five-One \(newShortcutsPayload)")
-                    NSLog("MRVN-Five-Two Sending Payload \(finalPayload)")
-                    //                    }
+                    if let folder = payload["data"] {
+                        sendNewFolderAndShortcuts(folder: folder)
+                    } else {
+                        NSLog("newFolderSelected Failed with: \(payload)")
+                    }
                 default:
                     NSLog("This case has defualted with: \(payload)")
                 }
@@ -360,9 +368,54 @@ class ShortcutAction: Action {
         //        sendToPropertyInspector(payload: <#T##[String : Any]#>)
     }
     
+    func sendNewFolderAndShortcuts(folder: String) {
+        NSLog("MRVN-Five-Two newFolderSelected")
+        //                    if i.key == "data" {
+        NSLog("MRVN-Five-Three data")
+        let newShortcutsPayload = filterMappedFolder(folderName: folder)
+        
+//        if shortcutToRun.isEmpty {
+//            shortcutToRun = newShortcutsPayload.first ?? "nil"
+//        }
+        NSLog("🚀 Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
+        //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder, "filteredShortcuts": "\(newShortcutsPayload)"]
+        
+        //                    let newPayload: [String: Any] = [
+        //                        "sdsEvt": SdsEventRecieveType.folderSelected.rawValue,
+        //                        "filteredShortcuts": newShortcutsPayload
+        //                    ]
+        
+        var isShortcutInFolder = false
+        if newShortcutsPayload.contains(shortcutToRun) {
+            NSLog("🧱 CastleWall-One: The folder contains our shortcuts: \(shortcutToRun)")
+            isShortcutInFolder = true
+        } else {
+            NSLog("🧱 CastleWall-Two: Shortcut: \(shortcutToRun) is not in our folder")
+            shortcutToRun = newShortcutsPayload.first ?? "nil"
+            //Set
+        }
+        
+        let finalPayload: [String: Any] = [
+            "sdsEvt": SdsEventSendType.filteredFolder.rawValue,
+            "filteredShortcuts": newShortcutsPayload,
+            "isShortcutInFolder": isShortcutInFolder,
+            "shortcutToRun": shortcutToRun
+        ]
+        
+#warning("The `folderSelected` event is wrong! We need to send the *other* event!")
+        //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder.rawValue, "filteredShortcuts": "\(newShortcutsPayload)"]
+        
+        sendToPropertyInspector(payload: finalPayload)
+        NSLog("MRVN-Five-One \(newShortcutsPayload)")
+        NSLog("MRVN-Five-Two Sending Payload \(finalPayload)")
+        saveSettingsHelper()
+        //                    }
+    }
+    
     func didReceiveSettings(device: String, payload: SettingsEvent<Settings>.Payload) {
         NSLog("MRVN-Four didReceiveSettings \(payload.settings)")
         shortcutToRun = payload.settings.shortcutToRun
+        
     }
     
 }
@@ -378,6 +431,13 @@ func filterMappedFolder(folderName: String) -> [String] {
     }
 }
 
+func findFolderFromShortcut() {
+    let matchingShortcut = newData.first { $0.shortcutName == shortcutToRun }
+    if let folderName = matchingShortcut?.shortcutFolder {
+        let filteredShortcuts = filterMappedFolder(folderName: folderName)
+        // Use the filteredShortcuts as needed
+    }
+}
 
 
 

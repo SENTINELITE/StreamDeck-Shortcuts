@@ -2,11 +2,20 @@
 //Someone with more knowledge of JS would be able to make this better. 😉
 //Shoutout to GitHub CoPilot for the assistance!
 
+//import { greet, message } from './newFile.js';
+
 let websocket = null,
     uuid = null,
     actionInfo = {};
 
+//
+
+const SdsEvents = {
+    filteredFolder: Symbol("filteredFolder")
+}
+
 listOfCuts = ['Placeholder', '2'];
+var listOfShortcutsVersionTwo = {};
 
 function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
     uuid = inUUID;
@@ -33,11 +42,51 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
             const payload = jsonObj.payload;
 //            shortcutsFolder = payload.voices
 
-            shortcutsFolder = parseJSONSafely(payload.voices)
+            console.log("ZYX Payload -> ", payload)
 
-            console.log("XYZ: ", shortcutsFolder)
+            switch (payload.sdsEvt) {
+                case "initialPayload":
+                    console.log("📦 initialPayload")
+                    shortcutsFolder = payload.folders
+                    console.log("XYZ: ", shortcutsFolder)
+                    refreshListOfShortcutsFolders()
+                    break;
+                case "filteredFolder": //This needs to get removed
+                    console.log("📦 filteredFolder")
+                    console.log("Parsing new Payload Data")
+                    console.log("New X -> ", payload)
+                    console.log("New Filted Array -> ", payload.filteredShortcuts)
+                    console.log("New SdsEvnt -> ", payload.sdsEvt)
 
-            refreshListOfShortcutsFolders()
+                    listOfShortcutsVersionTwo = payload.filteredShortcuts
+
+                    shortcutsFrontend = document.getElementById("shortcuts_list");
+                    shortcutsFrontend.length = 0;
+                    numCnt = 0
+                    for (var val of listOfShortcutsVersionTwo) {
+                        console.log(numCnt, val)
+                        option = genOption(val);
+                        shortcutsFrontend.appendChild(option);
+                        numCnt += 1
+                    }
+                    
+                    if (payload.isShortcutInFolder && listOfShortcutsVersionTwo.length > 0) {
+                    const defaultSelection = payload.shortcutToRun;
+                    shortcutsFrontend.value = defaultSelection;
+                }
+
+                    break;
+                case "filteredShortcuts":
+                    console.log("filteredShortcuts -> ")
+                    break;
+                default:
+                    console.log("Unknown case of type: ", payload.sdsEvt);
+
+            }
+
+            if (payload["sds-evt"] === "filteredShortcuts") {
+                console.log("ZYX Payload 1222 -> ", payload)
+            }
         }
 //            console.log("Payload recieved, we've sent to the PI!!!!!");
 
@@ -74,6 +123,8 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
 //        }
 
         console.log('THE EVENTS!, ', evt);
+
+//    console.log(greet('Alice'))
     };
 
 }
@@ -90,8 +141,7 @@ function refreshListOfShortcutsFolders() {
 
     if (shortcutsFolder.length > 1) {
         console.log("___testAlert: ", shortcutsFolder.length);
-    }
-    else {
+    } else {
         folderID = document.getElementById("isFolder");
         folderID.style.display = "none";
         console.log("We should only have 1 id, aka All: ", shortcutsFolder.length);
@@ -108,25 +158,23 @@ function refreshListOfShortcutsFolders() {
             option = genOption(val);
             select.appendChild(option);
         }
-    }
-    else {
+    } else {
         console.log("Already have options, no need to add more!")
     }
 }
 
 function parseJSONSafely(str) {
     try {
-       return JSON5.parse(str);
-    }
-    catch (error) {
+        return JSON5.parse(str);
+    } catch (error) {
 //        Sentry.captureException(error);
-       console.log('This is the error: ', error);
+        console.log('This is the error: ', error);
         debugTextToPass = `⚠️ Error Code: 'Section-Six' \ JSON Failure! \nJSON: ${error}`, error;
         debugText(debugTextToPass, true)
-       // Return a default object, or null based on use case.
-       return {}
+        // Return a default object, or null based on use case.
+        return {}
     }
- }
+}
 
 function requestSettings(requestType, passIntoPayload) {
     if (websocket) {
@@ -155,13 +203,12 @@ const dealWithBug = async () => {
     await delay(500);
 
     if (resentCount < 10) {
-        resentCount ++;
-        if(hasResent === false) {
+        resentCount++;
+        if (hasResent === false) {
             requestSettings('requestSettings');
             console.log("Swift WebSocket is still loading. We've re-requested the settings.");
         }
-    }
-    else {
+    } else {
         // const textArea = document.getElementById('mytextarea');//Shortcut nameofElement
         const PI_Shortcuts = document.getElementById('PI_Shortcuts');//Shortcut nameofElement
         // textArea.value = "⚠️ Error Code: 'Kilo-One' \ Please restart the StreamDeck Software.";
@@ -172,9 +219,9 @@ const dealWithBug = async () => {
         debugText(valToPass, true);
         //Change the status of something to X
     }
-  };
+};
 
-  ///WERAWERAWEA REMOVE
+///WERAWERAWEA REMOVE
 //   dealWithBug();
 
 function updateSettings() {
@@ -245,6 +292,24 @@ function updateSettings() {
     }
 }
 
+function debugSDPI() {
+    let select = document.getElementById("shortcuts_folder_list");
+
+    let lastValue = select.value;
+
+    setInterval(() => {
+        let currentValue = select.value;
+        if (currentValue !== lastValue) {
+            let newVal = select.value
+            console.log('🎉 sdpi debug .value: ', newVal);
+            selectedNewIndex(newVal, 'shortcutFolder', newVal);
+            lastValue = currentValue;
+        }
+    }, 100);
+}
+
+//selectedNewIndex
+
 function findFolder(shortcut) {
 
     if (listOfCuts.includes(shortcut)) {
@@ -295,7 +360,7 @@ function filterMapped(filteredByFolder) {
     var sh_count = 0;
 
     if (filteredByFolder == 'All') {
-    console.log('This is the result! ', mappedDataFromBackend[0])
+        console.log('This is the result! ', mappedDataFromBackend[0])
 
         // for (const [key, value] of Object.entries(mappedDataFromBackend)) {
         //     console.log("00001")
@@ -310,8 +375,7 @@ function filterMapped(filteredByFolder) {
         }
         console.log("🚨filterMapped: All, Total sh_count: ", sh_count);
         console.log("🚨filterMapped: All, Total shortcut Length: ", listOfCuts.length);
-    }
-    else {
+    } else {
         for (var key in mappedDataFromBackend) {
             // console.log(key + " <:> " + mappedDataFromBackend[key]);
             if (filteredByFolder == mappedDataFromBackend[key]) {
@@ -371,8 +435,7 @@ function refreshListOfShortcuts() {
             listOfShortcuts.value = shortcutFromBackend;
             console.log("☀️ SUN 0 if | 🦑 shortcutFromBackend: ", shortcutFromBackend, "listOFCuts Selected: ", listOfShortcuts.value);
             console.log("☀️ SUN 0 if | 🦑 LOC: ", listOfCuts);
-        }
-        else {
+        } else {
             shortcutFromBackend = listOfCuts[0];
             listOfShortcuts.value = shortcutFromBackend;
             console.log("☀️ SUN 1 else | 🦑 shortcutFromBackend: ", shortcutFromBackend, "listOFCuts Selected: ", listOfShortcuts.value, "ListOFShortcuts", listOfShortcuts);
@@ -460,8 +523,7 @@ function debugText(errorText, showDebug) {
         PI_Shortcuts.style.display = "none";
         textArea2.style.display = "block";
         textArea2.value = errorText;
-    }
-    else {
+    } else {
         PI_Shortcuts.style.display = "block";
         textArea2.value = "";
         debugTextParent.style.display = "none";
@@ -504,14 +566,12 @@ function refreshListOfVoices(sayvoice) {
 }
 
 
-
 function checkIfShortcutExists(shortcutToVerify) {
     for (const i of listOfCuts) {
         if (shortcutToVerify == i) {
             console.log('Shortcut founD!')
             //Change Folder/Shortcut group!
-        }
-        else {
+        } else {
             console.log('short not found')
             //Throw an error/Change title to error?
         }
@@ -520,14 +580,46 @@ function checkIfShortcutExists(shortcutToVerify) {
 
 //shortcuts_folder_list
 
-function selectedNewIndex(selected_id, selected_type) {
-    console.log("selectedNewIndex", selected_id);
-    if (selected_type == "shortcutFolder") {
-        console.log("New Shortcut Folder Selected", shortcutsFolder[selected_id]);
-        //Fetch the shortcuts under this folder, then fill the list of shortcuts!
-        // requestSettings('shortcutsOfFolder');
-        filterMapped(shortcutsFolder[selected_id]);
-        //TODO: Send message about ref type 🟥
+//The event types we can send to the Swift back-end.
+const SdsEventSend = {
+    newFolderSelected: "newFolderSelected",
+    newShortcutSelected: "newShortcutSelected",
+    voiceHover: "voiceHover"
+};
+
+
+function sendNewPayload(event, data) {
+
+    let payload = {};
+    payload.type = event; //Enum Type
+    payload.data = data
+    const payloadJson = {
+        "action": actionInfo['action'],
+        "event": "sendToPlugin",
+        "context": uuid,
+        "payload": payload,
+    };
+    websocket.send(JSON.stringify(payloadJson));
+    console.log("📧 Payload: ", payloadJson);
+    console.log("New Shortcut Folder Selected", data);
+
+}
+
+function selectedNewIndex(selected_id, selected_type, selectedNew) {
+    console.log("👏🏼 selectedNewIndex", selected_id);
+    if (selected_type === "shortcutFolder") {
+
+        pay = shortcutsFolder[selected_id]
+        
+        if (selectedNew) {
+            sendNewPayload(SdsEventSend.newFolderSelected, selected_id)
+        } else {
+            sendNewPayload(SdsEventSend.newFolderSelected, pay)
+        }
+
+        console.log("New Shortcut Folder Selected | Sending Payload: ", shortcutsFolder[selected_id]);
+        console.log("New Shortcut Folder Selected | Sending Payload: ", pay, selected_id, selected_type);
+
     }
     //🚨 ReWrite
     else if (selected_type == "shortcut") {
@@ -541,32 +633,33 @@ function selectedNewIndex(selected_id, selected_type) {
         refType = "dropdownRefs";
         // updateSettings();
 
-    }
-    else if (selected_id === -1) {
-    }
-    else if (selected_type == "sayvoice") {
+    } else if (selected_type === "shortcutSelected") {
+        console.log("New Shortcut selected from the dropdown menu! 👀")
+        let data = listOfShortcutsVersionTwo[selected_id]
+        sendNewPayload(SdsEventSend.newShortcutSelected, data)
+    } else if (selected_id === -1) {
+    } else if (selected_type == "sayvoice") {
         saySelect = document.getElementById("sayvoice");
         console.log("XIOP", saySelect.value);
         // saySelect.value = "Siri";
         // saySelect.selectedIndex =
         testGlobalVoice = saySelect.value;
         console.log("The voice is off!");
-    }
-    else {
+    } else {
         console.log("New X X Selected", selected_id);
         //TODO: Send message about ref type 🟥
     }
-    updateSettings();
+//    updateSettings();
 }
 
 function openPage(site) {
     websocket && (websocket.readyState === 1) &&
-        websocket.send(JSON.stringify({
-            event: 'openUrl',
-            payload: {
-                url: 'https://' + site
-            }
-        }))
+    websocket.send(JSON.stringify({
+        event: 'openUrl',
+        payload: {
+            url: 'https://' + site
+        }
+    }))
 }
 
 //   function tooggleAccessibility() {
@@ -655,8 +748,7 @@ function toggleMenu() {
         searchBar.value = "";
         // fillSearchBarList();
         fillCustomList();
-    }
-    else {
+    } else {
         searchMenu.style.display = "none";
     }
 
@@ -685,7 +777,9 @@ function fillSearchBarList() {
     //Refill the list with the new options
     for (var val of listOfCuts) {
         option = genOption(val)
-        option.onclick = function () { testPrint(this.value) };
+        option.onclick = function () {
+            testPrint(this.value)
+        };
         list.appendChild(option);
     }
 }
@@ -697,7 +791,9 @@ function fillCustomList() {
 
     for (var val of listOfCuts) {
         option = genOption(val)
-        option.onclick = function () { testPrint(this.value) };
+        option.onclick = function () {
+            testPrint(this.value)
+        };
         try {
             list.appendChild(option);
         } catch (e) {

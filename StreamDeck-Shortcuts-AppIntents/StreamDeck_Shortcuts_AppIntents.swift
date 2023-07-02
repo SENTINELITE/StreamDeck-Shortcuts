@@ -26,7 +26,7 @@ struct Shortcut: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
 //        SharedData.shared.animateBool()
-        print("V2 Should've toggled the Lobby ")
+        print("V2 perform action")
 //        StreamDeckPlugin.shared.instances.values.forEach {
 //            $0.setTitle(to: "\(str)", target: nil, state: nil)
 //        }

@@ -2,14 +2,11 @@ import Foundation
 import StreamDeck
 import Sentry
 
-
 @main
-class CounterPluginXYZ: PluginDelegate { //Type 'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
-    
+class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
     struct Settings: Codable, Hashable {
         let someKey: String
     }
-    
     // MARK: Manifest
     static var name: String = "V2"
     
@@ -35,7 +32,7 @@ class CounterPluginXYZ: PluginDelegate { //Type 'CounterPluginXYZ' does not conf
     
     static var sdkVersion: Int = 2
     
-    static var codePath: String = CounterPluginXYZ.executableName
+    static var codePath: String = StreamDeckShortcuts.executableName
     
     static var codePathMac: String?
     

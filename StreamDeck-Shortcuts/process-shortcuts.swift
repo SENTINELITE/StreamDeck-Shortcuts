@@ -147,6 +147,8 @@ func shortcutNameToUUID (inputShortcutName: String) -> String {
         print(matchingShortcut.shortcutName)
     }
     
+    NSLog("→ shortcutToRun: \(inputShortcutName) → UUID: \(id)")
+    
     return id
 }
 

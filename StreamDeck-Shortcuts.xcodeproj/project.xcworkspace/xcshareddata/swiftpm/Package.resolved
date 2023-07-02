@@ -1,34 +1,41 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Sentry",
-        "repositoryURL": "https://github.com/getsentry/sentry-cocoa",
-        "state": {
-          "branch": null,
-          "revision": "967f04b3cd6989df3f9ced3060481a21646c146d",
-          "version": "7.9.0"
-        }
-      },
-      {
-        "package": "StreamDeck",
-        "repositoryURL": "https://github.com/emorydunn/StreamDeckPlugin",
-        "state": {
-          "branch": "main",
-          "revision": "6874e2e4269ba592442d8afca54474b53927b915",
-          "version": null
-        }
-      },
-      {
-        "package": "swift-argument-parser",
-        "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
-        "state": {
-          "branch": null,
-          "revision": "6b2aa2748a7881eebb9f84fb10c01293e15b52ca",
-          "version": "0.5.0"
-        }
+  "pins" : [
+    {
+      "identity" : "sentry-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/getsentry/sentry-cocoa",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7cd187e14077985af950532a51b9aee43b1a9f87"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "streamdeckplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/emorydunn/StreamDeckPlugin",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6874e2e4269ba592442d8afca54474b53927b915"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "6b2aa2748a7881eebb9f84fb10c01293e15b52ca",
+        "version" : "0.5.0"
+      }
+    },
+    {
+      "identity" : "swiftclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/TelemetryDeck/SwiftClient",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3f8bd438c8681ce7ccdf035b529cb5c4cd82cd7b"
+      }
+    }
+  ],
+  "version" : 2
 }

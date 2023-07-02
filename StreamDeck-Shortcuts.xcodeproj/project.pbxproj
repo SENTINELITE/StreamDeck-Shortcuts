@@ -77,6 +77,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A130CC582A50FC0000614A99 /* onboarding.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = onboarding.html; sourceTree = "<group>"; };
+		A130CC592A50FEDA00614A99 /* sdpi.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = sdpi.css; sourceTree = "<group>"; };
+		A130CC5A2A50FEFC00614A99 /* main_pi.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = main_pi.js; sourceTree = "<group>"; };
+		A130CC5B2A50FF1E00614A99 /* main_pi_two.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = main_pi_two.html; sourceTree = "<group>"; };
 		A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		A17AD014298EA2990084D3EE /* IncrementAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementAction.swift; sourceTree = "<group>"; };
 		A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shortcuts.swift; sourceTree = "<group>"; };
@@ -86,8 +90,6 @@
 		A17E6C3B299303A700BCFA72 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A17E6C3C299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StreamDeck_Shortcuts_AppIntents.entitlements; sourceTree = "<group>"; };
 		A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
-		A1CFD9202993488B00D2D207 /* ShortcutPI.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = ShortcutPI.html; sourceTree = "<group>"; };
-		A1CFD921299348E400D2D207 /* ShortcutPI.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = ShortcutPI.js; sourceTree = "<group>"; };
 		A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "StreamDeck-Shortcuts"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F29E042753653900AA43C6 /* entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = entry.swift; sourceTree = "<group>"; };
 		A1F29E2D275366AC00AA43C6 /* analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = analytics.swift; sourceTree = "<group>"; };
@@ -96,7 +98,6 @@
 		A1F29E332753670200AA43C6 /* read-write-settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "read-write-settings.swift"; sourceTree = "<group>"; };
 		A1F29E352753670F00AA43C6 /* run-shortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "run-shortcut.swift"; sourceTree = "<group>"; };
 		A1F29E372753679400AA43C6 /* streamdeck-backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "streamdeck-backend.swift"; sourceTree = "<group>"; };
-		A1F29E402754AACC00AA43C6 /* SwiftClient */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwiftClient; path = ../../Packages/SwiftClient; sourceTree = "<group>"; };
 		A1F29E412754B9EA00AA43C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -142,8 +143,10 @@
 		A1CFD91F299347DC00D2D207 /* PropertyInspectorViews */ = {
 			isa = PBXGroup;
 			children = (
-				A1CFD9202993488B00D2D207 /* ShortcutPI.html */,
-				A1CFD921299348E400D2D207 /* ShortcutPI.js */,
+				A130CC582A50FC0000614A99 /* onboarding.html */,
+				A130CC592A50FEDA00614A99 /* sdpi.css */,
+				A130CC5A2A50FEFC00614A99 /* main_pi.js */,
+				A130CC5B2A50FF1E00614A99 /* main_pi_two.html */,
 			);
 			path = PropertyInspectorViews;
 			sourceTree = "<group>";
@@ -172,15 +175,15 @@
 		A1F29E032753653900AA43C6 /* StreamDeck-Shortcuts */ = {
 			isa = PBXGroup;
 			children = (
+				A1F29E042753653900AA43C6 /* entry.swift */,
 				A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */,
 				A1F29E2D275366AC00AA43C6 /* analytics.swift */,
 				A17AD014298EA2990084D3EE /* IncrementAction.swift */,
-				A1F29E042753653900AA43C6 /* entry.swift */,
 				A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */,
 				A1F29E31275366E300AA43C6 /* program-working-data.swift */,
 				A1F29E332753670200AA43C6 /* read-write-settings.swift */,
-				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
+				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
 				A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */,
 				A1F29E372753679400AA43C6 /* streamdeck-backend.swift */,
 				A1F29E412754B9EA00AA43C6 /* Info.plist */,
@@ -191,7 +194,6 @@
 		A1F29E0F2753658600AA43C6 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				A1F29E402754AACC00AA43C6 /* SwiftClient */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -649,8 +651,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				branch = main;
+				kind = branch;
 			};
 		};
 		A1F29E0B2753656E00AA43C6 /* XCRemoteSwiftPackageReference "SwiftClient" */ = {
