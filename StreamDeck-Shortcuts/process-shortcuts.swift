@@ -7,11 +7,17 @@
 
 import Foundation
 import Sentry
+import OSLog
 
 
 ///Fetches all the available Shortcuts & folders. Creates an array of `ShortcutDataTwo`, which contains each Shortcut's name, folder, & UUID
 func processShortcuts() {
-    NSLog("DEBUG: Starting processShortcuts()!")
+    
+    let shortcutsLogger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
+    
+    shortcutsLogger.debug("Starting processShortcuts()!")
+    
+    let startTime = Date()
     
     
     //Refresh working Data.
@@ -40,7 +46,7 @@ func processShortcuts() {
         
         guard let safeOutput = output else {
             //                SentrySDK.capture(message: "Couldn't unwrap optinal string: output from findFolders()... Outputs: \(output)")
-            print(output)
+            NSLog("\(output)")
             return "nil"
         }
         
@@ -56,7 +62,7 @@ func processShortcuts() {
         //Change All to "Unsorted". All should just return all Shortcuts
         shortcutsFolder.insert("Unsorted", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
         shortcutsFolder.insert("All", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
-        NSLog("Shortcuts Folders Fetched: \(shortcutsFolder)")
+        shortcutsLogger.debug("Shortcuts Folders Fetched: \(shortcutsFolder)")
         listOfCuts = listOfAllShortcuts
         
         
@@ -122,8 +128,12 @@ func processShortcuts() {
     fetchFolders()
 //    findDiff()
     
-    print("MappedOut: \(shortcutsMapped)")
-    NSLog("DEBUG: Finished Running processShortcuts()!")
+    let finishedTime = Date()
+    let diff = (finishedTime.timeIntervalSinceNow - startTime.timeIntervalSinceNow)
+    let out = diff.formatted(.number.precision(.fractionLength(3))).description
+    processRunShortcutTime = out
+    shortcutsLogger.debug("Finishied running processShortcuts, in \(out)")
+    shortcutsLogger.debug("Mapped Out: \(shortcutsMapped)")
 }
 
 ///Checks & updates the key's data, based off it's previously saved UUID

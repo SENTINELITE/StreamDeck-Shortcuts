@@ -1,84 +1,75 @@
 <!DOCTYPE html>
-
+<html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf8" />
+    <title>⛄🔥⛄🔥 com.sentinelite.sds Property Inspector V2</title>
+
+    <!-- Import scripts -->
     <script src="https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v2/dist/sdpi-components.js"></script>
+    <script src="https://unpkg.com/json5@~2/dist/index.min.js"></script>
+    <script src="main_pi.js"></script>
+    
+    <!-- Set viewport settings -->
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+
+    <!-- Apple mobile settings -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <title>⛄🔥⛄🔥 com.sentinelite.sds Property Inspector V2</title>
-    <script src="https://unpkg.com/json5@~2/dist/index.min.js"></script>
+
+    <!-- Import styles -->
     <link rel="stylesheet" href="sdpi.css" />
-    <script src="main_pi.js"></script>
 </head>
 
-<html>
 <body>
-    
-<!--    <sdpi-item label="📁 Folder"/>-->
-<!--        <div id="PI_Shortcuts" <div id="isFolder">-->
-<!--            <sdpi-select setting="All" onfocus="debugSDPI();" placeholder="Please choose a color" id="shortcuts_folder_list">-->
-<!--            </sdpi-select>-->
-<!--            </sdpi-item>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    </sdpi-item>-->
-<!---->
-<!--    <sdpi-item>-->
-<!--        <sdpi-button onclick="debugSDPI('feao9ea')">-->
-<!--            Click me-->
-<!--        </sdpi-button>-->
-<!--    </sdpi-item>-->
+    <sdpi-item label="📁 Folder">
+            <div id="isFolder">
+                <sdpi-select  placeholder="Placeholder..." id="shortcuts_folder_list">
+                </sdpi-select>
+            </div>
+    </sdpi-item>
 
     <!-- Old Code -->
-    <div id="PI_Shortcuts">
-            <div class="sdpi-item" id="isFolder">
-               <label class="sdpi-item-label">📁 Folder</label>
-               <select class="sdpi-item-value select" name="shortcuts_folder_list" id="shortcuts_folder_list"
-                  onfocus="refreshListOfShortcutsFolders()"
-                  onchange="selectedNewIndex(this.selectedIndex, 'shortcutFolder');">
-                  <option value="rigatoni">Loading...</option>
-               </select>
+    <sdpi-item label="⚡ Shortcut">
+            <div id="isShortcuts">
+                <sdpi-select placeholder="All shortcuts_list" id="shortcuts_list">
+                    <!-- <sdpi-select onfocus="refreshListOfShortcuts();" placeholder="All shortcuts_list" id="shortcuts_list"> -->
+                </sdpi-select>
             </div>
+    </sdpi-item>
 
-    <div class="sdpi-item" id="isShortcuts">
-        <label class="sdpi-item-label">⚡ Shortcuts</label>
-        <select class="sdpi-item-value select" name="shortcuts_list" id="shortcuts_list" onchange="selectedNewIndex(this.selectedIndex, 'shortcutSelected');">
-            <option value="rigatoni">Loading...</option>
-        </select>
-    </div>
-    <!-- </div> -->
-    <!-- </div> -->
-
-    <!-- <div class="sdpi-item">
-        <div class="sdpi-item-label">Button</div>
-        <button class="sdpi-item-value max20" id="externalWindow">Click Me</button>
-    </div> -->
-    
-<sdpi-item>
+    <sdpi-item>
         <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">
             Discord Support 🚀
         </sdpi-button>
     </sdpi-item>
+    
+    <!-- Debug Text -->
+    <sdpi-item>
+        <p id="initPayloadText">Payload: 1,337ms <br>ProcessShortcuts: 1.337s<br>Payload Size: 0.00 kbs</p>
+    </sdpi-item>
 
-    <!-- <script>
-        var buttonXY = document.getElementById("externalWindow");
-
-        buttonXY.addEventListener("click", function() {
-            // Code to be executed when the button is clicked
-            console.log("Button clicked!");
-            window.open('onboarding.html');
-            // Add your desired functionality here
+<script type="text/javascript">
+        document.querySelector("#shortcuts_folder_list").addEventListener('valuechange', function(ev) {
+            selectedNewIndex(ev.target.value, 'shortcutFolder');
         });
-    </script> -->
+    </script>
+    
+    <script type="text/javascript">
+        document.querySelector("#shortcuts_list").addEventListener('valuechange', function(ev) {
+            selectedNewIndex(ev.target.value, 'shortcutSelected');
+        });
+    </script>
 
+
+
+    <!-- Disabled script
     <script>
         const myCustomInput = document.getElementById('shortcuts_folder_list');
         myCustomInput.addEventListener('change', function() {
-            console.log('🚀 Changed Val')
+            console.log('🚀 Changed Val');
             // Code to execute when the input value changes
         });
-    </script>
+    </script> -->
 </body>
 
 </html>

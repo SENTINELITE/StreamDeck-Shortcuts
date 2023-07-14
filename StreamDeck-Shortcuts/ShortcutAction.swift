@@ -21,7 +21,7 @@ class ShortcutAction: Action {
     struct Settings: Codable, Hashable {
         let shortcutToRun: String
         let updatedInt: Int
-//        let shortcutUUID: String
+        //        let shortcutUUID: String
     }
     
     //    static var settings: Settings = Settings
@@ -135,7 +135,7 @@ class ShortcutAction: Action {
         
         do {
             NSLog("About to run the shortcut...")
-//            let shortcutName - uuidToShortcut(inputUUID: <#T##UUID#>)
+            //            let shortcutName - uuidToShortcut(inputUUID: <#T##UUID#>)
             try shortcutsCLI.run()
             NSLog("Should've ran the shortcut with UUID: \(shortcutToRunUUID) with name: \(shortcutToRun)")
             NSLog("Ran? --- \(shortcutsCLI.arguments)")
@@ -188,20 +188,20 @@ class ShortcutAction: Action {
             executeShortcut()
         case 2:
             NSLog("☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
-
+            
             var components = URLComponents()
             components.scheme = "shortcuts"
             components.host = "open-shortcut"
             components.queryItems = [URLQueryItem(name: "name", value: shortcutToRun)]
-
+            
             guard let encodedURL = components.url else {
                 NSLog("🚨 Bloodhound-Two | Failed to encode shortcut. Not opening & exiting loop. Shortcut: \(shortcutToRun)")
                 return
             }
-
+            
             NSLog("🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)")
             NSWorkspace.shared.open(encodedURL)
-
+            
         case 3:
             if let url = URL(string: "shortcuts://create-shortcut") {
                 NSWorkspace.shared.open(url)
@@ -265,6 +265,7 @@ class ShortcutAction: Action {
     
     //TODO: Get the settings first, loading the previous state & use that to fill the PI!
     func propertyInspectorDidAppear(device: String) {
+        logger.debug("😡 MRVN-Two PI Did Appear")
         getSettings() //
         NSLog("MRVN-Two PI Did Appear")
         NSLog("🤖 MRVN-Five PI Did Appear before sending init payload: \(shortcutToRun)")
@@ -273,17 +274,27 @@ class ShortcutAction: Action {
         
         //        processShortcuts()
         //        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
+        let date = Date.now
+        
+        let formattedDate = date.formatted(.iso8601.year().day().month().dateSeparator(.dash).dateTimeSeparator(.standard).timeSeparator(.colon).timeZoneSeparator(.colon).time(includingFractionalSeconds: true).locale(Locale(identifier: "us_EN")))
         
         let finalPayload: [String: Any] = [
+            "totalShortcuts": newData.count,
+            "totalListOfShortcuts": listOfCuts.count,
+            "totalFolders": shortcutsFolder.count,
+            "processShortcutsSwift": processRunShortcutTime,
+            "sentAt": formattedDate.description,
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
             //            "folders": ["SE", "All", "DEV", "Shortcuts Demo", "StreamDeck Shortcuts"]//shortcutsFolder
             
             "folders": shortcutsFolder //shortcutsFolder
-//            "": listOfCuts
+            //            "": listOfCuts
             //TODO: Add all shortcuts here?
         ]
         
         sendToPropertyInspector(payload: finalPayload)
+        
+        logger.debug("Sent PI Appear payload with size: \(MemoryLayout.size(ofValue: finalPayload))")
         
         //Check for folder here first!
         
@@ -318,47 +329,41 @@ class ShortcutAction: Action {
         for i in payload {
             if i.key == "type" {
                 NSLog("MRVN-Five-One i.key == type, evt: \(i.value)")
-                let evt = i.value
-                switch evt {
-                    
-                case "newShortcutSelected":
-                    NSLog("Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
-                    shortcutToRun = payload["data"] ?? "nil"
-                    NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
-                    shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
-                    
-                    setTitle(to: shortcutToRun)
-                    
-                    //                    struct SettingsX: Codable, Hashable {
-                    //                        let someKey: String
-                    //                    }
-                    
-                    //                    let xy = Settings(shortcutToRun: "shortcutToRun_BravoZero", updatedInt: 3)
-                    //                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
-                    //TODO: Move to updateSettings func, Set settings.
-                    
-                    //                    setSettings(to: xy)
-                    //                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
-                    let customJSON = sdsSettings(shortcut: shortcutToRun)
-                    //                    setSettings(to: ["x":"yz"])
-                    //                    Settings.encode(customJSON)
-                    saveSettingsHelper()
-                    
-                    
-                case SdsEventRecieveType.newShortcutSelected.rawValue:
-                    NSLog("New Shortcut Selected //Raw Event... \(payload["data"])")
-                    //                    print("New Shortcut Selected... ", payload["data"])
-                    
-                    //                case SdsEventRecieveType.re
-                    
-                case "newFolderSelected":
-                    if let folder = payload["data"] {
-                        sendNewFolderAndShortcuts(folder: folder)
-                    } else {
-                        NSLog("newFolderSelected Failed with: \(payload)")
+                if let evt = SdsEventRecieveType(rawValue: i.value) {
+                    switch evt {
+                        
+                    case .newShortcutSelected:
+                        NSLog("Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
+                        shortcutToRun = payload["data"] ?? "nil"
+                        NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
+                        shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
+                        
+                        setTitle(to: shortcutToRun)
+                        
+                        //                    struct SettingsX: Codable, Hashable {
+                        //                        let someKey: String
+                        //                    }
+                        
+                        //                    let xy = Settings(shortcutToRun: "shortcutToRun_BravoZero", updatedInt: 3)
+                        //                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
+                        //TODO: Move to updateSettings func, Set settings.
+                        
+                        //                    setSettings(to: xy)
+                        //                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
+                        let customJSON = sdsSettings(shortcut: shortcutToRun)
+                        //                    setSettings(to: ["x":"yz"])
+                        //                    Settings.encode(customJSON)
+                        saveSettingsHelper()
+                        
+                    case .newFolderSelected:
+                        if let folder = payload["data"] {
+                            sendNewFolderAndShortcuts(folder: folder)
+                        } else {
+                            NSLog("newFolderSelected Failed with: \(payload)")
+                        }
                     }
-                default:
-                    NSLog("This case has defualted with: \(payload)")
+                } else {
+                    NSLog("SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
                 }
                 //Switch on the eventType
             }
@@ -370,13 +375,14 @@ class ShortcutAction: Action {
     
     func sendNewFolderAndShortcuts(folder: String) {
         NSLog("MRVN-Five-Two newFolderSelected")
+        logger.debug("😡 MRVN-Five-Two newFolderSelected")
         //                    if i.key == "data" {
         NSLog("MRVN-Five-Three data")
         let newShortcutsPayload = filterMappedFolder(folderName: folder)
         
-//        if shortcutToRun.isEmpty {
-//            shortcutToRun = newShortcutsPayload.first ?? "nil"
-//        }
+        //        if shortcutToRun.isEmpty {
+        //            shortcutToRun = newShortcutsPayload.first ?? "nil"
+        //        }
         NSLog("🚀 Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
         //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder, "filteredShortcuts": "\(newShortcutsPayload)"]
         

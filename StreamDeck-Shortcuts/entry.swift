@@ -1,6 +1,9 @@
 import Foundation
 import StreamDeck
 import Sentry
+import OSLog
+
+let logger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Main")
 
 @main
 class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
@@ -50,6 +53,7 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
     @Environment(PluginCount.self) var count: Int
     
     required init() {
+        logger.debug("😡 Entry.swift")
         NSLog("Nemesis-One CounterPlugin initiated!")
         count = Int.random(in: 0...100)
         processShortcuts()
