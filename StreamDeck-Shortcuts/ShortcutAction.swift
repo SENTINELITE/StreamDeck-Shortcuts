@@ -215,6 +215,9 @@ class ShortcutAction: Action {
     
     func executeShortcut () {
         if !tmpIsAccess {
+//            Task {
+//                async let shelled = shellTest("\(shortcutToRun)")
+//            }
             vTwoRunShortcut()
         } else {
             NSLog("Horizon-Audio | Soft-releasing shortcutRun, due to accessbility-mode being on.")
@@ -272,7 +275,7 @@ class ShortcutAction: Action {
         
         findFolderFromShortcut() //Send the folder //TODO: Send the init selected folder with the init payload, that way we're already filtering instead of showing All.
         
-        //        processShortcuts()
+                processShortcuts()
         //        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
         let date = Date.now
         
@@ -361,6 +364,8 @@ class ShortcutAction: Action {
                         } else {
                             NSLog("newFolderSelected Failed with: \(payload)")
                         }
+                    case .globalSettingsUpdated:
+                        NSLog("A global setting has changed... Logic not implemented yet.")
                     }
                 } else {
                     NSLog("SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
@@ -469,6 +474,7 @@ extension SdsEventSendType: CustomStringConvertible {
 enum SdsEventRecieveType: String, Codable {
     case newShortcutSelected //A Shortcut has been selected
     case newFolderSelected // A Folder has been selected
+    case globalSettingsUpdated // A Global setting has been changed
 }
 
 

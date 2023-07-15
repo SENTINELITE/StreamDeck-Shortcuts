@@ -4,6 +4,9 @@
 
 //import { greet, message } from './newFile.js';
 
+var RELEASE = '2.0.0';
+var hasResent = false;
+
 let websocket = null,
 uuid = null,
 actionInfo = {};
@@ -17,11 +20,11 @@ filteredFolder: Symbol("filteredFolder")
 listOfCuts = ['Placeholder', '2'];
 var listOfShortcutsVersionTwo = {};
 
-function ClearTempData() {
-    console.log('clearing temp data')
-    listOfCuts.length = 0;
-    listOfShortcutsVersionTwo.length = 0;
-}
+// function ClearTempData() {
+//     console.log('clearing temp data')
+//     listOfCuts.length = 0;
+//     listOfShortcutsVersionTwo.length = 0;
+// }
 
 function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
     uuid = inUUID;
@@ -67,7 +70,7 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     console.log("📦 initialPayload")
                     shortcutsFolder = payload.folders
                     console.log("XYZ: ", shortcutsFolder)
-                    initPayload(sentAt, processShortcutsSwift, payloadSize)
+                    initPayload(sentAt, processShortcutsSwift, payloadSize, totalShortcuts, totalFolders)
                     refreshListOfShortcutsFolders()
                     break;
                 case "filteredFolder": //This needs to get removed
@@ -76,6 +79,7 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     console.log("New X -> ", payload)
                     console.log("New Filted Array -> ", payload.filteredShortcuts)
                     console.log("New SdsEvnt -> ", payload.sdsEvt)
+                    let start = new Date();
                     
                     shortcutsFrontend = document.getElementById("shortcuts_list");
                     shortcutsFrontend.length = 0;
@@ -111,6 +115,9 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                         shortcutsFrontend.value = index;
                     }
                     
+                    let finished = new Date();
+                    let diff = finished - start
+                    console.log(' ⏰ Finsihed Shortcuts Timer: ', diff)
                     break;
                 case "filteredShortcuts":
                     console.log("⏰ ⏰ ⏰ filteredShortcuts -> ")
@@ -164,7 +171,7 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
     
 }
 
-function initPayload(sentAt, swift, payloadSize) {
+function initPayload(sentAt, swift, payloadSize, shortcuts, folders) {
     console.log("👋👋👋🏼sentAT: ", sentAt)
     let beDate = new Date(sentAt + "-00:00");
     let now = new Date();
@@ -174,10 +181,11 @@ function initPayload(sentAt, swift, payloadSize) {
     console.log("Diff: ", diff);
     
     select = document.getElementById("initPayloadText");
-    select.innerHTML = `Payload: ${diff}ms<br>Process Shortcuts: ${swift}s<br>Payload Size ${payloadSize} kb`
+    select.innerHTML = `Payload: ${diff}ms<br>Process Shortcuts: ${swift}s<br>Payload Size ${payloadSize} kb<br>Folders: #${folders}<br>Shortcuts: #${shortcuts}`
 }
 
 function refreshListOfShortcutsFolders() {
+    let start = new Date();
     // debugText("", false);
     
     select = document.getElementById("shortcuts_folder_list");
@@ -219,6 +227,11 @@ function refreshListOfShortcutsFolders() {
         console.log("Already have options, no need to add more!")
     }
     select.value = 0
+    
+    let finished = new Date();
+    let diff = start - finished
+    
+    console.log(' ⏰ Finsihed Folder Timer: ', diff)
     
 }
 

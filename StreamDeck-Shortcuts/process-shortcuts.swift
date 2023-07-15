@@ -25,6 +25,7 @@ func processShortcuts() {
     shortcutsFolder.removeAll()
     shortcutsMapped.removeAll()
     listOfFoldersWithShortcuts.removeAll()
+    newData.removeAll()
 //    shortcutdUUIDRawStringArray.removeAll()
     var shortcutdUUIDRawStringArray = [String]()
     
@@ -133,6 +134,7 @@ func processShortcuts() {
     let out = diff.formatted(.number.precision(.fractionLength(3))).description
     processRunShortcutTime = out
     shortcutsLogger.debug("Finishied running processShortcuts, in \(out)")
+    NSLog("Finishied running processShortcuts, in \(out) - NSLOG")
     shortcutsLogger.debug("Mapped Out: \(shortcutsMapped)")
 }
 
