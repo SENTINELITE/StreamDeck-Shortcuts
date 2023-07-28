@@ -21,6 +21,8 @@ class ShortcutAction: Action {
     struct Settings: Codable, Hashable {
         let shortcutToRun: String
         let updatedInt: Int
+//        var isForcedTitle: Bool = false
+//        var isAccessibility: Bool = false
         //        let shortcutUUID: String
     }
     
@@ -215,9 +217,11 @@ class ShortcutAction: Action {
     
     func executeShortcut () {
         if !tmpIsAccess {
-//            Task {
-//                async let shelled = shellTest("\(shortcutToRun)")
-//            }
+            if isAccessibility {
+                Task {
+                    async let shelled = shellTest("\(shortcutToRun)")
+                }
+            }
             vTwoRunShortcut()
         } else {
             NSLog("Horizon-Audio | Soft-releasing shortcutRun, due to accessbility-mode being on.")
@@ -262,12 +266,15 @@ class ShortcutAction: Action {
         NSLog("🛡️ DomeOfProtection With: \(payload)")
         SDVersion = StreamDeckPlugin.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
         NSLog("Nemesis-Zero-Init with count: \(SDVersion)")
-        
         getSettings()
+        if isForcedTitle {
+            setTitle(to: shortcutToRun)
+        }
     }
     
     //TODO: Get the settings first, loading the previous state & use that to fill the PI!
     func propertyInspectorDidAppear(device: String) {
+        processRunShortcutTime = "0"
         logger.debug("😡 MRVN-Two PI Did Appear")
         getSettings() //
         NSLog("MRVN-Two PI Did Appear")
@@ -275,7 +282,6 @@ class ShortcutAction: Action {
         
         findFolderFromShortcut() //Send the folder //TODO: Send the init selected folder with the init payload, that way we're already filtering instead of showing All.
         
-                processShortcuts()
         //        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
         let date = Date.now
         
@@ -288,9 +294,9 @@ class ShortcutAction: Action {
             "processShortcutsSwift": processRunShortcutTime,
             "sentAt": formattedDate.description,
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
-            //            "folders": ["SE", "All", "DEV", "Shortcuts Demo", "StreamDeck Shortcuts"]//shortcutsFolder
-            
-            "folders": shortcutsFolder //shortcutsFolder
+            "folders": shortcutsFolder,
+            "isForcedTitle": isForcedTitle.description,
+            "isAccessibility": isAccessibility.description,
             //            "": listOfCuts
             //TODO: Add all shortcuts here?
         ]
@@ -303,7 +309,7 @@ class ShortcutAction: Action {
         
         sendNewFolderAndShortcuts(folder: "All")
         NSLog("🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
-        
+        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     
@@ -340,8 +346,7 @@ class ShortcutAction: Action {
                         shortcutToRun = payload["data"] ?? "nil"
                         NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
                         shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
-                        
-                        setTitle(to: shortcutToRun)
+
                         
                         //                    struct SettingsX: Codable, Hashable {
                         //                        let someKey: String
@@ -365,7 +370,12 @@ class ShortcutAction: Action {
                             NSLog("newFolderSelected Failed with: \(payload)")
                         }
                     case .globalSettingsUpdated:
-                        NSLog("A global setting has changed... Logic not implemented yet.")
+//                        struct Settings: Codable, Hashable {
+//                            let someKey: String
+//                            var isForcedTitle: Bool = false
+//                        }
+//                        StreamDeckPlugin.shared.sendEvent(.setGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: <#T##[String : Any]?#>)
+                        NSLog("A global setting has changed... Logic not implemented yet. \(payload)")
                     }
                 } else {
                     NSLog("SentFromSteamDeckApp -> This case has defaulted with: \(payload)")

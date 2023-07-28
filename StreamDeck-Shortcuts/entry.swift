@@ -9,6 +9,7 @@ let logger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Main")
 class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
     struct Settings: Codable, Hashable {
         let someKey: String
+        var isForcedTitle: Bool = false
     }
     // MARK: Manifest
     static var name: String = "V2"
@@ -57,6 +58,11 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
         NSLog("Nemesis-One CounterPlugin initiated!")
         count = Int.random(in: 0...100)
         processShortcuts()
+    }
+    
+    func didReceiveGlobalSettings(_ settings: Settings) {
+        NSLog("Conduit-One: \(settings)")
+        isForcedTitle = settings.isForcedTitle
     }
     
     func willAppear(action: String, context: String, device: String, payload: AppearEvent<Settings>) {

@@ -9,6 +9,8 @@ import Foundation
 
 var newData = [ShortcutDataTwo]()
 var processRunShortcutTime: String = "nil"
+var isForcedTitle = false //TODO: Connect to PI     
+var isAccessibility = false
 
 var savedShortcut = "TheDefaultTradedValue"
 var theValueToTradeVoice = "TheDefaultTradedValueVoice_DevX"
@@ -51,3 +53,10 @@ func checkIfKeyExits(keyToLookFor: String) -> String {
     }
     return keyStatus
 }
+
+
+//streamdeck-backend.swift
+var deviceName = "N/A"
+//
+var devicesX = [String : String]()
+var devices = [String : String]()

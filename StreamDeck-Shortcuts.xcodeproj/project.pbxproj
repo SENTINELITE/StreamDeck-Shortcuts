@@ -37,7 +37,6 @@
 		A1F29E32275366E300AA43C6 /* program-working-data.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E31275366E300AA43C6 /* program-working-data.swift */; };
 		A1F29E342753670200AA43C6 /* read-write-settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E332753670200AA43C6 /* read-write-settings.swift */; };
 		A1F29E362753670F00AA43C6 /* run-shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E352753670F00AA43C6 /* run-shortcut.swift */; };
-		A1F29E382753679400AA43C6 /* streamdeck-backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E372753679400AA43C6 /* streamdeck-backend.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,7 +96,6 @@
 		A1F29E31275366E300AA43C6 /* program-working-data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "program-working-data.swift"; sourceTree = "<group>"; };
 		A1F29E332753670200AA43C6 /* read-write-settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "read-write-settings.swift"; sourceTree = "<group>"; };
 		A1F29E352753670F00AA43C6 /* run-shortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "run-shortcut.swift"; sourceTree = "<group>"; };
-		A1F29E372753679400AA43C6 /* streamdeck-backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "streamdeck-backend.swift"; sourceTree = "<group>"; };
 		A1F29E412754B9EA00AA43C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -185,7 +183,6 @@
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
 				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
 				A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */,
-				A1F29E372753679400AA43C6 /* streamdeck-backend.swift */,
 				A1F29E412754B9EA00AA43C6 /* Info.plist */,
 			);
 			path = "StreamDeck-Shortcuts";
@@ -337,7 +334,6 @@
 				A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */,
 				A1F29E342753670200AA43C6 /* read-write-settings.swift in Sources */,
 				A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */,
-				A1F29E382753679400AA43C6 /* streamdeck-backend.swift in Sources */,
 				A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */,
 				A1F29E052753653900AA43C6 /* entry.swift in Sources */,
 				A1F29E32275366E300AA43C6 /* program-working-data.swift in Sources */,
