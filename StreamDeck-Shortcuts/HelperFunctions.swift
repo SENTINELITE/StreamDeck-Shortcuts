@@ -102,9 +102,28 @@ func preformShortcutRun() {
 
 
 
-struct PluginCount: EnvironmentKey {
-    static let defaultValue: Int = 0
+// Separate keys for different settings
+struct ForcedTitleGlobalKey: EnvironmentKey, GlobalSettingKey {
+    static let defaultValue: Bool = false
 }
+
+struct AccessibilityGlobalKey: EnvironmentKey, GlobalSettingKey {
+    static let defaultValue: Bool = false
+}
+
+extension GlobalSettings {
+    @MainActor
+    var isForcedTitleGlobal: Bool {
+        get { self[ForcedTitleGlobalKey.self] }
+        set { self[ForcedTitleGlobalKey.self] = newValue }
+    }
+    
+    var isAccessibilityGlobal: Bool {
+        get { self[AccessibilityGlobalKey.self] }
+        set { self[AccessibilityGlobalKey.self] = newValue }
+    }
+}
+
 
 
 ///A new Struct for the core back-end data, for version 2.

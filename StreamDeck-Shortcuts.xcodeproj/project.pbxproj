@@ -29,6 +29,8 @@
 		A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */; };
 		A17E6C38299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */; };
 		A17E6C3A299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C39299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift */; };
+		A19863DE2A85B6730081D90F /* ExtraData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19863DD2A85B6730081D90F /* ExtraData.swift */; };
+		A19863E02A85B75F0081D90F /* RunShortcutBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */; };
 		A1CFD91C29932A1C00D2D207 /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */; };
 		A1F29E052753653900AA43C6 /* entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E042753653900AA43C6 /* entry.swift */; };
 		A1F29E0D2753656E00AA43C6 /* TelemetryClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1F29E0C2753656E00AA43C6 /* TelemetryClient */; };
@@ -88,6 +90,8 @@
 		A17E6C39299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDeck_Shortcuts_AppIntents.swift; sourceTree = "<group>"; };
 		A17E6C3B299303A700BCFA72 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A17E6C3C299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StreamDeck_Shortcuts_AppIntents.entitlements; sourceTree = "<group>"; };
+		A19863DD2A85B6730081D90F /* ExtraData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraData.swift; sourceTree = "<group>"; };
+		A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunShortcutBack.swift; sourceTree = "<group>"; };
 		A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
 		A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "StreamDeck-Shortcuts"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F29E042753653900AA43C6 /* entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = entry.swift; sourceTree = "<group>"; };
@@ -178,9 +182,11 @@
 				A1F29E2D275366AC00AA43C6 /* analytics.swift */,
 				A17AD014298EA2990084D3EE /* IncrementAction.swift */,
 				A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */,
+				A19863DD2A85B6730081D90F /* ExtraData.swift */,
 				A1F29E31275366E300AA43C6 /* program-working-data.swift */,
 				A1F29E332753670200AA43C6 /* read-write-settings.swift */,
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
+				A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */,
 				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
 				A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */,
 				A1F29E412754B9EA00AA43C6 /* Info.plist */,
@@ -332,6 +338,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */,
+				A19863DE2A85B6730081D90F /* ExtraData.swift in Sources */,
+				A19863E02A85B75F0081D90F /* RunShortcutBack.swift in Sources */,
 				A1F29E342753670200AA43C6 /* read-write-settings.swift in Sources */,
 				A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */,
 				A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */,
@@ -639,7 +647,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/emorydunn/StreamDeckPlugin";
 			requirement = {
-				branch = main;
+				branch = GlobalSettings;
 				kind = branch;
 			};
 		};

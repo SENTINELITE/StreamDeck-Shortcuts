@@ -9,8 +9,7 @@ import Foundation
 
 var newData = [ShortcutDataTwo]()
 var processRunShortcutTime: String = "nil"
-var isForcedTitle = false //TODO: Connect to PI     
-var isAccessibility = false
+var isCurrentlyProcessingShortcuts = false
 
 var savedShortcut = "TheDefaultTradedValue"
 var theValueToTradeVoice = "TheDefaultTradedValueVoice_DevX"

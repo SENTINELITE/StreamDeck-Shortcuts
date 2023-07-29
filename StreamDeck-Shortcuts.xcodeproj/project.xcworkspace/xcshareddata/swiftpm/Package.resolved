@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/emorydunn/StreamDeckPlugin",
       "state" : {
-        "branch" : "main",
-        "revision" : "6874e2e4269ba592442d8afca54474b53927b915"
+        "branch" : "GlobalSettings",
+        "revision" : "5bfdf36d70dbbf8c8be1309a4d675786ed2130e8"
       }
     },
     {
