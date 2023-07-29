@@ -22,10 +22,15 @@ func processShortcuts() {
     
     //Refresh working Data.
     listOfCuts.removeAll()
+    shortcutsLogger.debug("Reset listOfCuts")
     shortcutsFolder.removeAll()
+    shortcutsLogger.debug("Reset shortcutsFolder")
     shortcutsMapped.removeAll()
+    shortcutsLogger.debug("Reset shortcutsMapped")
     listOfFoldersWithShortcuts.removeAll()
+    shortcutsLogger.debug("Reset listOfFoldersWithShortcuts")
     newData.removeAll()
+    shortcutsLogger.debug("Reset newData")
 //    shortcutdUUIDRawStringArray.removeAll()
     var shortcutdUUIDRawStringArray = [String]()
     
@@ -33,6 +38,7 @@ func processShortcuts() {
     
     //MARK: Func that handles the CLI
     func shortcutsCLIProcessor(args: [String]) -> String {
+        shortcutsLogger.debug("Running CLI with: \(args)")
         let shortcutsCLI = Process()
         let pipe = Pipe()
         shortcutsCLI.standardOutput = pipe
@@ -48,11 +54,13 @@ func processShortcuts() {
         guard let safeOutput = output else {
             //                SentrySDK.capture(message: "Couldn't unwrap optinal string: output from findFolders()... Outputs: \(output)")
             NSLog("\(output)")
+            shortcutsLogger.debug("CLI safeOutPut")
             return "nil"
         }
         
         shortcutsCLI.waitUntilExit()
         //    NSLog("Finshed running With:  \(shortcutsCLI.arguments)")
+        shortcutsLogger.debug("Safely Exiting CLI...")
         return safeOutput
     }
     
@@ -132,7 +140,7 @@ func processShortcuts() {
     let finishedTime = Date()
     let diff = (finishedTime.timeIntervalSinceNow - startTime.timeIntervalSinceNow)
     let out = diff.formatted(.number.precision(.fractionLength(3))).description
-    processRunShortcutTime = out
+    processRunShortcutTime = "Last Run: " + out
     shortcutsLogger.debug("Finishied running processShortcuts, in \(out)")
     NSLog("Finishied running processShortcuts, in \(out) - NSLOG")
     shortcutsLogger.debug("Mapped Out: \(shortcutsMapped)")

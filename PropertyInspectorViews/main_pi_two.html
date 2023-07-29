@@ -36,6 +36,14 @@
                 </sdpi-select>
             </div>
     </sdpi-item>
+    
+    <sdpi-item label="Display Title">
+        <sdpi-checkbox id="display_title_toggle" setting="is_okay" label=""></sdpi-checkbox>
+    </sdpi-item>
+    
+    <sdpi-item label="Accessibility">
+        <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
+    </sdpi-item>
 
     <sdpi-item>
         <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">
@@ -47,29 +55,6 @@
     <sdpi-item>
         <p id="initPayloadText">Payload: 1,337ms <br>ProcessShortcuts: 1.337s<br>Payload Size: 0.00 kbs<br>Folders: #0<br>Shortcuts: #0</p>
     </sdpi-item>
-
-<script type="text/javascript">
-        document.querySelector("#shortcuts_folder_list").addEventListener('valuechange', function(ev) {
-            selectedNewIndex(ev.target.value, 'shortcutFolder');
-        });
-    </script>
-    
-    <script type="text/javascript">
-        document.querySelector("#shortcuts_list").addEventListener('valuechange', function(ev) {
-            selectedNewIndex(ev.target.value, 'shortcutSelected');
-        });
-    </script>
-
-
-
-    <!-- Disabled script
-    <script>
-        const myCustomInput = document.getElementById('shortcuts_folder_list');
-        myCustomInput.addEventListener('change', function() {
-            console.log('🚀 Changed Val');
-            // Code to execute when the input value changes
-        });
-    </script> -->
 </body>
 
 </html>

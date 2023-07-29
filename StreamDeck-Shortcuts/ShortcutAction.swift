@@ -9,20 +9,17 @@ import Foundation
 import StreamDeck
 import AppKit
 
-var shortcutToRun = ""
-var shortcutToRunUUID = ""
-
 class ShortcutAction: Action {
     static var controllers: [StreamDeck.ControllerType] = [.keypad]
     
     static var encoder: StreamDeck.RotaryEncoder?
     
-    
     struct Settings: Codable, Hashable {
         let shortcutToRun: String
-        let updatedInt: Int
-//        var isForcedTitle: Bool = false
-//        var isAccessibility: Bool = false
+        let isPerKeyForcedTextfield: Bool
+        let isPerKeyAccessibility: Bool
+        //        var isForcedTitle: Bool = false
+        //        var isAccessibility: Bool = false
         //        let shortcutUUID: String
     }
     
@@ -58,10 +55,16 @@ class ShortcutAction: Action {
     var pressCount = 0
     var hold = false
     var currentTask: Task<Void, Never>?
-    var tmpIsAccess = false
     var tmpAccessHoldTime = 3.3
     var startedHoldingAt = 0.0
     var sdKeyDownBuffer = 0.5 //Time between taps, for double & triple clicking. TODO: We need to make this adjustable & toggelable. Some people may not want any delay for these features.
+    
+    var isForcedTitle = true //TODO: Connect to PI
+    var isAccessibility = false //TODO: Remove this global var!
+    var shortcutToRun = ""
+    //let isPerKeyForcedTextfield: Bool = false
+    //let isPerKeyAccessibility: Bool = false
+    var shortcutToRunUUID = ""
     
     func reset() {
         pressCount = 0
@@ -79,31 +82,15 @@ class ShortcutAction: Action {
     func keyDown(device: String, payload: KeyEvent<Settings>) {
         NSLog("Pressed keyDown...")
         getSettings()
+        //        StreamDeckPlugin.shared getGlobalSettings()
+        //        StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)
         
-        if tmpIsAccess {
-            startedHoldingAt = Date.now.timeIntervalSince1970 // Store the current Unix timestamp
-        } else {
-            NSLog("👀 Press count \(pressCount)")
-            clicked()
-        }
-        
-        
-    }
-    
-    func keyUp(device: String, payload: KeyEvent<Settings>) {
-        if tmpIsAccess {
-            let releasedAt = Date.now.timeIntervalSince1970 // Store the current Unix timestamp
-            let timeDifference = releasedAt - startedHoldingAt
-            
-            if timeDifference > tmpAccessHoldTime {
-                //RunShortcut //TODO: Merge with other finishTask logic changes.
-                NSLog("Horizon-Audio | WIP... Should Run Shortcut Here")
-            } else {
-                NSLog("Horizon-Audio | Accessibility Shortcut failed to execute due to the user letting go early")
-            }
-        }
-        
-        
+        //        if payload.settings.isPerKeyAccessibility {
+        startedHoldingAt = Date.now.timeIntervalSince1970 // Store the current Unix timestamp
+        //        } else {
+        //            NSLog("👀 Press count \(pressCount)")
+        clicked(settings: payload.settings)
+        //        }
     }
     
     func vTwoRunShortcut() {
@@ -150,7 +137,7 @@ class ShortcutAction: Action {
         NSLog("mapped Shortcuts: \(shortcutsMapped)")
     }
     
-    func clicked() {
+    func clicked(settings: ShortcutAction.Settings) {
         NSLog("clicked()...")
         pressCount += 1 // Increment pressCount
         
@@ -167,7 +154,7 @@ class ShortcutAction: Action {
                     try await sleep(for: sdKeyDownBuffer)
                     NSLog("Task.sleep done | Wrapping Thread Up...")
                     //                    print("pressCount count: \(self.pressCount)")
-                    finishTask()
+                    finishTask(settings: settings)
                     
                 } onCancel: {
                     NSLog("Task.canceled |")
@@ -182,12 +169,12 @@ class ShortcutAction: Action {
     }
     
     //TODO: Move inner switch logic to individual functions.
-    func finishTask () {
+    func finishTask (settings: ShortcutAction.Settings) {
         NSLog("☃️ Total times clicked: \(pressCount)")
         
         switch pressCount {
         case 1:
-            executeShortcut()
+            executeShortcut(settings: settings)
         case 2:
             NSLog("☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
             
@@ -210,22 +197,22 @@ class ShortcutAction: Action {
             }
         default:
             NSLog("Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways...")
-            executeShortcut()
+            executeShortcut(settings: settings)
         }
         pressCount = 0
     }
     
-    func executeShortcut () {
-        if !tmpIsAccess {
-            if isAccessibility {
-                Task {
-                    async let shelled = shellTest("\(shortcutToRun)")
-                }
+    func executeShortcut (settings: ShortcutAction.Settings) {
+        //        if !tmpIsAccess {
+        if settings.isPerKeyAccessibility {
+            Task {
+                async let shelled = shellTest("\(settings.shortcutToRun)")
             }
-            vTwoRunShortcut()
-        } else {
-            NSLog("Horizon-Audio | Soft-releasing shortcutRun, due to accessbility-mode being on.")
         }
+        vTwoRunShortcut()
+        //        } else {
+        //            NSLog("Horizon-Audio | Soft-releasing shortcutRun, due to accessbility-mode being on.")
+        //        }
     }
     
     
@@ -257,24 +244,19 @@ class ShortcutAction: Action {
         setImage(to: image)
     }
     
-    func updateText() { //contextStr: String
-        let int = Int.random(in: 0...1337)
-        setTitle(to: int.description)
-    }
-    
     func willAppear(device: String, payload: AppearEvent<Settings>) {
         NSLog("🛡️ DomeOfProtection With: \(payload)")
         SDVersion = StreamDeckPlugin.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
         NSLog("Nemesis-Zero-Init with count: \(SDVersion)")
         getSettings()
-        if isForcedTitle {
-            setTitle(to: shortcutToRun)
+        if payload.settings.isPerKeyForcedTextfield {
+            setTitle(to: payload.settings.shortcutToRun)
         }
     }
     
     //TODO: Get the settings first, loading the previous state & use that to fill the PI!
     func propertyInspectorDidAppear(device: String) {
-        processRunShortcutTime = "0"
+        //        processRunShortcutTime = "0"
         logger.debug("😡 MRVN-Two PI Did Appear")
         getSettings() //
         NSLog("MRVN-Two PI Did Appear")
@@ -295,35 +277,43 @@ class ShortcutAction: Action {
             "sentAt": formattedDate.description,
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
             "folders": shortcutsFolder,
-            "isForcedTitle": isForcedTitle.description,
-            "isAccessibility": isAccessibility.description,
+            "isForcedTitle": isForcedTitle,
+            "isAccessibility": isAccessibility,
             //            "": listOfCuts
             //TODO: Add all shortcuts here?
         ]
         
         sendToPropertyInspector(payload: finalPayload)
         
-        logger.debug("Sent PI Appear payload with size: \(MemoryLayout.size(ofValue: finalPayload))")
+        logger.debug("Sending PI Appear, 📦 Initial Payload Size: \(MemoryLayout.size(ofValue: finalPayload))")
         
         //Check for folder here first!
         
         sendNewFolderAndShortcuts(folder: "All")
         NSLog("🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
-        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
+        //        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     
     
     func propertyInspectorDidDisappear(device: String) {
         saveSettingsHelper()
-        getSettings() // Retrieve the saved settings
+        getSettings() // Retrieve the saved settings | TODO: Do We really need this anymore?
     }
     
     ///A Generalized helper function to save settings.
     func saveSettingsHelper() {
-        let xy = Settings(shortcutToRun: shortcutToRun, updatedInt: Int.random(in: 0...100))
+        let xy = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility)
+        //        setSettings(to: xy)
+        setSettings(to: xy)
         NSLog("Gibby One | New Settings saved, with: \(xy)")
-        setSettings(to: xy) // Save the updated settings
+        
+        if isForcedTitle {
+            setTitle(to: shortcutToRun)
+        } else {
+            setTitle(to: "")
+        }
+        //        setSettings(to: xy) // Save the updated settings
     }
     
 #warning("Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅")
@@ -346,7 +336,7 @@ class ShortcutAction: Action {
                         shortcutToRun = payload["data"] ?? "nil"
                         NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
                         shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
-
+                        
                         
                         //                    struct SettingsX: Codable, Hashable {
                         //                        let someKey: String
@@ -370,12 +360,36 @@ class ShortcutAction: Action {
                             NSLog("newFolderSelected Failed with: \(payload)")
                         }
                     case .globalSettingsUpdated:
-//                        struct Settings: Codable, Hashable {
-//                            let someKey: String
-//                            var isForcedTitle: Bool = false
-//                        }
-//                        StreamDeckPlugin.shared.sendEvent(.setGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: <#T##[String : Any]?#>)
-                        NSLog("A global setting has changed... Logic not implemented yet. \(payload)")
+                        
+                        if let jsonDataString = payload["data"] {
+                            NSLog("🌐 global setting has changed... title: \(jsonDataString) ")
+                            // Step 2: Convert the "data" field back to a Swift data
+                            if let jsonData = jsonDataString.data(using: .utf8) {
+                                // Step 3: Use JSONDecoder to decode the JSON data into GlobalSettingsUpdated struct
+                                do {
+                                    let decoder = JSONDecoder()
+                                    let settings = try decoder.decode(GlobalSettingsUpdated.self, from: jsonData)
+                                    
+                                    // Now you have the decoded settings as an instance of GlobalSettingsUpdated
+                                    NSLog("🌐 isForcedTitle... title: \(settings.isForcedTitle) ")
+                                    NSLog("🌐 isAccess... title: \(settings.isAcces) ")
+                                    isForcedTitle = settings.isForcedTitle
+                                    isAccessibility = settings.isAcces
+                                    let perKeySettings = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: settings.isForcedTitle, isPerKeyAccessibility: settings.isAcces)
+                                    saveSettingsHelper()
+                                    //                                    StreamDeckPlugin.shared.sendEvent(.setGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)
+                                    //                                    StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)`
+                                } catch {
+                                    NSLog("🌐 Error: \(error) \(#file) \(#line) ")
+                                }
+                            } else {
+                                NSLog("🌐 Failed to load payload \(#file) \(#line) ")
+                            }
+                        }
+                        
+                        //                        StreamDeckPlugin.shared.sendEvent(.setGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: <#T##[String : Any]?#>)
+                        //                        StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: nil)
+                        //                        NSLog("A global setting has changed... Logic not implemented yet. \(payload)")
                     }
                 } else {
                     NSLog("SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
@@ -435,10 +449,20 @@ class ShortcutAction: Action {
     
     func didReceiveSettings(device: String, payload: SettingsEvent<Settings>.Payload) {
         NSLog("MRVN-Four didReceiveSettings \(payload.settings)")
+        
         shortcutToRun = payload.settings.shortcutToRun
+        isAccessibility = payload.settings.isPerKeyAccessibility
+        isForcedTitle = payload.settings.isPerKeyForcedTextfield
         
     }
     
+    func findFolderFromShortcut() {
+        let matchingShortcut = newData.first { $0.shortcutName == shortcutToRun }
+        if let folderName = matchingShortcut?.shortcutFolder {
+            let filteredShortcuts = filterMappedFolder(folderName: folderName)
+            // Use the filteredShortcuts as needed
+        }
+    }
 }
 
 
@@ -452,13 +476,6 @@ func filterMappedFolder(folderName: String) -> [String] {
     }
 }
 
-func findFolderFromShortcut() {
-    let matchingShortcut = newData.first { $0.shortcutName == shortcutToRun }
-    if let folderName = matchingShortcut?.shortcutFolder {
-        let filteredShortcuts = filterMappedFolder(folderName: folderName)
-        // Use the filteredShortcuts as needed
-    }
-}
 
 
 
@@ -490,4 +507,9 @@ enum SdsEventRecieveType: String, Codable {
 
 struct sdsSettings: Codable {
     var shortcut: String
+}
+
+struct GlobalSettingsUpdated: Codable {
+    let isForcedTitle: Bool
+    let isAcces: Bool
 }

@@ -20,12 +20,6 @@ filteredFolder: Symbol("filteredFolder")
 listOfCuts = ['Placeholder', '2'];
 var listOfShortcutsVersionTwo = {};
 
-// function ClearTempData() {
-//     console.log('clearing temp data')
-//     listOfCuts.length = 0;
-//     listOfShortcutsVersionTwo.length = 0;
-// }
-
 function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
     uuid = inUUID;
     
@@ -60,6 +54,8 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     var totalListOfShortcuts = payload.totalListOfShortcuts
                     var totalFolders = payload.totalFolders
                     var processShortcutsSwift = payload.processShortcutsSwift
+                    var isForcedTitle = payload.isForcedTitle
+                    var isAccessibility = payload.isAccessibility
                     
                     let payloadSize = logSizeInKilobytes('initPayload', payload)
                     console.log("📦🚀 payload Size", payloadSize)
@@ -72,6 +68,7 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     console.log("XYZ: ", shortcutsFolder)
                     initPayload(sentAt, processShortcutsSwift, payloadSize, totalShortcuts, totalFolders)
                     refreshListOfShortcutsFolders()
+                    setToggleStateNew(isForcedTitle, isAccessibility)
                     break;
                 case "filteredFolder": //This needs to get removed
                     console.log("📦 filteredFolder")
@@ -131,45 +128,33 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                 console.log("ZYX Payload 1222 -> ", payload)
             }
         }
-        //            console.log("Payload recieved, we've sent to the PI!!!!!");
-        
-        //            if (payload.error) {
-        //                Sentry.captureException(payload.error);
-        //                // printToConsole('Error: ' + payload.error);
-        //                return;
-        //            }
-        //
-        //            // const errorText2 = document.getElementById('errorPatch');
-        //            // errorText2.value = "Looking for error...";
-        //            debugText(`Looking for error...`, true);
-        //
-        //            console.log("Payload: ", payload);
-        //
-        //            usersSelectedShortcut = payload.shortcutName;
-        //
-        //            const el = document.querySelector('.sdpi-wrapper');
-        //
-        //            // mappedDataFromBackend = outNewTest;
-        //
-        //            refreshListOfShortcutsFolders();
-        //
-        //            if (usersSelectedShortcut.value == "undefined") {
-        //                shortcutName.value = "";
-        //                shortcut_list.value = "";
-        //            }
-        //            else {
-        //                // shortcut_list.value = shortcutName.value;
-        //            }
-        //
-        //            // el && el.classList.remove('hidden');
-        //        }
-        
         console.log('THE EVENTS!, ', evt);
-        
-        //    console.log(greet('Alice'))
     };
-    
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const shortcutsFolderList = document.querySelector("#shortcuts_folder_list");
+    const shortcutsList = document.querySelector("#shortcuts_list");
+    const displayTitleToggle = document.querySelector("#display_title_toggle");
+    const accessToggle = document.querySelector("#accessibility_toggle"); // Assuming "toggle" is the correct ID
+
+    shortcutsFolderList.addEventListener('valuechange', function(ev) {
+        selectedNewIndex(ev.target.value, 'shortcutFolder');
+    });
+
+    shortcutsList.addEventListener('valuechange', function(ev) {
+        selectedNewIndex(ev.target.value, 'shortcutSelected');
+    });
+
+    displayTitleToggle.addEventListener('valuechange', function(ev) {
+        toggleSetting(ev.target.value);
+    });
+    
+    accessToggle.addEventListener('valuechange', function(ev) {
+        toggleSetting(ev.target.value);
+    });
+});
+
 
 function initPayload(sentAt, swift, payloadSize, shortcuts, folders) {
     console.log("👋👋👋🏼sentAT: ", sentAt)
@@ -182,6 +167,31 @@ function initPayload(sentAt, swift, payloadSize, shortcuts, folders) {
     
     select = document.getElementById("initPayloadText");
     select.innerHTML = `Payload: ${diff}ms<br>Process Shortcuts: ${swift}s<br>Payload Size ${payloadSize} kb<br>Folders: #${folders}<br>Shortcuts: #${shortcuts}`
+}
+
+function toggleSetting(v) {
+    const displayToggle = document.getElementById("display_title_toggle"); // Assuming "toggle" is the correct ID
+    const accessToggle = document.getElementById("accessibility_toggle"); // Assuming "toggle" is the correct ID
+    console.log('🚨 Toggled Settings', v)
+    
+    const payloadToSend = {
+        isForcedTitle: displayToggle.value,
+        isAcces: accessToggle.value
+    };
+    
+    const jsonStringPayload = JSON.stringify(payloadToSend);
+    //Ideally we're doing payloadToSend.isForcedTitle = displayToggle.value.toString()
+    
+    sendNewPayload(SdsEventSend.globalSettingsUpdated, jsonStringPayload)
+}
+
+function setToggleStateNew(isForcedTitle, isAccessbility) {
+    console.log('🚀 👋🏼Setting State', isForcedTitle, isAccessbility)
+    
+    const displayToggle = document.getElementById("display_title_toggle"); // Assuming "toggle" is the correct ID
+    const accessToggle = document.getElementById("accessibility_toggle"); // Assuming "toggle" is the correct ID
+    displayToggle.value = isForcedTitle
+    accessToggle.value = isAccessbility
 }
 
 function refreshListOfShortcutsFolders() {
@@ -502,6 +512,7 @@ function checkIfShortcutExists(shortcutToVerify) {
 const SdsEventSend = {
 newFolderSelected: "newFolderSelected",
 newShortcutSelected: "newShortcutSelected",
+globalSettingsUpdated: "globalSettingsUpdated",
 voiceHover: "voiceHover"
 };
 
