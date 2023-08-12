@@ -13,63 +13,13 @@ import OSLog
 ///Fetches all the available Shortcuts & folders. Creates an array of `ShortcutDataTwo`, which contains each Shortcut's name, folder, & UUID
 func processShortcuts() {
     
-<<<<<<< HEAD
     if !isCurrentlyProcessingShortcuts {
-=======
-    let shortcutsLogger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
-    
-    shortcutsLogger.debug("Starting processShortcuts()!")
-    
-    let startTime = Date()
-    
-    
-    //Refresh working Data.
-    listOfCuts.removeAll()
-    shortcutsFolder.removeAll()
-    shortcutsMapped.removeAll()
-    listOfFoldersWithShortcuts.removeAll()
-    newData.removeAll()
-//    shortcutdUUIDRawStringArray.removeAll()
-    var shortcutdUUIDRawStringArray = [String]()
-    
-    var listOfAllShortcuts = [String]()
-    
-    //MARK: Func that handles the CLI
-    func shortcutsCLIProcessor(args: [String]) -> String {
-        let shortcutsCLI = Process()
-        let pipe = Pipe()
-        shortcutsCLI.standardOutput = pipe
-        shortcutsCLI.standardError = pipe
->>>>>>> 9a9a4cdcea6f68536f329dbb9bb4909ebaad4c3c
         
         let shortcutsLogger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
         
         shortcutsLogger.debug("Starting processShortcuts()!")
         
-<<<<<<< HEAD
         let startTime = Date()
-=======
-        guard let safeOutput = output else {
-            //                SentrySDK.capture(message: "Couldn't unwrap optinal string: output from findFolders()... Outputs: \(output)")
-            NSLog("\(output)")
-            return "nil"
-        }
-        
-        shortcutsCLI.waitUntilExit()
-        //    NSLog("Finshed running With:  \(shortcutsCLI.arguments)")
-        return safeOutput
-    }
-    
-    func fetchFolders() {
-        let listOfFolders = shortcutsCLIProcessor(args: ["list", "--folders"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
-        shortcutsFolder = listOfFolders
-        
-        //Change All to "Unsorted". All should just return all Shortcuts
-        shortcutsFolder.insert("Unsorted", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
-        shortcutsFolder.insert("All", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
-        shortcutsLogger.debug("Shortcuts Folders Fetched: \(shortcutsFolder)")
-        listOfCuts = listOfAllShortcuts
->>>>>>> 9a9a4cdcea6f68536f329dbb9bb4909ebaad4c3c
         
         
         //Refresh working Data.
@@ -197,40 +147,6 @@ func processShortcuts() {
         NSLog("Finishied running processShortcuts, in \(out) - NSLOG")
         shortcutsLogger.debug("Mapped Out: \(shortcutsMapped)")
     }
-<<<<<<< HEAD
-=======
-//
-//    func findDiff() {
-//        var shortcutsWithFolders = [String]() //Make a temp array to compare shortcuts that have folders with all shortcuts.
-//        for key in shortcutsMapped {
-//            shortcutsWithFolders.append(key.key)
-//        }
-//        let listOfAllShortcutsSet = Set(listOfAllShortcuts)
-//        let shortcutsWithFoldersSet = Set(shortcutsWithFolders)
-//        let diff2 = listOfAllShortcutsSet.symmetricDifference(shortcutsWithFoldersSet)
-//        print("XSET: \(shortcutsWithFolders.count)")
-//        print("OGSet: \(listOfAllShortcuts.count)")
-//        print("OGSet: \(diff2.count)")
-//        print("Shortcuts without a folder:", diff2)
-//
-//        for i in diff2 { //if the key's folder is nil, set it tall "all"
-//            shortcutsMapped.updateValue("All", forKey: String(i))
-//        }
-//        print(shortcutsMapped.count)
-//    }
-    
-    fetchShortcuts()
-    fetchFolders()
-//    findDiff()
-    
-    let finishedTime = Date()
-    let diff = (finishedTime.timeIntervalSinceNow - startTime.timeIntervalSinceNow)
-    let out = diff.formatted(.number.precision(.fractionLength(3))).description
-    processRunShortcutTime = out
-    shortcutsLogger.debug("Finishied running processShortcuts, in \(out)")
-    NSLog("Finishied running processShortcuts, in \(out) - NSLOG")
-    shortcutsLogger.debug("Mapped Out: \(shortcutsMapped)")
->>>>>>> 9a9a4cdcea6f68536f329dbb9bb4909ebaad4c3c
 }
 
 ///Checks & updates the key's data, based off it's previously saved UUID
