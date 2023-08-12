@@ -25,6 +25,7 @@
 		A12299262A18348000E2223F /* StreamDeck in Frameworks */ = {isa = PBXBuildFile; productRef = A12299252A18348000E2223F /* StreamDeck */; };
 		A129DE53278EB2A60024DAE6 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = A129DE52278EB2A60024DAE6 /* Sentry */; };
 		A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */; };
+		A162C82A2A86D31C007E13AE /* sdsGlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */; };
 		A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AD014298EA2990084D3EE /* IncrementAction.swift */; };
 		A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */; };
 		A17E6C38299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */; };
@@ -83,6 +84,7 @@
 		A130CC5A2A50FEFC00614A99 /* main_pi.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = main_pi.js; sourceTree = "<group>"; };
 		A130CC5B2A50FF1E00614A99 /* main_pi_two.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = main_pi_two.html; sourceTree = "<group>"; };
 		A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
+		A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sdsGlobalSettings.swift; sourceTree = "<group>"; };
 		A17AD014298EA2990084D3EE /* IncrementAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementAction.swift; sourceTree = "<group>"; };
 		A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shortcuts.swift; sourceTree = "<group>"; };
 		A17E6C35299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = "StreamDeck-Shortcuts-AppIntents.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +186,7 @@
 				A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */,
 				A19863DD2A85B6730081D90F /* ExtraData.swift */,
 				A1F29E31275366E300AA43C6 /* program-working-data.swift */,
+				A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */,
 				A1F29E332753670200AA43C6 /* read-write-settings.swift */,
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
 				A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */,
@@ -346,6 +349,7 @@
 				A1F29E052753653900AA43C6 /* entry.swift in Sources */,
 				A1F29E32275366E300AA43C6 /* program-working-data.swift in Sources */,
 				A1CFD91C29932A1C00D2D207 /* ShortcutAction.swift in Sources */,
+				A162C82A2A86D31C007E13AE /* sdsGlobalSettings.swift in Sources */,
 				A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */,
 				A1F29E30275366C500AA43C6 /* process-shortcuts.swift in Sources */,
 				A1F29E362753670F00AA43C6 /* run-shortcut.swift in Sources */,

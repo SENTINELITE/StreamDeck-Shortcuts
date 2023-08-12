@@ -155,7 +155,7 @@ func uuidToShortcut(inputUUID: UUID) -> String {
     
     guard let matchingShortcut = newData.first(where: {
         if let uuid = $0.shortcutUUID {
-            NSLog("ShortcutName\t\($0.shortcutName)\tId\t\(uuid)")
+//            NSLog("ShortcutName\t\($0.shortcutName)\tId\t\(uuid)")
             return uuid == inputUUID
         }
         return false

@@ -37,13 +37,30 @@
             </div>
     </sdpi-item>
     
-    <sdpi-item label="Display Title">
-        <sdpi-checkbox id="display_title_toggle" setting="is_okay" label=""></sdpi-checkbox>
+    <!-- <sdpi-item label="Display Title">
+        <sdpi-checkbox id="display_title_toggle" setting="is_okay" label="D1"></sdpi-checkbox>
+    </sdpi-item> -->
+    
+<sdpi-item label="Display Title" title="Apply the Shortcut's name to all Shortcut Keys">
+        <div style="display: flex;">
+            <sdpi-checkbox id="display_title_toggle_local" setting="local_setting" label="Local" title="Apply the Shortcut's name only to this specific Key"></sdpi-checkbox>
+            <span style="width: 20px;"></span> <!-- This provides a space in between -->
+            <sdpi-checkbox id="display_title_toggle_global" setting="global_setting" label="Global" title="Apply the Shortcut's name to all existing and future Shortcut Keys"></sdpi-checkbox>
+        </div>
     </sdpi-item>
     
-    <sdpi-item label="Accessibility">
-        <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
+    <sdpi-item label="Accessibility" title="Adjust accessibility settings for all Shortcut Keys">
+        <div style="display: flex;">
+            <sdpi-checkbox id="accessibility_toggle_local" setting="local_setting" label="Local" title="Adjust accessibility settings only for this specific Key"></sdpi-checkbox>
+            <span style="width: 20px;"></span> <!-- This provides a space in between -->
+            <sdpi-checkbox id="accessibility_toggle_global" setting="global_setting" label="Global" title="Adjust accessibility settings for all existing and future Shortcut Keys"></sdpi-checkbox>
+        </div>
     </sdpi-item>
+
+    
+    <!-- <sdpi-item label="Accessibility">
+        <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
+    </sdpi-item> -->
 
     <sdpi-item>
         <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">

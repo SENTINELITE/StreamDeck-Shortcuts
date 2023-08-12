@@ -5,7 +5,6 @@
 //  Created by Kirk Land on 1/27/22.
 //
 
-import StreamDeck
 import Foundation
 import AppKit
 import RegexBuilder
@@ -99,30 +98,6 @@ func preformShortcutRun() {
 ////In order to run the Shortcut as a background procress, we need to use the Bridge, as the CLI doens't work properly.
 ////Because we want to track the UUID, we have to create our own map, as AppleScript is the only way to retrieve a Shortcuts UUID.
 //
-
-
-
-// Separate keys for different settings
-struct ForcedTitleGlobalKey: EnvironmentKey, GlobalSettingKey {
-    static let defaultValue: Bool = false
-}
-
-struct AccessibilityGlobalKey: EnvironmentKey, GlobalSettingKey {
-    static let defaultValue: Bool = false
-}
-
-extension GlobalSettings {
-    @MainActor
-    var isForcedTitleGlobal: Bool {
-        get { self[ForcedTitleGlobalKey.self] }
-        set { self[ForcedTitleGlobalKey.self] = newValue }
-    }
-    
-    var isAccessibilityGlobal: Bool {
-        get { self[AccessibilityGlobalKey.self] }
-        set { self[AccessibilityGlobalKey.self] = newValue }
-    }
-}
 
 
 

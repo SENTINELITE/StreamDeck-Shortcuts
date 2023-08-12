@@ -21,8 +21,6 @@ class ShortcutAction: Action {
         let shortcutUUID: UUID
     }
     
-    //    static var settings: Settings = Settings
-    
     static var name: String = "Launch Shortcut V2"
     
     static var uuid: String = "com.sentinelite.sds.launcher"
@@ -56,9 +54,9 @@ class ShortcutAction: Action {
     var currentTask: Task<Void, Never>?
     var tmpAccessHoldTime = 3.3
     var startedHoldingAt = 0.0
-    var sdKeyDownBuffer = 0.5 //Time between taps, for double & triple clicking. TODO: We need to make this adjustable & toggelable. Some people may not want any delay for these features.
+    var sdKeyDownBuffer = 0.2 //Time between taps, for double & triple clicking. TODO: We need to make this adjustable & toggelable. Some people may not want any delay for these features. //Changed to 0.2 from 0.5
     
-    var isForcedTitle = true //TODO: Connect to PI
+    var isForcedTitle = false //TODO: Connect to PI
     var isAccessibility = false //TODO: Remove this global var!
     
     @available(*, deprecated, renamed: "UUID", message: "Switch to UUID")
@@ -72,12 +70,6 @@ class ShortcutAction: Action {
         pressCount = 0
         hold = false
     }
-    
-    //Min Hold Dur
-    //Wait Dur
-    
-    //func processTaps
-    //
     
     func clicked(settings: ShortcutAction.Settings) {
         NSLog("clicked()...")
@@ -219,9 +211,7 @@ class ShortcutAction: Action {
         SDVersion = StreamDeckPlugin.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
         NSLog("Nemesis-Zero-Init with count: \(SDVersion)")
         getSettings()
-        if payload.settings.isPerKeyForcedTextfield || isForcedTitleGlobal == true  {
-            setTitle(to: payload.settings.shortcutToRun)
-        }
+        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     //TODO: Get the settings first, loading the previous state & use that to fill the PI!
@@ -246,7 +236,7 @@ class ShortcutAction: Action {
             "processShortcutsSwift": processRunShortcutTime,
             "sentAt": formattedDate.description,
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
-            "folders": shortcutsFolder,
+            "folders": shortcutsFolder, //
             "selectedFolder": shortcutFolder,
             "isForcedTitle": isForcedTitle,
             "isAccessibility": isAccessibility,
@@ -269,7 +259,6 @@ class ShortcutAction: Action {
         
         sendNewFolderAndShortcuts(folder: "All")
         NSLog("🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
-                processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     
@@ -277,6 +266,7 @@ class ShortcutAction: Action {
     func propertyInspectorDidDisappear(device: String) {
         saveSettingsHelper()
         getSettings() // Retrieve the saved settings | TODO: Do We really need this anymore?
+        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     ///A Generalized helper function to save settings.
@@ -311,21 +301,7 @@ class ShortcutAction: Action {
                         NSLog("🤖 Shortcut UUID Debug 1: \(shortcutToRunUUID)")
                         shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
                         NSLog("🤖 Shortcut UUID Debug 2: \(shortcutToRunUUID)")
-                        
-                        
-                        //                    struct SettingsX: Codable, Hashable {
-                        //                        let someKey: String
-                        //                    }
-                        
-                        //                    let xy = Settings(shortcutToRun: "shortcutToRun_BravoZero", updatedInt: 3)
-                        //                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
-                        //TODO: Move to updateSettings func, Set settings.
-                        
-                        //                    setSettings(to: xy)
-                        //                    NSLog ("LifeLine One | New Settings saved, with: \(xy)")
                         let customJSON = sdsSettings(shortcut: shortcutToRun)
-                        //                    setSettings(to: ["x":"yz"])
-                        //                    Settings.encode(customJSON)
                         saveSettingsHelper()
                         
                     case .newFolderSelected:
@@ -354,9 +330,6 @@ class ShortcutAction: Action {
                                     isForcedTitleGlobal = settings.isForcedTitleGlobal
                                     isAccessibilityGlobal = settings.isAccesGlobal //If this is true then the above will equalt true & vice versa
                                     saveSettingsHelper()
-                                    
-                                    //                                    StreamDeckPlugin.shared.sendEvent(.setGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)
-                                    //                                    StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)`
                                 } catch {
                                     NSLog("🌐 Error: \(error) \(#file) \(#line) ")
                                 }
@@ -364,40 +337,24 @@ class ShortcutAction: Action {
                                 NSLog("🌐 Failed to load payload \(#file) \(#line) ")
                             }
                         }
-                        
-                        //                        StreamDeckPlugin.shared.sendEvent(.setGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: <#T##[String : Any]?#>)
-                        //                        StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: nil)
-                        //                        NSLog("A global setting has changed... Logic not implemented yet. \(payload)")
                     }
                 } else {
                     NSLog("SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
                 }
-                //Switch on the eventType
             }
         }
+    }
+    
+    func newShortcutSelected () {
         
-        //Send Sorted Shortcuts
-        //        sendToPropertyInspector(payload: <#T##[String : Any]#>)
     }
     
     func sendNewFolderAndShortcuts(folder: String) {
         NSLog("MRVN-Five-Two newFolderSelected")
         logger.debug("😡 MRVN-Five-Two newFolderSelected")
-        //                    if i.key == "data" {
         NSLog("MRVN-Five-Three data")
         let newShortcutsPayload = filterMappedFolder(folderName: folder)
-        
-        //        if shortcutToRun.isEmpty {
-        //            shortcutToRun = newShortcutsPayload.first ?? "nil"
-        //        }
         NSLog("🚀 Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
-        //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder, "filteredShortcuts": "\(newShortcutsPayload)"]
-        
-        //                    let newPayload: [String: Any] = [
-        //                        "sdsEvt": SdsEventRecieveType.folderSelected.rawValue,
-        //                        "filteredShortcuts": newShortcutsPayload
-        //                    ]
-        
         var isShortcutInFolder = false
         if newShortcutsPayload.contains(shortcutToRun) {
             NSLog("🧱 CastleWall-One: The folder contains our shortcuts: \(shortcutToRun)")
@@ -416,7 +373,6 @@ class ShortcutAction: Action {
         ]
         
 #warning("The `folderSelected` event is wrong! We need to send the *other* event!")
-        //                    let payloadToSend = ["sdsEvt": SdsEventSendType.filteredFolder.rawValue, "filteredShortcuts": "\(newShortcutsPayload)"]
         
         sendToPropertyInspector(payload: finalPayload)
         NSLog("MRVN-Five-One \(newShortcutsPayload)")
@@ -438,6 +394,10 @@ class ShortcutAction: Action {
         isAccessibility = payload.settings.isPerKeyAccessibility
         isForcedTitle = payload.settings.isPerKeyForcedTextfield
         
+        if payload.settings.isPerKeyForcedTextfield || isForcedTitleGlobal == true  {
+//            setTitle(to: payload.settings.shortcutToRun)
+            setTitleSDS()
+        }
     }
     
     func didReceiveGlobalSettings() {
@@ -446,11 +406,17 @@ class ShortcutAction: Action {
     }
     
     func setTitleSDS() {
-        if isForcedTitle || isForcedTitleGlobal {
-            setTitle(to: shortcutToRun)
-        } else {
-            setTitle(to: "")
-        }
+//        NSLog("About to set Title... \(shortcutToRun)")
+//        Task {
+//            try await Task.sleep(nanoseconds: 1_000_000_000)
+            if isForcedTitle || isForcedTitleGlobal {
+                setTitle(to: shortcutToRun)
+                NSLog("set Title -> \(shortcutToRun)")
+            } else {
+                setTitle(to: "")
+                NSLog("set Title -> BLANK")
+            }
+//        }
     }
     
     func findFolderFromShortcut() {
