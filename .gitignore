@@ -6,4 +6,4 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 /StreamDeck-Shortcuts/analytics.swift
 *.xcuserstate
-**/xcuserdata/
+**/xcuserdata/StreamDeck-Shortcuts.xcodeproj/project.xcworkspace/xcuserdata/kirkland.xcuserdatad/UserInterfaceState.xcuserstate
