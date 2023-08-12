@@ -8,8 +8,8 @@ let logger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Main")
 @main
 class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
     struct Settings: Codable, Hashable {
-//        var isForcedTitle: Bool = false
-        var isAcces: Bool = false
+        let someKey: String
+        var isForcedTitle: Bool = false
     }
     // MARK: Manifest
     static var name: String = "V2"
@@ -55,14 +55,15 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
 //    @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
     
     required init() {
-        logger.debug("😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!")
+        logger.debug("😡 Entry.swift")
+        NSLog("Nemesis-One CounterPlugin initiated!")
+        count = Int.random(in: 0...100)
         processShortcuts()
     }
     
     func didReceiveGlobalSettings(_ settings: Settings) {
-        NSLog("🧨 Conduit-Zero")
-        NSLog("🧨 Conduit-One Settings: \(settings)")
-//        isForcedTitle = settings.isForcedTitle
+        NSLog("Conduit-One: \(settings)")
+        isForcedTitle = settings.isForcedTitle
     }
     
     func willAppear(action: String, context: String, device: String, payload: AppearEvent<Settings>) {
@@ -73,15 +74,8 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
 //        }
         NSLog("Nemesis-One-Two SDS - SE - WillAppear V2 Action Instance")
         NSLog("Nemesis-One-Three Payload \(payload)")
-        logger.debug("😡 \(StreamDeckPlugin.shared.uuid)")
         
     }
-    
-//    func propertyInspectorDidAppear(action: String, context: String, device: String) {
-//        NSLog("👀  👀Nemesis-One-Three Got Global Settings!")
-//        getGlobalSettings()
-//        NSLog("👀  DONE  👀Nemesis-One-Three Got Global Settings!")
-//    }
     
     func sentToPlugin(context: String, action: String, payload: [String : String]) {
         NSLog("Nemesis-One-Four sentToPlguin \(payload), action: \(action)")

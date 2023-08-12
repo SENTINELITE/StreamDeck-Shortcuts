@@ -36,41 +36,6 @@
                 </sdpi-select>
             </div>
     </sdpi-item>
-    
-<<<<<<< HEAD
-    <!-- <sdpi-item label="Display Title">
-        <sdpi-checkbox id="display_title_toggle" setting="is_okay" label="D1"></sdpi-checkbox>
-    </sdpi-item> -->
-    
-<sdpi-item label="Display Title" title="Apply the Shortcut's name to all Shortcut Keys">
-        <div style="display: flex;">
-            <sdpi-checkbox id="display_title_toggle_local" setting="local_setting" label="Local" title="Apply the Shortcut's name only to this specific Key"></sdpi-checkbox>
-            <span style="width: 20px;"></span> <!-- This provides a space in between -->
-            <sdpi-checkbox id="display_title_toggle_global" setting="global_setting" label="Global" title="Apply the Shortcut's name to all existing and future Shortcut Keys"></sdpi-checkbox>
-        </div>
-    </sdpi-item>
-    
-    <sdpi-item label="Accessibility" title="Adjust accessibility settings for all Shortcut Keys">
-        <div style="display: flex;">
-            <sdpi-checkbox id="accessibility_toggle_local" setting="local_setting" label="Local" title="Adjust accessibility settings only for this specific Key"></sdpi-checkbox>
-            <span style="width: 20px;"></span> <!-- This provides a space in between -->
-            <sdpi-checkbox id="accessibility_toggle_global" setting="global_setting" label="Global" title="Adjust accessibility settings for all existing and future Shortcut Keys"></sdpi-checkbox>
-        </div>
-    </sdpi-item>
-
-    
-    <!-- <sdpi-item label="Accessibility">
-        <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
-    </sdpi-item> -->
-=======
-    <sdpi-item label="Display Title">
-        <sdpi-checkbox id="display_title_toggle" setting="is_okay" label=""></sdpi-checkbox>
-    </sdpi-item>
-    
-    <sdpi-item label="Accessibility">
-        <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
-    </sdpi-item>
->>>>>>> 9a9a4cdcea6f68536f329dbb9bb4909ebaad4c3c
 
     <sdpi-item>
         <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">
@@ -82,6 +47,29 @@
     <sdpi-item>
         <p id="initPayloadText">Payload: 1,337ms <br>ProcessShortcuts: 1.337s<br>Payload Size: 0.00 kbs<br>Folders: #0<br>Shortcuts: #0</p>
     </sdpi-item>
+
+<script type="text/javascript">
+        document.querySelector("#shortcuts_folder_list").addEventListener('valuechange', function(ev) {
+            selectedNewIndex(ev.target.value, 'shortcutFolder');
+        });
+    </script>
+    
+    <script type="text/javascript">
+        document.querySelector("#shortcuts_list").addEventListener('valuechange', function(ev) {
+            selectedNewIndex(ev.target.value, 'shortcutSelected');
+        });
+    </script>
+
+
+
+    <!-- Disabled script
+    <script>
+        const myCustomInput = document.getElementById('shortcuts_folder_list');
+        myCustomInput.addEventListener('change', function() {
+            console.log('🚀 Changed Val');
+            // Code to execute when the input value changes
+        });
+    </script> -->
 </body>
 
 </html>
