@@ -17,6 +17,10 @@ struct AccessibilityGlobalKey: GlobalSettingKey {
     static let defaultValue: Bool = false
 }
 
+struct HoldTimeGlobalKey: GlobalSettingKey {
+    static let defaultValue: Bool = false
+}
+
 extension GlobalSettings {
     @MainActor
     var isForcedTitleGlobal: Bool {
@@ -27,5 +31,10 @@ extension GlobalSettings {
     var isAccessibilityGlobal: Bool {
         get { self[AccessibilityGlobalKey.self] }
         set { self[AccessibilityGlobalKey.self] = newValue }
+    }
+    
+    var isHoldTimeGlobal: Bool {
+        get { self[HoldTimeGlobalKey.self] }
+        set { self[HoldTimeGlobalKey.self] = newValue }
     }
 }

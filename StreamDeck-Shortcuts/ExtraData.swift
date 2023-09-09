@@ -45,6 +45,8 @@ struct GlobalSettingsUpdated: Codable {
     let isForcedTitleGlobal: Bool
     let isAccesLocal: Bool
     let isAccesGlobal: Bool
+    let isHoldTimeGlobal: Bool
+    let accessHoldTime: Double
 }
 
 

@@ -19,6 +19,7 @@ class ShortcutAction: Action {
         let isPerKeyForcedTextfield: Bool
         let isPerKeyAccessibility: Bool
         let shortcutUUID: UUID
+        var accessHoldTime: Double
     }
     
     static var name: String = "Launch Shortcut V2"
@@ -41,6 +42,10 @@ class ShortcutAction: Action {
     
     var coordinates: Coordinates?
     
+    var isPressed = false
+    
+    var holdTime: Double = 0.0
+    
     required init(context: String, coordinates: Coordinates?) {
         self.context = context
         self.coordinates = coordinates
@@ -48,6 +53,7 @@ class ShortcutAction: Action {
     
     @GlobalSetting(\.isForcedTitleGlobal) var isForcedTitleGlobal
     @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
+    @GlobalSetting(\.isHoldTimeGlobal) var isHoldTimeGlobal
     
     var pressCount = 0
     var hold = false
@@ -108,7 +114,9 @@ class ShortcutAction: Action {
         
         switch pressCount {
         case 1:
-            executeShortcut(settings: settings)
+            Task {
+                await executeShortcut(settings: settings)
+            }
         case 2:
             NSLog("☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
             
@@ -131,19 +139,60 @@ class ShortcutAction: Action {
             }
         default:
             NSLog("Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways...")
-            executeShortcut(settings: settings)
+            Task {
+                await executeShortcut(settings: settings)
+            }
         }
         pressCount = 0
     }
     
-    func executeShortcut (settings: ShortcutAction.Settings) {
+    ///Runs the shortcut.
+    func executeShortcut (settings: ShortcutAction.Settings) async {
         if settings.isPerKeyAccessibility || isAccessibilityGlobal {
-            Task {
-                async let shelled = shellTest("\(settings.shortcutToRun)")
+            await sayCLI("\(settings.shortcutToRun)")
+            if isHoldTimeGlobal {
+                Task {
+                    var curTime = holdTime //5.5 seconds
+                    
+                    if curTime > 0 { //if this is zero, it's disabled so we ignore
+                        while curTime > 0 {
+                            if !isPressed {
+                                print("User let go early!")
+                                setTitleSDS()
+                                await sayCLI("Cancelled Shortcut!")
+                                return
+                            }
+                            
+                            let duration = Duration.seconds(curTime).formatted(.units(fractionalPart: .show(length: 0)))
+                            let shellText = Int(curTime).description //duration.description
+                            
+                            await sayCLI(shellText)
+                            setTitleSDSAcess(inputStr: "\(duration)")
+                            
+                            try await Task.sleep(nanoseconds: 1_000_000_000) //Sleep 1s
+                            curTime -= 1 //Subtract 1s
+                            //                        isFirstLoop = false
+                        }
+                        
+                        if !isPressed {
+                            print("User let go early!")
+                            setTitleSDS()
+                            await sayCLI("Cancelled Shortcut!")
+                            return
+                        }
+                        
+                        await sayCLI("Running Shortcut!")
+                        vTwoRunShortcut()
+                        setTitleSDS()
+                        print("vTwoRunShortcut - One")
+                    }
+                }
             }
+        } else {
+            vTwoRunShortcut()
         }
-        vTwoRunShortcut()
     }
+    
     
     func vTwoRunShortcut() {
         NSLog("MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown")
@@ -188,6 +237,8 @@ class ShortcutAction: Action {
     }
     
     func keyDown(device: String, payload: KeyEvent<Settings>) {
+        isPressed = true
+        
         NSLog("Pressed keyDown...")
         getSettings()
         //        StreamDeckPlugin.shared getGlobalSettings()
@@ -199,6 +250,10 @@ class ShortcutAction: Action {
         //            NSLog("👀 Press count \(pressCount)")
         clicked(settings: payload.settings)
         //        }
+    }
+    
+    func keyUp(device: String, payload: KeyEvent<Settings>) {
+        isPressed = false
     }
     
     func sleep(for seconds: Double) async throws {
@@ -241,7 +296,11 @@ class ShortcutAction: Action {
             "isForcedTitle": isForcedTitle,
             "isAccessibility": isAccessibility,
             "isForcedTitleGlobal": isForcedTitleGlobal,
-            "isAccessibilityGlobal": isAccessibilityGlobal
+            "isAccessibilityGlobal": isAccessibilityGlobal,
+            "isHoldTimeGlobal": isHoldTimeGlobal,
+            "accessHoldTime": holdTime,
+            
+            
             
             //            "": listOfCuts
             //TODO: Add all shortcuts here?
@@ -271,7 +330,7 @@ class ShortcutAction: Action {
     
     ///A Generalized helper function to save settings.
     func saveSettingsHelper() {
-        let xy = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility, shortcutUUID: shortcutToRunUUID)
+        let xy = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility, shortcutUUID: shortcutToRunUUID, accessHoldTime: holdTime)
         //        setSettings(to: xy)
         setSettings(to: xy)
         NSLog("Gibby One | New Settings saved, with: \(xy)")
@@ -325,10 +384,14 @@ class ShortcutAction: Action {
                                     
                                     isForcedTitle = settings.isForcedTitleLocal
                                     isAccessibility = settings.isAccesLocal
+                                    holdTime = settings.accessHoldTime //If this is true then the above will equalt true & vice versa
 //                                    let perKeySettings = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: settings.isForcedTitle, isPerKeyAccessibility: settings.isAcces)
                                     
                                     isForcedTitleGlobal = settings.isForcedTitleGlobal
                                     isAccessibilityGlobal = settings.isAccesGlobal //If this is true then the above will equalt true & vice versa
+                                    isHoldTimeGlobal = settings.isHoldTimeGlobal //If this is true then the above will equalt true & vice versa
+                                    
+                                    NSLog("SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)")
                                     saveSettingsHelper()
                                 } catch {
                                     NSLog("🌐 Error: \(error) \(#file) \(#line) ")
@@ -394,6 +457,8 @@ class ShortcutAction: Action {
         isAccessibility = payload.settings.isPerKeyAccessibility
         isForcedTitle = payload.settings.isPerKeyForcedTextfield
         
+        holdTime = payload.settings.accessHoldTime
+        
         if payload.settings.isPerKeyForcedTextfield || isForcedTitleGlobal == true  {
 //            setTitle(to: payload.settings.shortcutToRun)
             setTitleSDS()
@@ -401,8 +466,17 @@ class ShortcutAction: Action {
     }
     
     func didReceiveGlobalSettings() {
-        NSLog("Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal)")
+        NSLog("Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal)")
         setTitleSDS()
+    }
+    
+
+}
+
+//MARK: Extended Functions
+extension ShortcutAction {
+    func setTitleSDSAcess(inputStr: String) {
+        setTitle(to: inputStr)
     }
     
     func setTitleSDS() {
@@ -430,9 +504,13 @@ class ShortcutAction: Action {
             // Use the filteredShortcuts as needed
         }
     }
+    
+    //MARK: Access Speach
+    
 }
 
 
+//MARK: Misc Functions
 ///Retutrns an array of shortcuts, that match the passed in folder String.
 func filterMappedFolder(folderName: String) -> [String] {
     if folderName == "All" {

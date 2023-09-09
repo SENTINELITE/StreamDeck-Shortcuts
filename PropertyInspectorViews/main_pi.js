@@ -6,6 +6,7 @@
 
 var RELEASE = '2.0.0';
 var hasResent = false;
+let isInitializing = false; // Flag to check if in initialization mode
 
 let websocket = null,
 uuid = null,
@@ -19,12 +20,6 @@ filteredFolder: Symbol("filteredFolder")
 
 listOfCuts = ['Placeholder', '2'];
 var listOfShortcutsVersionTwo = {};
-
-// function ClearTempData() {
-//     console.log('clearing temp data')
-//     listOfCuts.length = 0;
-//     listOfShortcutsVersionTwo.length = 0;
-// }
 
 function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
     uuid = inUUID;
@@ -60,6 +55,12 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     var totalListOfShortcuts = payload.totalListOfShortcuts
                     var totalFolders = payload.totalFolders
                     var processShortcutsSwift = payload.processShortcutsSwift
+                    var isForcedTitle = payload.isForcedTitle
+                    var isForcedTitleGlobal = payload.isForcedTitleGlobal
+                    var isAccessibility = payload.isAccessibility
+                    var isAccessibilityGlobal = payload.isAccessibilityGlobal
+                    var isHoldTimeGlobal = payload.isHoldTimeGlobal
+                    var holdTime = payload.accessHoldTime
                     
                     let payloadSize = logSizeInKilobytes('initPayload', payload)
                     console.log("📦🚀 payload Size", payloadSize)
@@ -71,7 +72,9 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     shortcutsFolder = payload.folders
                     console.log("XYZ: ", shortcutsFolder)
                     initPayload(sentAt, processShortcutsSwift, payloadSize, totalShortcuts, totalFolders)
-                    refreshListOfShortcutsFolders()
+                    refreshListOfShortcutsFolders(payload.selectedFolder)
+                    
+                    setToggleStateNew(isForcedTitle, isAccessibility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime)
                     break;
                 case "filteredFolder": //This needs to get removed
                     console.log("📦 filteredFolder")
@@ -131,45 +134,71 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                 console.log("ZYX Payload 1222 -> ", payload)
             }
         }
-        //            console.log("Payload recieved, we've sent to the PI!!!!!");
-        
-        //            if (payload.error) {
-        //                Sentry.captureException(payload.error);
-        //                // printToConsole('Error: ' + payload.error);
-        //                return;
-        //            }
-        //
-        //            // const errorText2 = document.getElementById('errorPatch');
-        //            // errorText2.value = "Looking for error...";
-        //            debugText(`Looking for error...`, true);
-        //
-        //            console.log("Payload: ", payload);
-        //
-        //            usersSelectedShortcut = payload.shortcutName;
-        //
-        //            const el = document.querySelector('.sdpi-wrapper');
-        //
-        //            // mappedDataFromBackend = outNewTest;
-        //
-        //            refreshListOfShortcutsFolders();
-        //
-        //            if (usersSelectedShortcut.value == "undefined") {
-        //                shortcutName.value = "";
-        //                shortcut_list.value = "";
-        //            }
-        //            else {
-        //                // shortcut_list.value = shortcutName.value;
-        //            }
-        //
-        //            // el && el.classList.remove('hidden');
-        //        }
-        
         console.log('THE EVENTS!, ', evt);
-        
-        //    console.log(greet('Alice'))
     };
-    
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const shortcutsFolderList = document.querySelector("#shortcuts_folder_list");
+    const shortcutsList = document.querySelector("#shortcuts_list");
+
+    const displayTitleToggle = document.getElementById("display_title_toggle_local");
+    const accessToggle = document.getElementById("accessibility_toggle_local");
+    const displayTitleToggleGlobal = document.getElementById("display_title_toggle_global");
+    const accessToggleGlobal = document.getElementById("accessibility_toggle_global");
+    const holdTimeGlobal = document.getElementById("holdTime_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeSlider = document.getElementById("holdTimeSlider")
+
+    // Existing event listeners
+    shortcutsFolderList.addEventListener('valuechange', function(ev) {
+        selectedNewIndex(ev.target.value, 'shortcutFolder');
+    });
+
+    shortcutsList.addEventListener('valuechange', function(ev) {
+        selectedNewIndex(ev.target.value, 'shortcutSelected');
+    });
+
+    displayTitleToggle.addEventListener('valuechange', function(ev) {
+        if (!isInitializing) {
+        toggleSetting(ev.target.value);
+    }
+    });
+    
+    accessToggle.addEventListener('valuechange', function(ev) {
+        if (!isInitializing) {
+        toggleSetting(ev.target.value);
+    }
+    });
+
+    // Additional event listeners for global toggles
+    displayTitleToggleGlobal.addEventListener('valuechange', function(ev) {
+        if (!isInitializing) {
+        toggleSetting(ev.target.value);
+    }
+    });
+
+    accessToggleGlobal.addEventListener('valuechange', function(ev) {
+        if (!isInitializing) {
+        toggleSetting(ev.target.value);
+    }
+    });
+    
+    holdTimeGlobal.addEventListener('valuechange', function(ev) {
+        console.log("👻 → holdTimeGlobal changed to: → ", ev.target.value)
+        if (!isInitializing) {
+        toggleSetting(ev.target.value);
+    }
+    });
+    
+    holdTimeSlider.addEventListener('valuechange', function(ev) {
+        console.log("👻 → Slider val changed to → ", ev.target.value)
+        if (!isInitializing) {
+        toggleSetting(ev.target.value);
+    }
+    });
+    
+});
+
 
 function initPayload(sentAt, swift, payloadSize, shortcuts, folders) {
     console.log("👋👋👋🏼sentAT: ", sentAt)
@@ -184,56 +213,90 @@ function initPayload(sentAt, swift, payloadSize, shortcuts, folders) {
     select.innerHTML = `Payload: ${diff}ms<br>Process Shortcuts: ${swift}s<br>Payload Size ${payloadSize} kb<br>Folders: #${folders}<br>Shortcuts: #${shortcuts}`
 }
 
-function refreshListOfShortcutsFolders() {
-    let start = new Date();
-    // debugText("", false);
+function toggleSetting(v) {
+    const displayToggle = document.getElementById("display_title_toggle_local"); // Assuming "toggle" is the correct ID
+    const accessToggle = document.getElementById("accessibility_toggle_local"); // Assuming "toggle" is the correct ID
+    const displayToggleGlobal = document.getElementById("display_title_toggle_global"); // Assuming "toggle" is the correct ID
+    const accessToggleGlobal = document.getElementById("accessibility_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeGlobal = document.getElementById("holdTime_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeSlider = document.getElementById("holdTimeSlider")
     
-    select = document.getElementById("shortcuts_folder_list");
+    console.log('🚨 Toggled Settings', v)
     
-    // preShortcut = select.value;
+    const payloadToSend = {
+        isForcedTitleLocal: displayToggle.value,
+        isForcedTitleGlobal: displayToggleGlobal.value,
+        isAccesLocal: accessToggle.value,
+        isAccesGlobal: accessToggleGlobal.value,
+        isHoldTimeGlobal: holdTimeGlobal.value,
+        accessHoldTime: holdTimeSlider.value
+    };
     
-    //    console.log("PreSelect ", shortcutFromBackend);
+    const jsonStringPayload = JSON.stringify(payloadToSend);
+    //Ideally we're doing payloadToSend.isForcedTitle = displayToggle.value.toString()
     
+    sendNewPayload(SdsEventSend.globalSettingsUpdated, jsonStringPayload)
+}
+
+function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime) {
+    isInitializing = true
+    console.log('🚀 👋🏼Setting State', isForcedTitle, isAccessbility)
     
-    //Show/Hide if the user has shortcuts or not...
-    // if (shortcutsFolder.length > 1) {
-    //     console.log("___testAlert: ", shortcutsFolder.length);
-    // } else {
-    //     folderID = document.getElementById("isFolder");
-    //     folderID.style.display = "none";
-    //     console.log("We should only have 1 id, aka All: ", shortcutsFolder.length);
-    // }
+    const displayToggle = document.getElementById("display_title_toggle_local"); // Assuming "toggle" is the correct ID
+    const accessToggle = document.getElementById("accessibility_toggle_local"); // Assuming "toggle" is the correct ID
+    const displayToggleGlobal = document.getElementById("display_title_toggle_global"); // Assuming "toggle" is the correct ID
+    const accessToggleGlobal = document.getElementById("accessibility_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeGlobal = document.getElementById("holdTime_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeSlider = document.getElementById("holdTimeSlider")
     
-    //select.remove(select[0])
+    displayToggle.value = isForcedTitle
+    accessToggle.value = isAccessbility
     
-    //  console.log('L of folders: ', listOfCuts.length)
+    displayToggleGlobal.value = isForcedTitleGlobal
+    accessToggleGlobal.value = isAccessibilityGlobal
     
-    console.log('⭕ dropDown Length ', select.length)
-    console.log('⭕ Shortucts Folder: ', shortcutsFolder.length)
-    select.length = 0;
+    holdTimeGlobal.value = isHoldTimeGlobal
+    holdTimeSlider.value = holdTime
     
-    if (select.length != shortcutsFolder.length) {
-        select.length = 0;
-        
-        var loopNum = 0;
-        for (var val of shortcutsFolder) {
-            console.log('  ⭕ Gen Option ', val)
-            var ID = loopNum;
-            option = genOption(val, ID); //ID = loop num...
-            select.appendChild(option);
-            loopNum++;
-        }
-    } else {
-        console.log("Already have options, no need to add more!")
-    }
-    select.value = 0
+    isInitializing = false
     
-    let finished = new Date();
-    let diff = start - finished
-    
-    console.log(' ⏰ Finsihed Folder Timer: ', diff)
     
 }
+
+function refreshListOfShortcutsFolders(selectedFolder) {
+    const start = performance.now(); // Using performance.now() for accurate timing
+    
+    const select = document.getElementById("shortcuts_folder_list");
+
+    // Clear dropdown
+    select.innerHTML = '';
+
+    // Add options to dropdown
+    shortcutsFolder.forEach((val, index) => {
+        const option = genOption(val, index);
+        select.appendChild(option);
+    });
+
+    // Set default selected option
+    // select.value = 0;
+    
+    // Set default selected option to selectedFolder or 0 if not found
+    const selectedFolderIndex = shortcutsFolder.indexOf(selectedFolder);
+    
+    console.log('🚨 ⚠️')
+    console.log(selectedFolder)
+    console.log(shortcutsFolder)
+    console.log(selectedFolderIndex)
+    console.log(shortcutsFolder[selectedFolderIndex])
+    
+    select.value = (selectedFolderIndex !== -1) ? selectedFolderIndex : 0;
+    
+    const finished = performance.now();
+    const diff = finished - start;
+    
+    console.log('⏰ Finished Folder Timer:', diff);
+}
+
 
 function parseJSONSafely(str) {
     try {
@@ -364,6 +427,7 @@ function updateSettings() {
     }
 }
 
+//Not in use
 function debugSDPI() {
     let select = document.getElementById("shortcuts_folder_list");
     
@@ -496,12 +560,11 @@ function checkIfShortcutExists(shortcutToVerify) {
     }
 }
 
-//shortcuts_folder_list
-
 //The event types we can send to the Swift back-end.
 const SdsEventSend = {
 newFolderSelected: "newFolderSelected",
 newShortcutSelected: "newShortcutSelected",
+globalSettingsUpdated: "globalSettingsUpdated",
 voiceHover: "voiceHover"
 };
 
