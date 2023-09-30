@@ -57,13 +57,13 @@ func shellTest(_ args: String...) async -> Int32 {
 
 //TODO: Repport Term.Status?
 ///New SDS V2 Say CLI
-func sayCLI(_ args: String...) async {
+func sayCLI(speak: String, speechRate: Int) async {
      Task.detached {
         let sayCLI = Process()
         sayCLI.executableURL = URL(fileURLWithPath: "/usr/bin/say")
-        sayCLI.arguments = args
+        sayCLI.arguments = [speak, "-r", "\(speechRate)"]
         sayCLI.launch()
         sayCLI.waitUntilExit()
-        NSLog("Finished running With: \(args)")
+         NSLog("Finished running With: \(sayCLI.arguments)")
     }
 }

@@ -47,6 +47,9 @@ struct GlobalSettingsUpdated: Codable {
     let isAccesGlobal: Bool
     let isHoldTimeGlobal: Bool
     let accessHoldTime: Double
+    let accessSpeechRateGlobal: Int
+    let isHoldTime: Bool
+    
 }
 
 

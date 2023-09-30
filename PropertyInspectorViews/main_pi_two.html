@@ -1,93 +1,110 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf8" />
-    <title>⛄🔥⛄🔥 com.sentinelite.sds Property Inspector V2</title>
-
-    <!-- Import scripts -->
-    <script src="https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v2/dist/sdpi-components.js"></script>
-    <script src="https://unpkg.com/json5@~2/dist/index.min.js"></script>
-    <script src="main_pi.js"></script>
+    <head>
+        <meta charset="utf8" />
+        <title>⛄🔥⛄🔥 com.sentinelite.sds Property Inspector V2</title>
+        
+        <!-- Import scripts -->
+        <script src="https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v2/dist/sdpi-components.js"></script>
+        <script src="https://unpkg.com/json5@~2/dist/index.min.js"></script>
+        <script src="main_pi.js"></script>
+        
+        <!-- Set viewport settings -->
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
+        
+        <!-- Apple mobile settings -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        
+        <!-- Import styles -->
+        <link rel="stylesheet" href="sdpi.css" />
+    </head>
     
-    <!-- Set viewport settings -->
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover" />
-
-    <!-- Apple mobile settings -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-
-    <!-- Import styles -->
-    <link rel="stylesheet" href="sdpi.css" />
-</head>
-
-<body>
-    <sdpi-item label="📁 Folder">
+    <body>
+        <sdpi-item label="📁 Folder">
             <div id="isFolder">
                 <sdpi-select  placeholder="Placeholder..." id="shortcuts_folder_list">
                 </sdpi-select>
             </div>
-    </sdpi-item>
-
-    <!-- Old Code -->
-    <sdpi-item label="⚡ Shortcut">
+        </sdpi-item>
+        
+        <!-- Old Code -->
+        <sdpi-item label="⚡ Shortcut">
             <div id="isShortcuts">
                 <sdpi-select placeholder="All shortcuts_list" id="shortcuts_list">
                     <!-- <sdpi-select onfocus="refreshListOfShortcuts();" placeholder="All shortcuts_list" id="shortcuts_list"> -->
                 </sdpi-select>
             </div>
-    </sdpi-item>
-    
-    <!-- <sdpi-item label="Display Title">
+        </sdpi-item>
+        
+        <!-- <sdpi-item label="Display Title">
         <sdpi-checkbox id="display_title_toggle" setting="is_okay" label="D1"></sdpi-checkbox>
-    </sdpi-item> -->
-    
-<sdpi-item label="Display Title" title="Apply the Shortcut's name to all Shortcut Keys">
-        <div style="display: flex;">
-            <sdpi-checkbox id="display_title_toggle_local" setting="local_setting" label="Local" title="Apply the Shortcut's name only to this specific Key"></sdpi-checkbox>
-            <span style="width: 20px;"></span> <!-- This provides a space in between -->
-            <sdpi-checkbox id="display_title_toggle_global" setting="global_setting" label="Global" title="Apply the Shortcut's name to all existing and future Shortcut Keys"></sdpi-checkbox>
-        </div>
-    </sdpi-item>
-    
-    <sdpi-item label="Accessibility" title="Adjust accessibility settings for all Shortcut Keys">
-        <div style="display: flex;">
-            <sdpi-checkbox id="accessibility_toggle_local" setting="local_setting" label="Local" title="Adjust accessibility settings only for this specific Key"></sdpi-checkbox>
-            <span style="width: 20px;"></span> <!-- This provides a space in between -->
-            <sdpi-checkbox id="accessibility_toggle_global" setting="global_setting" label="Global" title="Adjust accessibility settings for all existing and future Shortcut Keys"></sdpi-checkbox>
-        </div>
-    </sdpi-item>
-    
-    <sdpi-item label="Hold Time" title="Sets the amount of time a key needs to be pressed & held, before running the shortcut.">
-        <div style="display: flex;">
-            <sdpi-checkbox id="holdTime_toggle_global" setting="local_setting" label="" title="Toggles the Hold Time setting."></sdpi-checkbox>
-            <span style="width: 20px;"></span> <!-- This provides a space in between -->
-        <sdpi-range
-            id="holdTimeSlider"
-            setting="brightness"
-            min="2"
-            max="10"
-            step="1"
-            title="The duration to hold."
-            showlabels>
-        </sdpi-range>
-        </div>
-    </sdpi-item>
-
-    
-    <!-- <sdpi-item label="Accessibility">
+        </sdpi-item> -->
+        
+        <sdpi-item label="Display Title" title="Adjust how titles appear on Shortcut Keys">
+            <div style="display: flex;">
+                <sdpi-checkbox id="display_title_toggle_local" setting="local_setting" label="Local" title="Apply the Shortcut's name only to this specific Key"></sdpi-checkbox>
+                <span style="width: 20px;"></span> <!-- This provides a space in between -->
+                <sdpi-checkbox id="display_title_toggle_global" setting="global_setting" label="Global" title="Apply the Shortcut's name to all existing and future Shortcut Keys"></sdpi-checkbox>
+            </div>
+        </sdpi-item>
+        
+        <sdpi-item label="Accessibility" title="Adjust accessibility settings.">
+            <div style="display: flex;">
+                <sdpi-checkbox id="accessibility_toggle_local" setting="local_setting" label="Local" title="Adjust accessibility settings only for this specific Key"></sdpi-checkbox>
+                <span style="width: 20px;"></span> <!-- This provides a space in between -->
+                <sdpi-checkbox id="accessibility_toggle_global" setting="global_setting" label="Global" title="Adjust accessibility settings for all existing and future Shortcut Keys"></sdpi-checkbox>
+            </div>
+        </sdpi-item>
+        
+        <sdpi-item label="Hold Time" title="Adjust Hold Time settings.">
+            <div style="display: flex;">
+                <sdpi-checkbox id="holdTime_toggle_local" setting="local_setting" label="Local" title="Toggles the Hold Time setting, for this specific Key"></sdpi-checkbox>
+                <span style="width: 20px;"></span> <!-- This provides a space in between -->
+                <sdpi-checkbox id="holdTime_toggle_global" setting="local_setting" label="Global" title="Toggles the Hold Time setting, globally."></sdpi-checkbox>
+                <span style="width: 20px;"></span> <!-- This provides a space in between -->
+            </div>
+        </sdpi-item>
+        
+        <sdpi-item label="Hold Duration" title="Sets the amount of time a key needs to be pressed & held, before running the shortcut.">
+            <sdpi-range
+                id="holdTimeSlider"
+                setting="brightness"
+                min="2"
+                max="10"
+                step="1"
+                title="The duration to hold."
+                showlabels>
+            </sdpi-range>
+        </sdpi-item>
+        
+        <sdpi-item label="Speech rate" title="Sets the speech rate for all accessbility speech features.">
+            <sdpi-range
+                id="accessSpeechRateGlobalSlider"
+                setting="speech"
+                min="50"
+                max="300"
+                step="5"
+                title="The speech rate."
+                showlabels>
+            </sdpi-range>
+        </sdpi-item>
+        
+        
+        <!-- <sdpi-item label="Accessibility">
         <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
-    </sdpi-item> -->
-
-    <sdpi-item>
-        <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">
-            Discord Support 🚀
-        </sdpi-button>
-    </sdpi-item>
+        </sdpi-item> -->
+        
+        <sdpi-item>
+            <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">
+                Discord Support 🚀
+            </sdpi-button>
+        </sdpi-item>
+        
+        <!-- Debug Text -->
+        <sdpi-item>
+            <p id="initPayloadText">Payload: 1,337ms <br>ProcessShortcuts: 1.337s<br>Payload Size: 0.00 kbs<br>Folders: #0<br>Shortcuts: #0</p>
+        </sdpi-item>
+    </body>
     
-    <!-- Debug Text -->
-    <sdpi-item>
-        <p id="initPayloadText">Payload: 1,337ms <br>ProcessShortcuts: 1.337s<br>Payload Size: 0.00 kbs<br>Folders: #0<br>Shortcuts: #0</p>
-    </sdpi-item>
-</body>
-
 </html>

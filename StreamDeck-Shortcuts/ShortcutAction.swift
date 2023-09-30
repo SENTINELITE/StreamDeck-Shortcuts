@@ -14,14 +14,29 @@ class ShortcutAction: Action {
     
     static var encoder: StreamDeck.RotaryEncoder?
     
+    
+    ///The Settings we store foreach Key.
     struct Settings: Codable, Hashable {
+        ///A stored reference to the Shortcut's name
         let shortcutToRun: String
-        let isPerKeyForcedTextfield: Bool
-        let isPerKeyAccessibility: Bool
+        
+        ///Stored ref. to the Shortcut, by it's UUID (The preferred way of running)
         let shortcutUUID: UUID
+        
+        ///if the key is Force-projecting it's name to the Key, on the StreamDeck Display
+        let isPerKeyForcedTextfield: Bool
+        
+        ///If this key has Accessbility mode on. (Speakes the key when running it, providing audible feedback)
+        let isPerKeyAccessibility: Bool
+        
+        ///If this key has Hold mode on. (This makes the user click & hold the key for X time before running the key's action.)
+        let isPerKeyHoldTime: Bool
+        
+        ///The time the user has set for *this* key's holdTime, before running the action.
         var accessHoldTime: Double
     }
     
+    //MARK: Default Action Stuff
     static var name: String = "Launch Shortcut V2"
     
     static var uuid: String = "com.sentinelite.sds.launcher"
@@ -42,6 +57,8 @@ class ShortcutAction: Action {
     
     var coordinates: Coordinates?
     
+    //MARK: Action-specific extras
+    
     var isPressed = false
     
     var holdTime: Double = 0.0
@@ -54,28 +71,26 @@ class ShortcutAction: Action {
     @GlobalSetting(\.isForcedTitleGlobal) var isForcedTitleGlobal
     @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
     @GlobalSetting(\.isHoldTimeGlobal) var isHoldTimeGlobal
+    @GlobalSetting(\.accessSpeechRateGlobal) var accessSpeechRateGlobal
     
-    var pressCount = 0
-    var hold = false
+    // Local, internal counter, to handle Double/Triple tap feature.
+    private var pressCount = 0
+    
     var currentTask: Task<Void, Never>?
-    var tmpAccessHoldTime = 3.3
-    var startedHoldingAt = 0.0
-    var sdKeyDownBuffer = 0.2 //Time between taps, for double & triple clicking. TODO: We need to make this adjustable & toggelable. Some people may not want any delay for these features. //Changed to 0.2 from 0.5
+    
+    ///The amount of time the user has between clicks, before registering a Double/Triple tap.
+    var sdKeyDownBuffer = 0.2 //TODO: We need to make this adjustable & toggelable. Some people may not want any delay for these features.
     
     var isForcedTitle = false //TODO: Connect to PI
     var isAccessibility = false //TODO: Remove this global var!
     
+    /// Local ref to the Action's Setting
+    var isHoldTime = false
+    
     @available(*, deprecated, renamed: "UUID", message: "Switch to UUID")
     var shortcutToRun = ""
-    //let isPerKeyForcedTextfield: Bool = false
-    //let isPerKeyAccessibility: Bool = false
     var shortcutToRunUUID: UUID = UUID()
     var shortcutFolder = ""
-    
-    func reset() {
-        pressCount = 0
-        hold = false
-    }
     
     func clicked(settings: ShortcutAction.Settings) {
         NSLog("clicked()...")
@@ -149,24 +164,29 @@ class ShortcutAction: Action {
     ///Runs the shortcut.
     func executeShortcut (settings: ShortcutAction.Settings) async {
         if settings.isPerKeyAccessibility || isAccessibilityGlobal {
-            await sayCLI("\(settings.shortcutToRun)")
-            if isHoldTimeGlobal {
+            await sayCLI(speak: settings.shortcutToRun, speechRate: accessSpeechRateGlobal)
+            if isHoldTimeGlobal || isHoldTime {
                 Task {
+                    var hasLoopedOnce = false
                     var curTime = holdTime //5.5 seconds
                     
-                    if curTime > 0 { //if this is zero, it's disabled so we ignore
+                    if curTime >= 0 { //if this is zero, it's disabled so we ignore
                         while curTime > 0 {
                             if !isPressed {
                                 print("User let go early!")
                                 setTitleSDS()
-                                await sayCLI("Cancelled Shortcut!")
+                                await sayCLI(speak: "Cancelled Shortcut!", speechRate: accessSpeechRateGlobal)
                                 return
                             }
                             
                             let duration = Duration.seconds(curTime).formatted(.units(fractionalPart: .show(length: 0)))
-                            let shellText = Int(curTime).description //duration.description
+                            if hasLoopedOnce {
+                                let shellText = Int(curTime).description //duration.description
+                                await sayCLI(speak: shellText, speechRate: accessSpeechRateGlobal)
+                            } else {
+                                hasLoopedOnce = true
+                            }
                             
-                            await sayCLI(shellText)
                             setTitleSDSAcess(inputStr: "\(duration)")
                             
                             try await Task.sleep(nanoseconds: 1_000_000_000) //Sleep 1s
@@ -177,16 +197,18 @@ class ShortcutAction: Action {
                         if !isPressed {
                             print("User let go early!")
                             setTitleSDS()
-                            await sayCLI("Cancelled Shortcut!")
+                            await sayCLI(speak: "Cancelled Shortcut!", speechRate: accessSpeechRateGlobal)
                             return
                         }
                         
-                        await sayCLI("Running Shortcut!")
+                        await sayCLI(speak: "Running Shortcut!", speechRate: accessSpeechRateGlobal)
                         vTwoRunShortcut()
                         setTitleSDS()
                         print("vTwoRunShortcut - One")
                     }
                 }
+            } else {
+                vTwoRunShortcut()
             }
         } else {
             vTwoRunShortcut()
@@ -245,7 +267,6 @@ class ShortcutAction: Action {
         //        StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)
         
         //        if payload.settings.isPerKeyAccessibility {
-        startedHoldingAt = Date.now.timeIntervalSince1970 // Store the current Unix timestamp
         //        } else {
         //            NSLog("👀 Press count \(pressCount)")
         clicked(settings: payload.settings)
@@ -295,9 +316,11 @@ class ShortcutAction: Action {
             "selectedFolder": shortcutFolder,
             "isForcedTitle": isForcedTitle,
             "isAccessibility": isAccessibility,
+            "isHoldTime": isHoldTime,
             "isForcedTitleGlobal": isForcedTitleGlobal,
             "isAccessibilityGlobal": isAccessibilityGlobal,
             "isHoldTimeGlobal": isHoldTimeGlobal,
+            "accessSpeechRateGlobal": accessSpeechRateGlobal,
             "accessHoldTime": holdTime,
             
             
@@ -330,7 +353,7 @@ class ShortcutAction: Action {
     
     ///A Generalized helper function to save settings.
     func saveSettingsHelper() {
-        let xy = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility, shortcutUUID: shortcutToRunUUID, accessHoldTime: holdTime)
+        let xy = Settings(shortcutToRun: shortcutToRun, shortcutUUID: shortcutToRunUUID, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility, isPerKeyHoldTime: isHoldTime, accessHoldTime: holdTime)
         //        setSettings(to: xy)
         setSettings(to: xy)
         NSLog("Gibby One | New Settings saved, with: \(xy)")
@@ -385,11 +408,12 @@ class ShortcutAction: Action {
                                     isForcedTitle = settings.isForcedTitleLocal
                                     isAccessibility = settings.isAccesLocal
                                     holdTime = settings.accessHoldTime //If this is true then the above will equalt true & vice versa
-//                                    let perKeySettings = Settings(shortcutToRun: shortcutToRun, isPerKeyForcedTextfield: settings.isForcedTitle, isPerKeyAccessibility: settings.isAcces)
+                                    isHoldTime = settings.isHoldTime
                                     
                                     isForcedTitleGlobal = settings.isForcedTitleGlobal
                                     isAccessibilityGlobal = settings.isAccesGlobal //If this is true then the above will equalt true & vice versa
                                     isHoldTimeGlobal = settings.isHoldTimeGlobal //If this is true then the above will equalt true & vice versa
+                                    accessSpeechRateGlobal = settings.accessSpeechRateGlobal
                                     
                                     NSLog("SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)")
                                     saveSettingsHelper()
@@ -456,6 +480,8 @@ class ShortcutAction: Action {
         
         isAccessibility = payload.settings.isPerKeyAccessibility
         isForcedTitle = payload.settings.isPerKeyForcedTextfield
+        isHoldTime = payload.settings.isPerKeyHoldTime
+        
         
         holdTime = payload.settings.accessHoldTime
         

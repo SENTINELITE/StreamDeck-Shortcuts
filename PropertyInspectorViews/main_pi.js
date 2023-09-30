@@ -60,7 +60,9 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     var isAccessibility = payload.isAccessibility
                     var isAccessibilityGlobal = payload.isAccessibilityGlobal
                     var isHoldTimeGlobal = payload.isHoldTimeGlobal
+                    var isHoldTime = payload.isHoldTime
                     var holdTime = payload.accessHoldTime
+                    var accessSpeechRateGlobal = payload.accessSpeechRateGlobal
                     
                     let payloadSize = logSizeInKilobytes('initPayload', payload)
                     console.log("📦🚀 payload Size", payloadSize)
@@ -74,7 +76,7 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     initPayload(sentAt, processShortcutsSwift, payloadSize, totalShortcuts, totalFolders)
                     refreshListOfShortcutsFolders(payload.selectedFolder)
                     
-                    setToggleStateNew(isForcedTitle, isAccessibility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime)
+                    setToggleStateNew(isForcedTitle, isAccessibility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime, isHoldTime, accessSpeechRateGlobal)
                     break;
                 case "filteredFolder": //This needs to get removed
                     console.log("📦 filteredFolder")
@@ -141,60 +143,77 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
 document.addEventListener('DOMContentLoaded', (event) => {
     const shortcutsFolderList = document.querySelector("#shortcuts_folder_list");
     const shortcutsList = document.querySelector("#shortcuts_list");
-
+    
     const displayTitleToggle = document.getElementById("display_title_toggle_local");
     const accessToggle = document.getElementById("accessibility_toggle_local");
     const displayTitleToggleGlobal = document.getElementById("display_title_toggle_global");
     const accessToggleGlobal = document.getElementById("accessibility_toggle_global");
     const holdTimeGlobal = document.getElementById("holdTime_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeLocal = document.getElementById("holdTime_toggle_local");
+    
     const holdTimeSlider = document.getElementById("holdTimeSlider")
-
+    const speechRateSlider = document.getElementById("accessSpeechRateGlobalSlider")
+    
     // Existing event listeners
     shortcutsFolderList.addEventListener('valuechange', function(ev) {
         selectedNewIndex(ev.target.value, 'shortcutFolder');
     });
-
+    
     shortcutsList.addEventListener('valuechange', function(ev) {
         selectedNewIndex(ev.target.value, 'shortcutSelected');
     });
-
+    
     displayTitleToggle.addEventListener('valuechange', function(ev) {
         if (!isInitializing) {
-        toggleSetting(ev.target.value);
-    }
+            toggleSetting(ev.target.value);
+        }
     });
     
     accessToggle.addEventListener('valuechange', function(ev) {
         if (!isInitializing) {
-        toggleSetting(ev.target.value);
-    }
+            toggleSetting(ev.target.value);
+        }
     });
-
+    
     // Additional event listeners for global toggles
     displayTitleToggleGlobal.addEventListener('valuechange', function(ev) {
         if (!isInitializing) {
-        toggleSetting(ev.target.value);
-    }
+            toggleSetting(ev.target.value);
+        }
     });
-
+    
     accessToggleGlobal.addEventListener('valuechange', function(ev) {
         if (!isInitializing) {
-        toggleSetting(ev.target.value);
-    }
+            toggleSetting(ev.target.value);
+        }
     });
     
     holdTimeGlobal.addEventListener('valuechange', function(ev) {
         console.log("👻 → holdTimeGlobal changed to: → ", ev.target.value)
         if (!isInitializing) {
-        toggleSetting(ev.target.value);
-    }
+            toggleSetting(ev.target.value);
+        }
+    });
+    
+    holdTimeLocal.addEventListener('valuechange', function(ev) {
+        console.log("👻 → holdTime changed to: → ", ev.target.value)
+        if (!isInitializing) {
+            toggleSetting(ev.target.value);
+        }
     });
     
     holdTimeSlider.addEventListener('valuechange', function(ev) {
         console.log("👻 → Slider val changed to → ", ev.target.value)
         if (!isInitializing) {
-        toggleSetting(ev.target.value);
-    }
+            toggleSetting(ev.target.value);
+        }
+    });
+    
+    speechRateSlider.addEventListener('valuechange', function(ev) {
+        console.log("👻 → Slider val changed to → ", ev.target.value)
+        if (!isInitializing) {
+            toggleSetting(ev.target.value);
+        }
     });
     
 });
@@ -219,17 +238,21 @@ function toggleSetting(v) {
     const displayToggleGlobal = document.getElementById("display_title_toggle_global"); // Assuming "toggle" is the correct ID
     const accessToggleGlobal = document.getElementById("accessibility_toggle_global"); // Assuming "toggle" is the correct ID
     const holdTimeGlobal = document.getElementById("holdTime_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimeLocal = document.getElementById("holdTime_toggle_local");
     const holdTimeSlider = document.getElementById("holdTimeSlider")
+    const speechRateSlider = document.getElementById("accessSpeechRateGlobalSlider")
     
     console.log('🚨 Toggled Settings', v)
     
     const payloadToSend = {
-        isForcedTitleLocal: displayToggle.value,
-        isForcedTitleGlobal: displayToggleGlobal.value,
-        isAccesLocal: accessToggle.value,
-        isAccesGlobal: accessToggleGlobal.value,
-        isHoldTimeGlobal: holdTimeGlobal.value,
-        accessHoldTime: holdTimeSlider.value
+    isForcedTitleLocal: displayToggle.value,
+    isForcedTitleGlobal: displayToggleGlobal.value,
+    isAccesLocal: accessToggle.value,
+    isAccesGlobal: accessToggleGlobal.value,
+    isHoldTimeGlobal: holdTimeGlobal.value,
+    isHoldTime: holdTimeLocal.value,
+    accessHoldTime: holdTimeSlider.value,
+    accessSpeechRateGlobal: speechRateSlider.value
     };
     
     const jsonStringPayload = JSON.stringify(payloadToSend);
@@ -238,7 +261,7 @@ function toggleSetting(v) {
     sendNewPayload(SdsEventSend.globalSettingsUpdated, jsonStringPayload)
 }
 
-function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime) {
+function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime, isHoldTime, accessSpeechRateGlobal) {
     isInitializing = true
     console.log('🚀 👋🏼Setting State', isForcedTitle, isAccessbility)
     
@@ -247,7 +270,9 @@ function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, i
     const displayToggleGlobal = document.getElementById("display_title_toggle_global"); // Assuming "toggle" is the correct ID
     const accessToggleGlobal = document.getElementById("accessibility_toggle_global"); // Assuming "toggle" is the correct ID
     const holdTimeGlobal = document.getElementById("holdTime_toggle_global"); // Assuming "toggle" is the correct ID
+    const holdTimelocal = document.getElementById("holdTime_toggle_local");
     const holdTimeSlider = document.getElementById("holdTimeSlider")
+    const speechRateSlider = document.getElementById("accessSpeechRateGlobalSlider")
     
     displayToggle.value = isForcedTitle
     accessToggle.value = isAccessbility
@@ -256,7 +281,10 @@ function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, i
     accessToggleGlobal.value = isAccessibilityGlobal
     
     holdTimeGlobal.value = isHoldTimeGlobal
+    holdTimelocal.value = isHoldTime
     holdTimeSlider.value = holdTime
+    
+    speechRateSlider.value = accessSpeechRateGlobal
     
     isInitializing = false
     
@@ -267,16 +295,16 @@ function refreshListOfShortcutsFolders(selectedFolder) {
     const start = performance.now(); // Using performance.now() for accurate timing
     
     const select = document.getElementById("shortcuts_folder_list");
-
+    
     // Clear dropdown
     select.innerHTML = '';
-
+    
     // Add options to dropdown
     shortcutsFolder.forEach((val, index) => {
         const option = genOption(val, index);
         select.appendChild(option);
     });
-
+    
     // Set default selected option
     // select.value = 0;
     

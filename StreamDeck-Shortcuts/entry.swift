@@ -1,6 +1,6 @@
 import Foundation
 import StreamDeck
-import Sentry
+//import Sentry
 import OSLog
 
 let logger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Main")
@@ -55,6 +55,19 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
 //    @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
     
     required init() {
+        
+        
+//        //The initial signal won't send if the program exits too fast.
+//        SentrySDK.start { options in
+//            options.dsn  = "https://e5b7ab3d23b04542818cc7bbd4a9dc0a@o1114114.ingest.sentry.io/6145162"
+//            options.debug = false // Enabled debug when first installing is always helpful
+//            options.enableTracing = true
+//            options.swiftAsyncStacktraces = true
+////            options.tracesSampleRate = 0.1
+//        //    options.
+//            options.enableSwizzling = false
+//        }
+        
         logger.debug("😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!")
         processShortcuts()
     }

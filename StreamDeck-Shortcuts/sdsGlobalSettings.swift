@@ -21,6 +21,10 @@ struct HoldTimeGlobalKey: GlobalSettingKey {
     static let defaultValue: Bool = false
 }
 
+struct AccessSpeechRateGlobalKey: GlobalSettingKey {
+    static let defaultValue: Int = 175
+}
+
 extension GlobalSettings {
     @MainActor
     var isForcedTitleGlobal: Bool {
@@ -36,5 +40,10 @@ extension GlobalSettings {
     var isHoldTimeGlobal: Bool {
         get { self[HoldTimeGlobalKey.self] }
         set { self[HoldTimeGlobalKey.self] = newValue }
+    }
+    
+    var accessSpeechRateGlobal: Int {
+        get { self[AccessSpeechRateGlobalKey.self] }
+        set { self[AccessSpeechRateGlobalKey.self] = newValue }
     }
 }
