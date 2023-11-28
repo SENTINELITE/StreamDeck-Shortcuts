@@ -21,6 +21,11 @@
     </head>
     
     <body>
+        
+        <details class="message info">
+            <summary>The accessibility features are powered by AI services, & *are not* real voices. </summary>
+        </details>
+        
         <sdpi-item label="📁 Folder">
             <div id="isFolder">
                 <sdpi-select  placeholder="Placeholder..." id="shortcuts_folder_list">
@@ -36,6 +41,25 @@
                 </sdpi-select>
             </div>
         </sdpi-item>
+        
+        <sdpi-item label="🔊 Voice">
+            <div id="accessVoice">
+                <sdpi-select placeholder="OS Default..." id="access_voice_list">
+                    <option value="save1">System Default</option>
+                    <optgroup label="OpenAI Voices">
+                        <option value="johndoe" onmouseover="hoverVoice(this)">Alloy</option>
+                    </optgroup>
+                </sdpi-select>
+            </div>
+        </sdpi-item>
+        
+        <script>
+            function hoverVoice(option) {
+                var selectedVoice = option.value;
+                console.log('Hovered voice:', selectedVoice);
+            }
+        </script>
+        
         
         <!-- <sdpi-item label="Display Title">
         <sdpi-checkbox id="display_title_toggle" setting="is_okay" label="D1"></sdpi-checkbox>
@@ -62,7 +86,6 @@
                 <sdpi-checkbox id="holdTime_toggle_local" setting="local_setting" label="Local" title="Toggles the Hold Time setting, for this specific Key"></sdpi-checkbox>
                 <span style="width: 20px;"></span> <!-- This provides a space in between -->
                 <sdpi-checkbox id="holdTime_toggle_global" setting="local_setting" label="Global" title="Toggles the Hold Time setting, globally."></sdpi-checkbox>
-                <span style="width: 20px;"></span> <!-- This provides a space in between -->
             </div>
         </sdpi-item>
         
@@ -90,6 +113,22 @@
             </sdpi-range>
         </sdpi-item>
         
+        <sdpi-item label="2x3x Tap" title="Adjust double/triple tap feature.">
+            <div style="display: flex;">
+                <sdpi-checkbox id="Double_triple_tap_global" setting="local_setting" label="Global" title="Toggles the double/triple tap setting, for all keys"></sdpi-checkbox>
+                <span style="width: 10px;"></span> <!-- We need to fix this. It was jutting out the right side at 20px... -->
+                <sdpi-range
+                    id="timeBetweenTapsSlider"
+                    setting="tapDur"
+                    min="0.1"
+                    max="3"
+                    step="0.1"
+                    title="The amount of time you have inbetween clicks."
+                    showlabels>
+                </sdpi-range>
+            </div>
+        </sdpi-item>
+        
         
         <!-- <sdpi-item label="Accessibility">
         <sdpi-checkbox id="accessibility_toggle" setting="is_okay" label=""></sdpi-checkbox>
@@ -98,6 +137,12 @@
         <sdpi-item>
             <sdpi-button onclick="openPage('sentinelite.com/discord-shortcuts-support')">
                 Discord Support 🚀
+            </sdpi-button>
+        </sdpi-item>
+        
+        <sdpi-item>
+            <sdpi-button onclick="openPage('https://www.craft.me/s/iKBQvSfunF32K6')">
+                Privacy notice 🔗
             </sdpi-button>
         </sdpi-item>
         

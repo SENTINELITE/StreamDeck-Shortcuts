@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVFoundation
 import Sentry
 
 //  🔷----------------------------------------------------- --------------------------------------------------
@@ -65,5 +66,29 @@ func sayCLI(speak: String, speechRate: Int) async {
         sayCLI.launch()
         sayCLI.waitUntilExit()
          NSLog("Finished running With: \(sayCLI.arguments)")
+    }
+}
+
+//TODO: Pass Speed Parameter
+var audioPlayer: AVAudioPlayer?
+///Runs the specified audiio file & return the duration of the file.
+func runVoices(url: URL) async -> TimeInterval {
+    let durationTask = Task {
+        
+        audioPlayer = try AVAudioPlayer(contentsOf: url)
+        audioPlayer?.prepareToPlay()
+        audioPlayer?.play()
+        
+        guard let duration = audioPlayer?.duration else {
+            return TimeInterval(0)
+        }
+        return duration
+    }
+    do {
+        let result = try await durationTask.result.get()
+        return result
+    } catch {
+        print("Error")
+        return TimeInterval(0)
     }
 }

@@ -63,6 +63,16 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     var isHoldTime = payload.isHoldTime
                     var holdTime = payload.accessHoldTime
                     var accessSpeechRateGlobal = payload.accessSpeechRateGlobal
+                    accessibilityVoices = payload.accessibilityVoices // Not accessbile
+                    
+                    var selectedAccessibilityVoice = payload.selectedAccessibilityVoice
+                    
+                    console.log(accessibilityVoices)
+                    console.log('Voice', selectedAccessibilityVoice)
+                    
+                    var timeBetweenTaps = payload.timeBetweenTaps
+                    var isDoubleTripleTap = payload.isDoubleTripleTap
+                    
                     
                     let payloadSize = logSizeInKilobytes('initPayload', payload)
                     console.log("📦🚀 payload Size", payloadSize)
@@ -71,12 +81,13 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     console.log("📦 totalListOfShortcuts #", totalListOfShortcuts)
                     console.log("📦 folders #", totalFolders)
                     console.log("📦 initialPayload")
-                    shortcutsFolder = payload.folders
+                    shortcutsFolder = payload.folders //Globally accessible
                     console.log("XYZ: ", shortcutsFolder)
                     initPayload(sentAt, processShortcutsSwift, payloadSize, totalShortcuts, totalFolders)
                     refreshListOfShortcutsFolders(payload.selectedFolder)
+                    setDefaultCccessibilityVoicesState(accessibilityVoices, selectedAccessibilityVoice) //85
                     
-                    setToggleStateNew(isForcedTitle, isAccessibility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime, isHoldTime, accessSpeechRateGlobal)
+                    setToggleStateNew(isForcedTitle, isAccessibility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime, isHoldTime, accessSpeechRateGlobal, isDoubleTripleTap, timeBetweenTaps)
                     break;
                 case "filteredFolder": //This needs to get removed
                     console.log("📦 filteredFolder")
@@ -144,6 +155,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const shortcutsFolderList = document.querySelector("#shortcuts_folder_list");
     const shortcutsList = document.querySelector("#shortcuts_list");
     
+    const accessbilityVoicesList = document.querySelector("#access_voice_list");
+    
+    
     const displayTitleToggle = document.getElementById("display_title_toggle_local");
     const accessToggle = document.getElementById("accessibility_toggle_local");
     const displayTitleToggleGlobal = document.getElementById("display_title_toggle_global");
@@ -154,6 +168,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const holdTimeSlider = document.getElementById("holdTimeSlider")
     const speechRateSlider = document.getElementById("accessSpeechRateGlobalSlider")
     
+    const doubleTripleTapGlobal = document.getElementById("Double_triple_tap_global")
+    const timeBetweenTapsSlider = document.getElementById("timeBetweenTapsSlider")
+    
     // Existing event listeners
     shortcutsFolderList.addEventListener('valuechange', function(ev) {
         selectedNewIndex(ev.target.value, 'shortcutFolder');
@@ -161,6 +178,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
     shortcutsList.addEventListener('valuechange', function(ev) {
         selectedNewIndex(ev.target.value, 'shortcutSelected');
+    });
+    
+    accessbilityVoicesList.addEventListener('valuechange', function(ev) {
+        selectedNewIndex(ev.target.value, 'voiceSelected');
     });
     
     displayTitleToggle.addEventListener('valuechange', function(ev) {
@@ -216,6 +237,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
     
+    doubleTripleTapGlobal.addEventListener('valuechange', function(ev) {
+        console.log("👻 → Slider val changed to → ", ev.target.value)
+        if (!isInitializing) {
+            toggleSetting(ev.target.value);
+        }
+    });
+    
+    timeBetweenTapsSlider.addEventListener('valuechange', function(ev) {
+        console.log("👻 → Slider val changed to → ", ev.target.value)
+        if (!isInitializing) {
+            toggleSetting(ev.target.value);
+        }
+    });
+    
 });
 
 
@@ -242,6 +277,11 @@ function toggleSetting(v) {
     const holdTimeSlider = document.getElementById("holdTimeSlider")
     const speechRateSlider = document.getElementById("accessSpeechRateGlobalSlider")
     
+    // const accessbilityVoicesList = document.getElementById("access_voice_list")
+    
+    const doubleTripleTapGlobal = document.getElementById("Double_triple_tap_global")
+    const timeBetweenTapsSlider = document.getElementById("timeBetweenTapsSlider")
+    
     console.log('🚨 Toggled Settings', v)
     
     const payloadToSend = {
@@ -252,7 +292,10 @@ function toggleSetting(v) {
     isHoldTimeGlobal: holdTimeGlobal.value,
     isHoldTime: holdTimeLocal.value,
     accessHoldTime: holdTimeSlider.value,
-    accessSpeechRateGlobal: speechRateSlider.value
+    accessSpeechRateGlobal: speechRateSlider.value,
+    isDoubleTripleTap: doubleTripleTapGlobal.value,
+    timeBetweenTaps: timeBetweenTapsSlider.value,
+        // accessibilityVoicesGlobal: accessbilityVoicesList.options[accessbilityVoicesList.selectedIndex].text
     };
     
     const jsonStringPayload = JSON.stringify(payloadToSend);
@@ -261,7 +304,7 @@ function toggleSetting(v) {
     sendNewPayload(SdsEventSend.globalSettingsUpdated, jsonStringPayload)
 }
 
-function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime, isHoldTime, accessSpeechRateGlobal) {
+function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, isAccessibilityGlobal, isHoldTimeGlobal, holdTime, isHoldTime, accessSpeechRateGlobal, isDoubleTripleTap, timeBetweenTaps) {
     isInitializing = true
     console.log('🚀 👋🏼Setting State', isForcedTitle, isAccessbility)
     
@@ -273,6 +316,9 @@ function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, i
     const holdTimelocal = document.getElementById("holdTime_toggle_local");
     const holdTimeSlider = document.getElementById("holdTimeSlider")
     const speechRateSlider = document.getElementById("accessSpeechRateGlobalSlider")
+    
+    const doubleTripleTapGlobal = document.getElementById("Double_triple_tap_global")
+    const timeBetweenTapsSlider = document.getElementById("timeBetweenTapsSlider")
     
     displayToggle.value = isForcedTitle
     accessToggle.value = isAccessbility
@@ -286,10 +332,50 @@ function setToggleStateNew(isForcedTitle, isAccessbility, isForcedTitleGlobal, i
     
     speechRateSlider.value = accessSpeechRateGlobal
     
+    doubleTripleTapGlobal.value = isDoubleTripleTap
+    timeBetweenTapsSlider.value = timeBetweenTaps
+    
     isInitializing = false
     
     
 }
+
+function setDefaultCccessibilityVoicesState(voices, selectedVoice) {
+    const select = document.getElementById("access_voice_list");
+    
+    select.innerHTML = ''; // clear dropdown
+    
+    const systemVoice = voices.find(voice => voice === 'system'); // find system voice
+    
+    if(systemVoice) {
+        const systemOption = genOption(systemVoice, 0); // Option 0
+        select.appendChild(systemOption); // Add system voice to select
+    }
+    
+    const optgroup = document.createElement("optgroup");
+    optgroup.setAttribute("label", "OpenAI Voices");
+    
+    // Start index from 1 for other voices
+    let voiceIndex = 1;
+    
+    // Add options to dropdown
+    voices.forEach((val) => {
+        if(val !== 'system') {  // filter system voice
+            const option = genOption(val, voiceIndex);
+            optgroup.appendChild(option); // add non-system voice to optgroup
+            voiceIndex++; // increment index
+        }
+    });
+    
+    select.appendChild(optgroup); // Add optgroup to select
+    
+    const selectedIndex = voices.indexOf(selectedVoice);
+    
+    select.value = selectedIndex
+}
+
+
+
 
 function refreshListOfShortcutsFolders(selectedFolder) {
     const start = performance.now(); // Using performance.now() for accurate timing
@@ -593,7 +679,8 @@ const SdsEventSend = {
 newFolderSelected: "newFolderSelected",
 newShortcutSelected: "newShortcutSelected",
 globalSettingsUpdated: "globalSettingsUpdated",
-voiceHover: "voiceHover"
+voiceHover: "voiceHover",
+newVoiceSelected: "newVoiceSelected"
 };
 
 
@@ -610,7 +697,7 @@ function sendNewPayload(event, data) {
     };
     websocket.send(JSON.stringify(payloadJson));
     console.log("📧 Payload: ", payloadJson);
-    console.log("New Shortcut Folder Selected", data);
+    console.log("Payload Data", data);
     
 }
 
@@ -654,6 +741,11 @@ function selectedNewIndex(selected_id, selected_type, selectedNew) {
         // saySelect.selectedIndex =
         testGlobalVoice = saySelect.value;
         console.log("The voice is off!");
+    } else if (selected_type === "voiceSelected") {
+        //Send Voice Payload
+        
+        pay = accessibilityVoices[selected_id]
+        sendNewPayload(SdsEventSend.newVoiceSelected, pay)
     } else {
         console.log("New X X Selected", selected_id);
         //TODO: Send message about ref type 🟥

@@ -30,6 +30,7 @@ enum SdsEventRecieveType: String, Codable {
     case newShortcutSelected //A Shortcut has been selected
     case newFolderSelected // A Folder has been selected
     case globalSettingsUpdated // A Global setting has been changed
+    case newVoiceSelected
 }
 
 
@@ -49,6 +50,9 @@ struct GlobalSettingsUpdated: Codable {
     let accessHoldTime: Double
     let accessSpeechRateGlobal: Int
     let isHoldTime: Bool
+    let isDoubleTripleTap: Bool
+    let timeBetweenTaps: Double
+//    let accessibilityVoicesGlobal: Voice
     
 }
 

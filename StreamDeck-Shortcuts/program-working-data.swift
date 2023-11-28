@@ -16,7 +16,11 @@ var theValueToTradeVoice = "TheDefaultTradedValueVoice_DevX"
 
 // shortcuts = [String: String] // [ShortcutName : ShortcutFolder]
 var shortcutsFolder = ["placeholder Folder From Backend"]
+
+@available(*, deprecated, message: "Move to the ")
 var listOfSayVoices = ["Samantha", "Victoria", "Alex", "Fred"]
+
+var accessibilityVoices = ["system", "alloy", "echo", "fable", "onyx", "nova", "shimmer"]
 
 //Send the object of this, to minimize crosstalk.
 // shortcuts = [String: String] // [ShortcutName : ShortcutFolder]

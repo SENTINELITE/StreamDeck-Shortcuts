@@ -26,6 +26,7 @@
 		A129DE53278EB2A60024DAE6 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = A129DE52278EB2A60024DAE6 /* Sentry */; };
 		A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */; };
 		A162C82A2A86D31C007E13AE /* sdsGlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */; };
+		A169B2962AFF1562008C3ACD /* OpenAIVoicesInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A169B2952AFF1562008C3ACD /* OpenAIVoicesInterface.swift */; };
 		A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AD014298EA2990084D3EE /* IncrementAction.swift */; };
 		A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */; };
 		A17E6C38299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */; };
@@ -85,6 +86,7 @@
 		A130CC5B2A50FF1E00614A99 /* main_pi_two.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = main_pi_two.html; sourceTree = "<group>"; };
 		A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sdsGlobalSettings.swift; sourceTree = "<group>"; };
+		A169B2952AFF1562008C3ACD /* OpenAIVoicesInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIVoicesInterface.swift; sourceTree = "<group>"; };
 		A17AD014298EA2990084D3EE /* IncrementAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementAction.swift; sourceTree = "<group>"; };
 		A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shortcuts.swift; sourceTree = "<group>"; };
 		A17E6C35299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = "StreamDeck-Shortcuts-AppIntents.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -191,6 +193,7 @@
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
 				A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */,
 				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
+				A169B2952AFF1562008C3ACD /* OpenAIVoicesInterface.swift */,
 				A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */,
 				A1F29E412754B9EA00AA43C6 /* Info.plist */,
 			);
@@ -344,6 +347,7 @@
 				A19863DE2A85B6730081D90F /* ExtraData.swift in Sources */,
 				A19863E02A85B75F0081D90F /* RunShortcutBack.swift in Sources */,
 				A1F29E342753670200AA43C6 /* read-write-settings.swift in Sources */,
+				A169B2962AFF1562008C3ACD /* OpenAIVoicesInterface.swift in Sources */,
 				A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */,
 				A1F29E2E275366AC00AA43C6 /* analytics.swift in Sources */,
 				A1F29E052753653900AA43C6 /* entry.swift in Sources */,

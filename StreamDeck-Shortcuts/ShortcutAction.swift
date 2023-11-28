@@ -8,6 +8,7 @@
 import Foundation
 import StreamDeck
 import AppKit
+import OSLog
 
 class ShortcutAction: Action {
     static var controllers: [StreamDeck.ControllerType] = [.keypad]
@@ -68,18 +69,23 @@ class ShortcutAction: Action {
         self.coordinates = coordinates
     }
     
+    /// The global setting for the Forced Title
     @GlobalSetting(\.isForcedTitleGlobal) var isForcedTitleGlobal
     @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
     @GlobalSetting(\.isHoldTimeGlobal) var isHoldTimeGlobal
+    @GlobalSetting(\.isDoubleTripleTapOn) var isDoubleTripleTap
     @GlobalSetting(\.accessSpeechRateGlobal) var accessSpeechRateGlobal
+    @GlobalSetting(\.accessibilityVoice) var accessibilityVoiceGlobal
+    
+    
+    ///The amount of time the user has between clicks, before registering a Double/Triple tap. Default is 200ms
+    @GlobalSetting(\.timeBetweenTaps) var timeBetweenTaps
     
     // Local, internal counter, to handle Double/Triple tap feature.
     private var pressCount = 0
     
     var currentTask: Task<Void, Never>?
     
-    ///The amount of time the user has between clicks, before registering a Double/Triple tap.
-    var sdKeyDownBuffer = 0.2 //TODO: We need to make this adjustable & toggelable. Some people may not want any delay for these features.
     
     var isForcedTitle = false //TODO: Connect to PI
     var isAccessibility = false //TODO: Remove this global var!
@@ -93,32 +99,39 @@ class ShortcutAction: Action {
     var shortcutFolder = ""
     
     func clicked(settings: ShortcutAction.Settings) {
-        NSLog("clicked()...")
-        pressCount += 1 // Increment pressCount
         
-        // Cancel the previous task if it exists
-        currentTask?.cancel()
-        
-        // Create a new task
-        currentTask = Task {
-            NSLog("Starting Task...")
-            do {
-                NSLog("Starting Task 2 ...")
-                try await withTaskCancellationHandler {
-                    NSLog("Starting Task.sleep...")
-                    try await sleep(for: sdKeyDownBuffer)
-                    NSLog("Task.sleep done | Wrapping Thread Up...")
-                    //                    print("pressCount count: \(self.pressCount)")
-                    finishTask(settings: settings)
-                    
-                } onCancel: {
-                    NSLog("Task.canceled |")
-                    // Handler for task cancellation
-                    // We don't need to do anything special here in this case
+        if isDoubleTripleTap {
+            NSLog("clicked()...")
+            pressCount += 1 // Increment pressCount
+            
+            // Cancel the previous task if it exists
+            currentTask?.cancel()
+            
+            // Create a new task
+            currentTask = Task {
+                NSLog("Starting Task...")
+                do {
+                    NSLog("Starting Task 2 ...")
+                    try await withTaskCancellationHandler {
+                        NSLog("Starting Task.sleep...")
+                        try await sleep(for: timeBetweenTaps)
+                        NSLog("Task.sleep done | Wrapping Thread Up...")
+                        //                    print("pressCount count: \(self.pressCount)")
+                        finishTask(settings: settings)
+                        
+                    } onCancel: {
+                        NSLog("Task.canceled |")
+                        // Handler for task cancellation
+                        // We don't need to do anything special here in this case
+                    }
+                } catch {
+                    NSLog("Task.Erorr | \(error)")
+                    // Error handling if needed
                 }
-            } catch {
-                NSLog("Task.Erorr | \(error)")
-                // Error handling if needed
+            }
+        } else {
+            Task {
+                await executeShortcut(settings: settings)
             }
         }
     }
@@ -161,17 +174,131 @@ class ShortcutAction: Action {
         pressCount = 0
     }
     
+    func runVoice () {
+        
+    }
+    
+    ///check if Audio file exists, if not create it
+    func getShortcutAudioFile() async -> URL {
+        
+        let genFileLogger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Get Audio File")
+        
+        let manager = FileManager.default
+        let path = audioDir.appending("/Shortcuts/\(shortcutToRunUUID.uuidString)_\(accessibilityVoiceGlobal).aac")
+        let fileURL = URL(fileURLWithPath: path)
+        
+        if !manager.fileExists(atPath: path) {
+            genFileLogger.log("Audio file for \(self.shortcutToRunUUID.uuidString) didn't exist with voice: \(self.accessibilityVoiceGlobal), creating it now...")
+            
+            NSLog("Audio file for \(shortcutToRunUUID.uuidString) didn't exist with voice: \(accessibilityVoiceGlobal), creating it now...")
+            do {
+                if let inputVoice = Voice(rawValue: accessibilityVoiceGlobal) {
+                    try await getTextToSpeechAsync(text: shortcutToRun, shortcutUUID: shortcutToRunUUID.uuidString, voice: inputVoice)
+                }
+            } catch {
+                genFileLogger.error("Failed to generate file with error: \(error, privacy: .public)")
+            }
+        }
+        genFileLogger.log("About to return with path: \(fileURL, privacy: .public)")
+        return fileURL
+    }
+    
     ///Runs the shortcut.
     func executeShortcut (settings: ShortcutAction.Settings) async {
         if settings.isPerKeyAccessibility || isAccessibilityGlobal {
-            await sayCLI(speak: settings.shortcutToRun, speechRate: accessSpeechRateGlobal)
-            if isHoldTimeGlobal || isHoldTime {
-                Task {
-                    var hasLoopedOnce = false
-                    var curTime = holdTime //5.5 seconds
+            
+            if accessibilityVoiceGlobal != Voice.system.rawValue {
+                //TODO: compare uuid to shortcut name, to ensure we're playing the right audio!
+
+                let shortcutToRunAudioFile = await getShortcutAudioFile()
+                let canceledShortcutAudioFile = URL(fileURLWithPath: audioDir.appending("/Cancelled Shortcut/cancelled_shortcut_\(accessibilityVoiceGlobal).aac"))
+                
+                let initialDur = await runVoices(url: shortcutToRunAudioFile)
+                
+                //Sleep for the initial duration (to ensure the first clip plays through).
+                do {
+                    try await Task.sleep(for: .seconds(initialDur))
+                } catch {
+                    print(error)
+                }
+                
+                if isHoldTimeGlobal || isHoldTime {
+                        
+                    var funcDuration = holdTime - initialDur
                     
-                    if curTime >= 0 { //if this is zero, it's disabled so we ignore
-                        while curTime > 0 {
+                    for number in stride(from: 1, to: funcDuration, by: 1.0).reversed() {
+                        do {
+                            if !isPressed {
+                                print("User let go early!")
+                                setTitleSDS()
+                                let _ = await runVoices(url: canceledShortcutAudioFile)
+                                return
+                            }
+                            
+                            let roundedNum = Int(number)
+                            let audioFileName = "\(roundedNum)_\(accessibilityVoiceGlobal).aac"
+                            let audioURL = URL(fileURLWithPath: audioDir.appending("/Countdown/\(audioFileName)"))
+                            
+                            setTitleSDSAcess(inputStr: "\(roundedNum)")
+                            let _ = await runVoices(url: audioURL)
+                            
+                            // Add a delay between each count
+                            try await Task.sleep(for: .seconds(1))
+                        } catch {
+                            NSLog("\(error)")
+                        }
+                    }
+                    
+                    if !isPressed {
+                        print("User let go early!")
+                        setTitleSDS()
+                        let _ = await runVoices(url: canceledShortcutAudioFile)
+                        return
+                    }
+                    
+                    let runningShortcutURL = URL(fileURLWithPath: audioDir.appending("/Running Shortcut/running_shortcut_\(accessibilityVoiceGlobal).aac"))
+                    let _ = await runVoices(url: runningShortcutURL)
+                    
+                    vTwoRunShortcut()
+                    setTitleSDS()
+                } else {
+                    
+                    vTwoRunShortcut()
+                    setTitleSDS()
+                }
+                
+            } else {
+                //MARK: Local, macOS Speech API
+                await sayCLI(speak: settings.shortcutToRun, speechRate: accessSpeechRateGlobal)
+                if isHoldTimeGlobal || isHoldTime {
+                    Task {
+                        var hasLoopedOnce = false
+                        var curTime = holdTime //5.5 seconds
+                        
+                        if curTime >= 0 { //if this is zero, it's disabled so we ignore
+                            while curTime > 0 {
+                                if !isPressed {
+                                    print("User let go early!")
+                                    setTitleSDS()
+                                    await sayCLI(speak: "Cancelled Shortcut!", speechRate: accessSpeechRateGlobal)
+                                    return
+                                }
+                                
+                                let duration = Duration.seconds(curTime).formatted(.units(fractionalPart: .show(length: 0)))
+                                if hasLoopedOnce {
+                                    let shellText = Int(curTime).description //duration.description
+                                    await sayCLI(speak: shellText, speechRate: accessSpeechRateGlobal)
+                                } else {
+                                    hasLoopedOnce = true
+                                }
+                                
+                                setTitleSDSAcess(inputStr: "\(duration)")
+                                
+                                try await Task.sleep(nanoseconds: 1_000_000_000) //Sleep 1s
+                                curTime -= 1 //Subtract 1s
+                                //                        isFirstLoop = false
+                            }
+                            
                             if !isPressed {
                                 print("User let go early!")
                                 setTitleSDS()
@@ -179,36 +306,15 @@ class ShortcutAction: Action {
                                 return
                             }
                             
-                            let duration = Duration.seconds(curTime).formatted(.units(fractionalPart: .show(length: 0)))
-                            if hasLoopedOnce {
-                                let shellText = Int(curTime).description //duration.description
-                                await sayCLI(speak: shellText, speechRate: accessSpeechRateGlobal)
-                            } else {
-                                hasLoopedOnce = true
-                            }
-                            
-                            setTitleSDSAcess(inputStr: "\(duration)")
-                            
-                            try await Task.sleep(nanoseconds: 1_000_000_000) //Sleep 1s
-                            curTime -= 1 //Subtract 1s
-                            //                        isFirstLoop = false
-                        }
-                        
-                        if !isPressed {
-                            print("User let go early!")
+                            await sayCLI(speak: "Running Shortcut!", speechRate: accessSpeechRateGlobal)
+                            vTwoRunShortcut()
                             setTitleSDS()
-                            await sayCLI(speak: "Cancelled Shortcut!", speechRate: accessSpeechRateGlobal)
-                            return
+                            print("vTwoRunShortcut - One")
                         }
-                        
-                        await sayCLI(speak: "Running Shortcut!", speechRate: accessSpeechRateGlobal)
-                        vTwoRunShortcut()
-                        setTitleSDS()
-                        print("vTwoRunShortcut - One")
                     }
+                } else {
+                    vTwoRunShortcut()
                 }
-            } else {
-                vTwoRunShortcut()
             }
         } else {
             vTwoRunShortcut()
@@ -322,10 +428,11 @@ class ShortcutAction: Action {
             "isHoldTimeGlobal": isHoldTimeGlobal,
             "accessSpeechRateGlobal": accessSpeechRateGlobal,
             "accessHoldTime": holdTime,
-            
-            
-            
-            //            "": listOfCuts
+            "timeBetweenTaps": timeBetweenTaps,
+            "isDoubleTripleTap": isDoubleTripleTap,
+            "accessibilityVoices": accessibilityVoices,
+            "selectedAccessibilityVoice": accessibilityVoiceGlobal
+             
             //TODO: Add all shortcuts here?
         ]
         
@@ -392,6 +499,34 @@ class ShortcutAction: Action {
                         } else {
                             NSLog("newFolderSelected Failed with: \(payload)")
                         }
+                        
+                    case .newVoiceSelected:
+                        NSLog("✈️ Voice from payload \(payload)")
+                        
+                        
+                        if let jsonDataString = payload["data"] {
+                            if let decodedVoiceNew = Voice(rawValue: jsonDataString) {
+                                ///plays a new audio snipped if the voice isn't the same, & assigns it
+                                if accessibilityVoiceGlobal != decodedVoiceNew.rawValue {
+                                    accessibilityVoiceGlobal = decodedVoiceNew.rawValue
+                                    Task {
+                                        if decodedVoiceNew == .system {
+                                            await sayCLI(speak: "Hello, this is the default-system voice!", speechRate: accessSpeechRateGlobal)
+                                        } else {
+                                            let url = URL(fileURLWithPath: audioDir.appending("/Intros/intro_\(accessibilityVoiceGlobal).aac"))
+                                            let _ = await runVoices(url: url)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if let voice = payload["data"] {
+                            NSLog("✈️ Voice from payload \(voice)")
+                        } else {
+                            NSLog("newFolderSelected Failed with: \(payload)")
+                        }
+                        
                     case .globalSettingsUpdated:
                         
                         if let jsonDataString = payload["data"] {
@@ -413,7 +548,11 @@ class ShortcutAction: Action {
                                     isForcedTitleGlobal = settings.isForcedTitleGlobal
                                     isAccessibilityGlobal = settings.isAccesGlobal //If this is true then the above will equalt true & vice versa
                                     isHoldTimeGlobal = settings.isHoldTimeGlobal //If this is true then the above will equalt true & vice versa
-                                    accessSpeechRateGlobal = settings.accessSpeechRateGlobal
+//                                    accessSpeechRateGlobal = settings.accessSpeechRateGlobal
+                                    
+                                    
+                                    isDoubleTripleTap = settings.isDoubleTripleTap
+                                    timeBetweenTaps = settings.timeBetweenTaps
                                     
                                     NSLog("SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)")
                                     saveSettingsHelper()
@@ -492,7 +631,7 @@ class ShortcutAction: Action {
     }
     
     func didReceiveGlobalSettings() {
-        NSLog("Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal)")
+        NSLog("Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal), \(self.accessibilityVoiceGlobal)")
         setTitleSDS()
     }
     
