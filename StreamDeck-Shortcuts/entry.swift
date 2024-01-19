@@ -6,15 +6,15 @@ import OSLog
 let logger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Main")
 
 @main
-class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
+class StreamDeckShortcuts: Plugin { //Type,  'CounterPluginXYZ' does not conform to protocol 'PluginDelegate'
     struct Settings: Codable, Hashable {
 //        var isForcedTitle: Bool = false
         var isAcces: Bool = false
     }
     // MARK: Manifest
-    static var name: String = "V2"
+    static var name: String = "StreamDeck Shortcuts BETA"
     
-    static var description: String = "SDS V2!"
+    static var description: String = "Shortcuts allows you to run your Apple Shortcuts within the Elgato StreamDeck ecosystem. This is the beta version, that's under active development."
     
     static var category: String? = "SDS"
     
@@ -24,11 +24,11 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
     
     static var icon: String = "Icons/pluginIcon"
     
-    static var url: URL? = URL(string: "https://github.com/emorydunn/StreamDeckPlugin")
+    static var url: URL? = URL(string: "https://sentinelite.com")
     
-    static var version: String = "0.1"
+    static var version: String = "2.0.0-beta.11"
     
-    static var os: [PluginOS] = [.mac(minimumVersion: "12.0")]
+    static var os: [PluginOS] = [PluginOS.macOS("12.0")]
     
     static var applicationsToMonitor: ApplicationsToMonitor?
     
@@ -70,6 +70,8 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
         
         logger.debug("😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!")
         processShortcuts()
+        logger.debug("😡 Entry.swift | TD-One About to init!")
+        initializeTD()
     }
     
     func didReceiveGlobalSettings(_ settings: Settings) {
@@ -86,7 +88,7 @@ class StreamDeckShortcuts: PluginDelegate { //Type,  'CounterPluginXYZ' does not
 //        }
         NSLog("Nemesis-One-Two SDS - SE - WillAppear V2 Action Instance")
         NSLog("Nemesis-One-Three Payload \(payload)")
-        logger.debug("😡 \(StreamDeckPlugin.shared.uuid)")
+        logger.debug("😡 \(PluginCommunication.shared.uuid)")
         
     }
     

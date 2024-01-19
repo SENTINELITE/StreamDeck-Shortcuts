@@ -43,6 +43,7 @@ struct mySettings: Codable {
     var dropdownRefs: Int
 }
                                                                                                                 //, isDeprecatedRunner: false
+@available(*, deprecated, message: "Move away from this")
 var userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
 
 

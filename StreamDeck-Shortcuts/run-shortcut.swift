@@ -72,11 +72,13 @@ func sayCLI(speak: String, speechRate: Int) async {
 //TODO: Pass Speed Parameter
 var audioPlayer: AVAudioPlayer?
 ///Runs the specified audiio file & return the duration of the file.
-func runVoices(url: URL) async -> TimeInterval {
+func runVoices(url: URL, playbackSpeed: Float = 1.0) async -> TimeInterval {
     let durationTask = Task {
         
         audioPlayer = try AVAudioPlayer(contentsOf: url)
         audioPlayer?.prepareToPlay()
+        audioPlayer?.enableRate = true
+        audioPlayer?.rate = playbackSpeed
         audioPlayer?.play()
         
         guard let duration = audioPlayer?.duration else {

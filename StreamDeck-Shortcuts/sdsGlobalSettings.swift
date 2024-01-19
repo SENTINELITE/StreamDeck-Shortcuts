@@ -8,6 +8,18 @@
 import Foundation
 import StreamDeck
 
+//TODO: Move to the updated Global Settings
+
+/*
+ extension EnvironmentValues {
+     #environmentKey("count", defaultValue: 0, ofType: Int.self)
+ }
+
+ extension GlobalSettings {
+     #globalSetting("count", defaultValue: 0, ofType: Int.self)
+ }
+ */
+
 // Separate keys for different settings
 struct ForcedTitleGlobalKey: GlobalSettingKey {
     static let defaultValue: Bool = false

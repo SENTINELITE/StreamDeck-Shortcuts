@@ -22,7 +22,7 @@ struct Shortcut: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         print("Should've Ran Shortcut From Intent")
-        StreamDeckPlugin.shared.instances.values.forEach {
+        PluginCommunication.shared.instances.values.forEach {
             $0.setTitle(to: "\(str)", target: nil, state: nil)
         }
         return .result(value: 75)

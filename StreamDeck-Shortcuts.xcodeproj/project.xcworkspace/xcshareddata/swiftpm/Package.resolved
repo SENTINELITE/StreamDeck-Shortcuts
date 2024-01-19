@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/emorydunn/StreamDeckPlugin",
       "state" : {
-        "branch" : "GlobalSettings",
-        "revision" : "5bfdf36d70dbbf8c8be1309a4d675786ed2130e8"
+        "branch" : "main",
+        "revision" : "f77a2f4e5dcd6b8317f85d986e889fd3ab4c8fee"
       }
     },
     {
@@ -28,12 +28,21 @@
       }
     },
     {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "43c802fb7f96e090dde015344a94b5e85779eff1",
+        "version" : "509.1.0"
+      }
+    },
+    {
       "identity" : "swiftclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TelemetryDeck/SwiftClient",
       "state" : {
         "branch" : "main",
-        "revision" : "3f8bd438c8681ce7ccdf035b529cb5c4cd82cd7b"
+        "revision" : "c804f2e4ca2301200116e9da4c4640d9724960d6"
       }
     }
   ],

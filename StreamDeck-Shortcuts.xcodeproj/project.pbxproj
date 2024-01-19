@@ -655,7 +655,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/emorydunn/StreamDeckPlugin";
 			requirement = {
-				branch = GlobalSettings;
+				branch = main;
 				kind = branch;
 			};
 		};

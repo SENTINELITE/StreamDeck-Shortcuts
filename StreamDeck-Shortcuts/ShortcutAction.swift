@@ -357,9 +357,12 @@ class ShortcutAction: Action {
             NSLog("Ran? --- \(shortcutsCLI.arguments)")
         } catch {
             NSLog("\(error)")
+            return
         }
+        
+        sendSignal()
+        
         NSLog("Should've ran the shortcut...")
-        //        }
         
         NSLog("mapped Shortcuts: \(shortcutsMapped)")
     }
@@ -390,7 +393,7 @@ class ShortcutAction: Action {
 //    MARK: WillAppear
     func willAppear(device: String, payload: AppearEvent<Settings>) {
         NSLog("🛡️ DomeOfProtection With: \(payload)")
-        SDVersion = StreamDeckPlugin.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
+        SDVersion = PluginCommunication.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
         NSLog("Nemesis-Zero-Init with count: \(SDVersion)")
         getSettings()
         processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
