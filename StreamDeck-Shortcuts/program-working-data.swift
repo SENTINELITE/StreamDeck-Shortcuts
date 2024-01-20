@@ -7,12 +7,20 @@
 
 import Foundation
 
+var newData = [ShortcutDataTwo]()
+var processRunShortcutTime: String = "nil"
+var isCurrentlyProcessingShortcuts = false
+
 var savedShortcut = "TheDefaultTradedValue"
 var theValueToTradeVoice = "TheDefaultTradedValueVoice_DevX"
 
 // shortcuts = [String: String] // [ShortcutName : ShortcutFolder]
 var shortcutsFolder = ["placeholder Folder From Backend"]
+
+@available(*, deprecated, message: "Move to the ")
 var listOfSayVoices = ["Samantha", "Victoria", "Alex", "Fred"]
+
+var accessibilityVoices = ["system", "alloy", "echo", "fable", "onyx", "nova", "shimmer"]
 
 //Send the object of this, to minimize crosstalk.
 // shortcuts = [String: String] // [ShortcutName : ShortcutFolder]
@@ -35,6 +43,7 @@ struct mySettings: Codable {
     var dropdownRefs: Int
 }
                                                                                                                 //, isDeprecatedRunner: false
+@available(*, deprecated, message: "Move away from this")
 var userPrefs = mySettings(isAccessibility: false, accessibilityHoldDownTime: 5.0, accessibilityVoice: "Samantha", isForcedTitle: false, searchRefs: 0, textFieldRefs: 0, dropdownRefs: 0)
 
 
@@ -48,3 +57,10 @@ func checkIfKeyExits(keyToLookFor: String) -> String {
     }
     return keyStatus
 }
+
+
+//streamdeck-backend.swift
+var deviceName = "N/A"
+//
+var devicesX = [String : String]()
+var devices = [String : String]()
