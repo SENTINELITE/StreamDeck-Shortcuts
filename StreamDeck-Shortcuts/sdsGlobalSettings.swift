@@ -49,6 +49,7 @@ struct AccessibilityVoiceGlobalKey: GlobalSettingKey {
     static let defaultValue: String = Voice.shimmer.rawValue
 }
 
+//TODO: Switch to Macro system in B13 | https://github.com/emorydunn/StreamDeckPlugin?tab=readme-ov-file#macros
 extension GlobalSettings {
     @MainActor
     var isForcedTitleGlobal: Bool {

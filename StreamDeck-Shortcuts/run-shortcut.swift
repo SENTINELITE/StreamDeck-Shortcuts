@@ -7,7 +7,7 @@
 
 import Foundation
 import AVFoundation
-import Sentry
+//import Sentry
 
 //  🔷----------------------------------------------------- --------------------------------------------------
 //  | Runs the specified shortcut. TODO: Drop support for Applescript, & use the Shortcuts CLI excluseivly.  |
@@ -21,7 +21,7 @@ import Sentry
 ///Spins up a seperate CLI process that executes a Shortcut.
 /// - inputShortcut can be either a name or a UUID. UUID is the preferred method of running, though
 func runShortcutDTS(inputShortcut: String) async {
-    NSLog("Running with DTS Fix...")
+    shortcutsLogger(message: "Running with DTS Fix...")
     let shortcutsCLI = Process()
     shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
     
@@ -32,10 +32,10 @@ func runShortcutDTS(inputShortcut: String) async {
     do {
         try shortcutsCLI.run()
     } catch {
-        NSLog("\(error)")
-        SentrySDK.capture(error: error)
+        shortcutsLogger(message: "\(error)")
+//        SentrySDK.capture(error: error)
     }
-    NSLog("Should've ran the shortcut...")
+    shortcutsLogger(message: "Should've ran the shortcut...")
 }
 
 
@@ -51,7 +51,7 @@ func shellTest(_ args: String...) async -> Int32 {
     sayCLI.arguments = args
     sayCLI.launch()
     sayCLI.waitUntilExit()
-    NSLog("Finshed running With:  \(args)")
+    shortcutsLogger(message: "Finshed running With:  \(args)")
     
     return sayCLI.terminationStatus
 }
@@ -65,7 +65,7 @@ func sayCLI(speak: String, speechRate: Int) async {
         sayCLI.arguments = [speak, "-r", "\(speechRate)"]
         sayCLI.launch()
         sayCLI.waitUntilExit()
-         NSLog("Finished running With: \(sayCLI.arguments)")
+         shortcutsLogger(message: "Finished running With: \(sayCLI.arguments)")
     }
 }
 

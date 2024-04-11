@@ -69,7 +69,8 @@ class ShortcutAction: Action {
         self.coordinates = coordinates
     }
     
-    /// The global setting for the Forced Title
+    //MARK: Global Settings
+    ///The global setting for the Forced Title
     @GlobalSetting(\.isForcedTitleGlobal) var isForcedTitleGlobal
     @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
     @GlobalSetting(\.isHoldTimeGlobal) var isHoldTimeGlobal
@@ -101,7 +102,7 @@ class ShortcutAction: Action {
     func clicked(settings: ShortcutAction.Settings) {
         
         if isDoubleTripleTap {
-            NSLog("clicked()...")
+            shortcutsLogger(message: "clicked()...")
             pressCount += 1 // Increment pressCount
             
             // Cancel the previous task if it exists
@@ -109,23 +110,23 @@ class ShortcutAction: Action {
             
             // Create a new task
             currentTask = Task {
-                NSLog("Starting Task...")
+                shortcutsLogger(message: "Starting Task...")
                 do {
-                    NSLog("Starting Task 2 ...")
+                    shortcutsLogger(message: "Starting Task 2 ...")
                     try await withTaskCancellationHandler {
-                        NSLog("Starting Task.sleep...")
+                        shortcutsLogger(message: "Starting Task.sleep...")
                         try await sleep(for: timeBetweenTaps)
-                        NSLog("Task.sleep done | Wrapping Thread Up...")
+                        shortcutsLogger(message: "Task.sleep done | Wrapping Thread Up...")
                         //                    print("pressCount count: \(self.pressCount)")
                         finishTask(settings: settings)
                         
                     } onCancel: {
-                        NSLog("Task.canceled |")
+                        shortcutsLogger(message: "Task.canceled |")
                         // Handler for task cancellation
                         // We don't need to do anything special here in this case
                     }
                 } catch {
-                    NSLog("Task.Erorr | \(error)")
+                    shortcutsLogger(message: "Task.Erorr | \(error)")
                     // Error handling if needed
                 }
             }
@@ -138,7 +139,7 @@ class ShortcutAction: Action {
     
     //TODO: Move inner switch logic to individual functions.
     func finishTask (settings: ShortcutAction.Settings) {
-        NSLog("☃️ Total times clicked: \(pressCount)")
+        shortcutsLogger(message: "☃️ Total times clicked: \(pressCount)")
         
         switch pressCount {
         case 1:
@@ -146,7 +147,7 @@ class ShortcutAction: Action {
                 await executeShortcut(settings: settings)
             }
         case 2:
-            NSLog("☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
+            shortcutsLogger(message: "☃️ Should open \(shortcutToRun) in the Shortcuts.app, for editing")
             
             var components = URLComponents()
             components.scheme = "shortcuts"
@@ -154,11 +155,11 @@ class ShortcutAction: Action {
             components.queryItems = [URLQueryItem(name: "name", value: shortcutToRun)]
             
             guard let encodedURL = components.url else {
-                NSLog("🚨 Bloodhound-Two | Failed to encode shortcut. Not opening & exiting loop. Shortcut: \(shortcutToRun)")
+                shortcutsLogger(message: "🚨 Bloodhound-Two | Failed to encode shortcut. Not opening & exiting loop. Shortcut: \(shortcutToRun)")
                 return
             }
             
-            NSLog("🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)")
+            shortcutsLogger(message: "🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)")
             NSWorkspace.shared.open(encodedURL)
             
         case 3:
@@ -166,7 +167,7 @@ class ShortcutAction: Action {
                 NSWorkspace.shared.open(url)
             }
         default:
-            NSLog("Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways...")
+            shortcutsLogger(message: "Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways...")
             Task {
                 await executeShortcut(settings: settings)
             }
@@ -190,7 +191,7 @@ class ShortcutAction: Action {
         if !manager.fileExists(atPath: path) {
             genFileLogger.log("Audio file for \(self.shortcutToRunUUID.uuidString) didn't exist with voice: \(self.accessibilityVoiceGlobal), creating it now...")
             
-            NSLog("Audio file for \(shortcutToRunUUID.uuidString) didn't exist with voice: \(accessibilityVoiceGlobal), creating it now...")
+            shortcutsLogger(message: "Audio file for \(shortcutToRunUUID.uuidString) didn't exist with voice: \(accessibilityVoiceGlobal), creating it now...")
             do {
                 if let inputVoice = Voice(rawValue: accessibilityVoiceGlobal) {
                     try await getTextToSpeechAsync(text: shortcutToRun, shortcutUUID: shortcutToRunUUID.uuidString, voice: inputVoice)
@@ -245,7 +246,7 @@ class ShortcutAction: Action {
                             // Add a delay between each count
                             try await Task.sleep(for: .seconds(1))
                         } catch {
-                            NSLog("\(error)")
+                            shortcutsLogger(message: "\(error)")
                         }
                     }
                     
@@ -323,21 +324,21 @@ class ShortcutAction: Action {
     
     
     func vTwoRunShortcut() {
-        NSLog("MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown")
+        shortcutsLogger(message: "MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown")
         
         
         //        Task {
-        //            NSLog("About to execute Shortcut V2")
+        //            shortcutsLogger(message: "About to execute Shortcut V2")
         //            async let dtsRunner = runShortcutDTS(inputShortcut: shortcutToRun)
-        //            NSLog("Executed Shortcut V2")
+        //            shortcutsLogger(message: "Executed Shortcut V2")
         //        }
         
         //        Accessibility Test (51194254-37BC-4209-864A-34888ACDD0C7)
         
         //        func runShortcutDTS(inputShortcut: String) async {
         
-        NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRun)")
-        NSLog("Echo-Three | Running with DTS Fix... \(shortcutToRunUUID)")
+        shortcutsLogger(message: "Echo-Three | Running with DTS Fix... \(shortcutToRun)")
+        shortcutsLogger(message: "Echo-Three | Running with DTS Fix... \(shortcutToRunUUID)")
         
         let shortcutsCLI = Process()
         shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
@@ -350,38 +351,34 @@ class ShortcutAction: Action {
         //shortcutsCLI.arguments = ["run", "51194254-37BC-4209-864A-34888ACDD0C7"]
         
         do {
-            NSLog("About to run the shortcut...")
+            shortcutsLogger(message: "About to run the shortcut...")
             //            let shortcutName - uuidToShortcut(inputUUID: <#T##UUID#>)
             try shortcutsCLI.run()
-            NSLog("Should've ran the shortcut with UUID: \(shortcutToRunUUID) with name: \(shortcutToRun)")
-            NSLog("Ran? --- \(shortcutsCLI.arguments)")
+            shortcutsLogger(message: "Should've ran the shortcut with UUID: \(shortcutToRunUUID) with name: \(shortcutToRun)")
+            shortcutsLogger(message: "Ran? --- \(shortcutsCLI.arguments)")
         } catch {
-            NSLog("\(error)")
+            shortcutsLogger(message: "\(error)")
             return
         }
         
         sendSignal()
         
-        NSLog("Should've ran the shortcut...")
+        shortcutsLogger(message: "Should've ran the shortcut...")
         
-        NSLog("mapped Shortcuts: \(shortcutsMapped)")
+        shortcutsLogger(message: "mapped Shortcuts: \(shortcutsMapped)")
     }
     
+    
+    //MARK: KeyDown
     func keyDown(device: String, payload: KeyEvent<Settings>) {
         isPressed = true
         
-        NSLog("Pressed keyDown...")
+        shortcutsLogger(message: "Pressed keyDown...")
         getSettings()
-        //        StreamDeckPlugin.shared getGlobalSettings()
-        //        StreamDeckPlugin.shared.sendEvent(.getGlobalSettings, context: StreamDeckPlugin.shared.uuid, payload: payload)
-        
-        //        if payload.settings.isPerKeyAccessibility {
-        //        } else {
-        //            NSLog("👀 Press count \(pressCount)")
         clicked(settings: payload.settings)
-        //        }
     }
     
+    //MARK: KeyUp
     func keyUp(device: String, payload: KeyEvent<Settings>) {
         isPressed = false
     }
@@ -390,11 +387,11 @@ class ShortcutAction: Action {
         try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
     }
     
-//    MARK: WillAppear
+    //MARK: WillAppear
     func willAppear(device: String, payload: AppearEvent<Settings>) {
-        NSLog("🛡️ DomeOfProtection With: \(payload)")
+        shortcutsLogger(message: "🛡️ DomeOfProtection With: \(payload)")
         SDVersion = PluginCommunication.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
-        NSLog("Nemesis-Zero-Init with count: \(SDVersion)")
+        shortcutsLogger(message: "Nemesis-Zero-Init with count: \(SDVersion)")
         getSettings()
         processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
@@ -404,8 +401,8 @@ class ShortcutAction: Action {
         //        processRunShortcutTime = "0"
         logger.debug("😡 MRVN-Two PI Did Appear")
         getSettings() //
-        NSLog("MRVN-Two PI Did Appear")
-        NSLog("🤖 MRVN-Five PI Did Appear before sending init payload: \(shortcutToRun)")
+        shortcutsLogger(message: "MRVN-Two PI Did Appear")
+        shortcutsLogger(message: "🤖 MRVN-Five PI Did Appear before sending init payload: \(shortcutToRun)")
         
 //        findFolderFromShortcut() Send the folder //TODO: Send the init selected folder with the init payload, that way we're already filtering instead of showing All.
         
@@ -441,7 +438,7 @@ class ShortcutAction: Action {
         
         sendToPropertyInspector(payload: payload)
         
-        NSLog("FolderSearch Being Sent 🚨 ⚠️ | Found folder \(shortcutFolder) for shortcut \(shortcutToRun)")
+        shortcutsLogger(message: "FolderSearch Being Sent 🚨 ⚠️ | Found folder \(shortcutFolder) for shortcut \(shortcutToRun)")
         logger.debug("Sending PI Appear, 📦 Initial Payload Size: \(MemoryLayout.size(ofValue: payload))")
         
         //Check for folder here first!
@@ -450,7 +447,7 @@ class ShortcutAction: Action {
         
         
         sendNewFolderAndShortcuts(folder: "All")
-        NSLog("🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
+        shortcutsLogger(message: "🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
     }
     
     
@@ -466,7 +463,7 @@ class ShortcutAction: Action {
         let xy = Settings(shortcutToRun: shortcutToRun, shortcutUUID: shortcutToRunUUID, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility, isPerKeyHoldTime: isHoldTime, accessHoldTime: holdTime)
         //        setSettings(to: xy)
         setSettings(to: xy)
-        NSLog("Gibby One | New Settings saved, with: \(xy)")
+        shortcutsLogger(message: "Gibby One | New Settings saved, with: \(xy)")
         setTitleSDS()
         //        setSettings(to: xy) // Save the updated settings
     }
@@ -474,7 +471,7 @@ class ShortcutAction: Action {
 #warning("Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅")
     //TODO: Make an Alias called SentFromSteamDeckApp?
     func sentToPlugin(payload: [String : String]) {
-        NSLog("MRVN-Three SendToPlugin - \(payload)")
+        shortcutsLogger(message: "MRVN-Three SendToPlugin - \(payload)")
         
         //The PI has requested X to be done. Delegate to that...
         
@@ -482,17 +479,17 @@ class ShortcutAction: Action {
         
         for i in payload {
             if i.key == "type" {
-                NSLog("MRVN-Five-One i.key == type, evt: \(i.value)")
+                shortcutsLogger(message: "MRVN-Five-One i.key == type, evt: \(i.value)")
                 if let evt = SdsEventRecieveType(rawValue: i.value) {
                     switch evt {
                         
                     case .newShortcutSelected:
-                        NSLog("Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
+                        shortcutsLogger(message: "Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
                         shortcutToRun = payload["data"] ?? "nil"
-                        NSLog("Beta-One | New Shortcut Selected... \(shortcutToRun)")
-                        NSLog("🤖 Shortcut UUID Debug 1: \(shortcutToRunUUID)")
+                        shortcutsLogger(message: "Beta-One | New Shortcut Selected... \(shortcutToRun)")
+                        shortcutsLogger(message: "🤖 Shortcut UUID Debug 1: \(shortcutToRunUUID)")
                         shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
-                        NSLog("🤖 Shortcut UUID Debug 2: \(shortcutToRunUUID)")
+                        shortcutsLogger(message: "🤖 Shortcut UUID Debug 2: \(shortcutToRunUUID)")
                         let customJSON = sdsSettings(shortcut: shortcutToRun)
                         saveSettingsHelper()
                         
@@ -500,11 +497,11 @@ class ShortcutAction: Action {
                         if let folder = payload["data"] {
                             sendNewFolderAndShortcuts(folder: folder)
                         } else {
-                            NSLog("newFolderSelected Failed with: \(payload)")
+                            shortcutsLogger(message: "newFolderSelected Failed with: \(payload)")
                         }
                         
                     case .newVoiceSelected:
-                        NSLog("✈️ Voice from payload \(payload)")
+                        shortcutsLogger(message: "✈️ Voice from payload \(payload)")
                         
                         
                         if let jsonDataString = payload["data"] {
@@ -525,15 +522,15 @@ class ShortcutAction: Action {
                         }
                         
                         if let voice = payload["data"] {
-                            NSLog("✈️ Voice from payload \(voice)")
+                            shortcutsLogger(message: "✈️ Voice from payload \(voice)")
                         } else {
-                            NSLog("newFolderSelected Failed with: \(payload)")
+                            shortcutsLogger(message: "newFolderSelected Failed with: \(payload)")
                         }
                         
                     case .globalSettingsUpdated:
                         
                         if let jsonDataString = payload["data"] {
-                            NSLog("🌐 global setting has changed... title: \(jsonDataString) ")
+                            shortcutsLogger(message: "🌐 global setting has changed... title: \(jsonDataString) ")
                             // Step 2: Convert the "data" field back to a Swift data
                             if let jsonData = jsonDataString.data(using: .utf8) {
                                 // Step 3: Use JSONDecoder to decode the JSON data into GlobalSettingsUpdated struct
@@ -541,7 +538,7 @@ class ShortcutAction: Action {
                                     let decoder = JSONDecoder()
                                     let settings = try decoder.decode(GlobalSettingsUpdated.self, from: jsonData)
                                     
-                                    NSLog("📦 GlobalSettings Payload... \(settings)")
+                                    shortcutsLogger(message: "📦 GlobalSettings Payload... \(settings)")
                                     
                                     isForcedTitle = settings.isForcedTitleLocal
                                     isAccessibility = settings.isAccesLocal
@@ -557,18 +554,18 @@ class ShortcutAction: Action {
                                     isDoubleTripleTap = settings.isDoubleTripleTap
                                     timeBetweenTaps = settings.timeBetweenTaps
                                     
-                                    NSLog("SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)")
+                                    shortcutsLogger(message: "SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)")
                                     saveSettingsHelper()
                                 } catch {
-                                    NSLog("🌐 Error: \(error) \(#file) \(#line) ")
+                                    shortcutsLogger(message: "🌐 Error: \(error) \(#file) \(#line) ")
                                 }
                             } else {
-                                NSLog("🌐 Failed to load payload \(#file) \(#line) ")
+                                shortcutsLogger(message: "🌐 Failed to load payload \(#file) \(#line) ")
                             }
                         }
                     }
                 } else {
-                    NSLog("SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
+                    shortcutsLogger(message: "SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
                 }
             }
         }
@@ -579,17 +576,17 @@ class ShortcutAction: Action {
     }
     
     func sendNewFolderAndShortcuts(folder: String) {
-        NSLog("MRVN-Five-Two newFolderSelected")
+        shortcutsLogger(message: "MRVN-Five-Two newFolderSelected")
         logger.debug("😡 MRVN-Five-Two newFolderSelected")
-        NSLog("MRVN-Five-Three data")
+        shortcutsLogger(message: "MRVN-Five-Three data")
         let newShortcutsPayload = filterMappedFolder(folderName: folder)
-        NSLog("🚀 Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
+        shortcutsLogger(message: "🚀 Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
         var isShortcutInFolder = false
         if newShortcutsPayload.contains(shortcutToRun) {
-            NSLog("🧱 CastleWall-One: The folder contains our shortcuts: \(shortcutToRun)")
+            shortcutsLogger(message: "🧱 CastleWall-One: The folder contains our shortcuts: \(shortcutToRun)")
             isShortcutInFolder = true
         } else {
-            NSLog("🧱 CastleWall-Two: Shortcut: \(shortcutToRun) is not in our folder")
+            shortcutsLogger(message: "🧱 CastleWall-Two: Shortcut: \(shortcutToRun) is not in our folder")
             shortcutToRun = newShortcutsPayload.first ?? "nil"
             //Set
         }
@@ -604,17 +601,17 @@ class ShortcutAction: Action {
 #warning("The `folderSelected` event is wrong! We need to send the *other* event!")
         
         sendToPropertyInspector(payload: finalPayload)
-        NSLog("MRVN-Five-One \(newShortcutsPayload)")
-        NSLog("MRVN-Five-Two Sending Payload \(finalPayload)")
+        shortcutsLogger(message: "MRVN-Five-One \(newShortcutsPayload)")
+        shortcutsLogger(message: "MRVN-Five-Two Sending Payload \(finalPayload)")
         saveSettingsHelper()
         //                    }
     }
     
     func didReceiveSettings(device: String, payload: SettingsEvent<Settings>.Payload) {
-        NSLog("MRVN-Four didReceiveSettings \(payload.settings)")
-        NSLog("🤖 Shortcut UUID Debug 3: \(shortcutToRunUUID)")
+        shortcutsLogger(message: "MRVN-Four didReceiveSettings \(payload.settings)")
+        shortcutsLogger(message: "🤖 Shortcut UUID Debug 3: \(shortcutToRunUUID)")
         shortcutToRunUUID = payload.settings.shortcutUUID
-        NSLog("🤖 Shortcut UUID Debug 4: \(shortcutToRunUUID)")
+        shortcutsLogger(message: "🤖 Shortcut UUID Debug 4: \(shortcutToRunUUID)")
         shortcutToRun = uuidToShortcut(inputUUID: shortcutToRunUUID)
         
 //        shortcutToRun = payload.settings.shortcutToRun
@@ -634,7 +631,7 @@ class ShortcutAction: Action {
     }
     
     func didReceiveGlobalSettings() {
-        NSLog("Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal), \(self.accessibilityVoiceGlobal)")
+        shortcutsLogger(message: "Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal), \(self.accessibilityVoiceGlobal)")
         setTitleSDS()
     }
     
@@ -648,26 +645,26 @@ extension ShortcutAction {
     }
     
     func setTitleSDS() {
-//        NSLog("About to set Title... \(shortcutToRun)")
+//        shortcutsLogger(message: "About to set Title... \(shortcutToRun)")
 //        Task {
 //            try await Task.sleep(nanoseconds: 1_000_000_000)
             if isForcedTitle || isForcedTitleGlobal {
                 setTitle(to: shortcutToRun)
-                NSLog("set Title -> \(shortcutToRun)")
+                shortcutsLogger(message: "set Title -> \(shortcutToRun)")
             } else {
                 setTitle(to: "")
-                NSLog("set Title -> BLANK")
+                shortcutsLogger(message: "set Title -> BLANK")
             }
 //        }
     }
     
     func findFolderFromShortcut() {
         //shortcutName
-        NSLog("FolderSearch 🚨 ⚠️ | looking for folder for shortcut \(shortcutToRun)")
+        shortcutsLogger(message: "FolderSearch 🚨 ⚠️ | looking for folder for shortcut \(shortcutToRun)")
         let matchingShortcut = newData.first { $0.shortcutName == shortcutToRun }
         if let folderName = matchingShortcut?.shortcutFolder {
             shortcutFolder = folderName
-            NSLog("FolderSearch 🚨 ⚠️ | Found folder \(folderName) for shortcut \(shortcutToRun)")
+            shortcutsLogger(message: "FolderSearch 🚨 ⚠️ | Found folder \(folderName) for shortcut \(shortcutToRun)")
             let filteredShortcuts = filterMappedFolder(folderName: folderName)
             // Use the filteredShortcuts as needed
         }

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Sentry
+//import Sentry
 
 var newKeyIds = [String:String]()
 let sdDir = NSHomeDirectory().appending("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/")
@@ -19,22 +19,22 @@ func dirCheck() async -> Bool {
     let manager = FileManager.default
     do {
         let fileUrl = URL(fileURLWithPath: sdDir)
-        NSLog("X : fileURL: \(fileUrl)")
-        NSLog("X :  marker di=r \(sdDir)")
+        shortcutsLogger(message: "X : fileURL: \(fileUrl)")
+        shortcutsLogger(message: "X :  marker di=r \(sdDir)")
         if !manager.fileExists(atPath: sdDir) {
             try manager.createDirectory(
                 at: fileUrl,
                 withIntermediateDirectories: false,
                 attributes: nil
             )
-            NSLog("📂 Path has been made!")
+            shortcutsLogger(message: "📂 Path has been made!")
         }
         else {
-            NSLog("📂 Path exists!")
+            shortcutsLogger(message: "📂 Path exists!")
         }
         return true
     } catch {
-        NSLog("🚨 #E1 \(error)")
+        shortcutsLogger(message: "🚨 #E1 \(error)")
         return false
     }
 }
@@ -46,7 +46,7 @@ func saveFile (fileName: String) async -> Int {
     //Check if the .sdPlugin folder exists, this is a safety net, so we don't throw un-related error to Sentry.
     if await dirCheck() {
         do {
-            NSLog("📂 Path exists! We need to save the new data!")
+            shortcutsLogger(message: "📂 Path exists! We need to save the new data!")
             if fileName.contains("keys.json") {
                 let jsonData = try JSONSerialization.data(withJSONObject: newKeyIds, options: .prettyPrinted)
                 try jsonData.write(to: fileUrl)
@@ -58,11 +58,11 @@ func saveFile (fileName: String) async -> Int {
                 try jsonData.write(to: fileUrl)
             }
             else {
-                NSLog("Unknown filepath: \(fileUrl)")
+                shortcutsLogger(message: "Unknown filepath: \(fileUrl)")
             }
             return 1
         } catch {
-            NSLog("📂 Can't creat file because of: \(error)")
+            shortcutsLogger(message: "📂 Can't creat file because of: \(error)")
             return 0
         }
         //        }
@@ -82,26 +82,26 @@ func loadFiles (fileName: String) async -> Int {
             if fileName.contains("keys.json") {
                 let decodedData = try JSONDecoder().decode([String : String].self, from: data)
                 newKeyIds = decodedData
-                NSLog("DecodedData: \(decodedData)")
+                shortcutsLogger(message: "DecodedData: \(decodedData)")
                 
             }
             else if fileName.contains("userSettings.json") {
                 let decodedData = try JSONDecoder().decode(mySettings.self, from: data)
                 userPrefs = decodedData
-                NSLog("DecodedData: \(decodedData)")
+                shortcutsLogger(message: "DecodedData: \(decodedData)")
             }
             else {
-                NSLog("Unknown filepath: \(fileUrl)")
+                shortcutsLogger(message: "Unknown filepath: \(fileUrl)")
             }
             return 1
         } catch {
-            NSLog("📂 Loading file Error: \(error)")
-            SentrySDK.capture(error: error)
+            shortcutsLogger(message: "📂 Loading file Error: \(error)")
+//            SentrySDK.capture(error: error)
             return 0
         }
     }
     else {
-        NSLog("📂 File doesn't exist, defaulting to default keys & settings!")
+        shortcutsLogger(message: "📂 File doesn't exist, defaulting to default keys & settings!")
     }
     return 0
 }

@@ -1,6 +1,5 @@
 import Foundation
 import StreamDeck
-//import Sentry
 import OSLog
 
 let logger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Main")
@@ -26,7 +25,7 @@ class StreamDeckShortcuts: Plugin { //Type,  'CounterPluginXYZ' does not conform
     
     static var url: URL? = URL(string: "https://sentinelite.com")
     
-    static var version: String = "2.0.0-beta.11"
+    static var version: String = "2.0.0-beta.12"
     
     static var os: [PluginOS] = [PluginOS.macOS("12.0")]
     
@@ -44,61 +43,40 @@ class StreamDeckShortcuts: Plugin { //Type,  'CounterPluginXYZ' does not conform
     
     static var actions: [any Action.Type] = [
         ShortcutAction.self
-        ////        DecrementAction.self
     ]
-    
-    //    static var actions: [any Action.Type] = [
-    
-    //    ]
     
 //    @GlobalSetting(\.isForcedTitleGlobal) var isForcedTitleGlobal
 //    @GlobalSetting(\.isAccessibilityGlobal) var isAccessibilityGlobal
     
     required init() {
-        
-        
-//        //The initial signal won't send if the program exits too fast.
-//        SentrySDK.start { options in
-//            options.dsn  = "https://e5b7ab3d23b04542818cc7bbd4a9dc0a@o1114114.ingest.sentry.io/6145162"
-//            options.debug = false // Enabled debug when first installing is always helpful
-//            options.enableTracing = true
-//            options.swiftAsyncStacktraces = true
-////            options.tracesSampleRate = 0.1
-//        //    options.
-//            options.enableSwizzling = false
-//        }
-        
-        logger.debug("😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!")
-        processShortcuts()
-        logger.debug("😡 Entry.swift | TD-One About to init!")
-        initializeTD()
+        setupPlugin()
     }
     
     func didReceiveGlobalSettings(_ settings: Settings) {
-        NSLog("🧨 Conduit-Zero")
-        NSLog("🧨 Conduit-One Settings: \(settings)")
+        shortcutsLogger(message: "🧨 Conduit-Zero")
+        shortcutsLogger(message: "🧨 Conduit-One Settings: \(settings)")
 //        isForcedTitle = settings.isForcedTitle
     }
     
     func willAppear(action: String, context: String, device: String, payload: AppearEvent<Settings>) {
-//        count += 1
-//        NSLog("Nemesis-One-One with count: \(count)")
+
+        
 //        StreamDeckPlugin.shared.instances.values.forEach {
 //            $0.setTitle(to: "\(count)", target: nil, state: nil)
 //        }
-        NSLog("Nemesis-One-Two SDS - SE - WillAppear V2 Action Instance")
-        NSLog("Nemesis-One-Three Payload \(payload)")
-        logger.debug("😡 \(PluginCommunication.shared.uuid)")
-        
+        shortcutsLogger(message: "Nemesis-One-Two SDS - SE - WillAppear V2 Action Instance")
+        shortcutsLogger(message: "Nemesis-One-Three Payload \(payload)")
+        shortcutsLogger(message: "😡 \(PluginCommunication.shared.uuid)", logLevel: .debug)
     }
     
 //    func propertyInspectorDidAppear(action: String, context: String, device: String) {
-//        NSLog("👀  👀Nemesis-One-Three Got Global Settings!")
+//        shortcutsLogger(message: "👀  👀Nemesis-One-Three Got Global Settings!")
 //        getGlobalSettings()
-//        NSLog("👀  DONE  👀Nemesis-One-Three Got Global Settings!")
+//        shortcutsLogger(message: "👀  DONE  👀Nemesis-One-Three Got Global Settings!")
 //    }
     
     func sentToPlugin(context: String, action: String, payload: [String : String]) {
-        NSLog("Nemesis-One-Four sentToPlguin \(payload), action: \(action)")
+        shortcutsLogger(message: "Nemesis-One-Four sentToPlguin \(payload), action: \(action)")
     }
 }
+

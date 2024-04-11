@@ -27,12 +27,10 @@
 		A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */; };
 		A162C82A2A86D31C007E13AE /* sdsGlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */; };
 		A169B2962AFF1562008C3ACD /* OpenAIVoicesInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A169B2952AFF1562008C3ACD /* OpenAIVoicesInterface.swift */; };
-		A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17AD014298EA2990084D3EE /* IncrementAction.swift */; };
 		A17E6C302992F1A800BCFA72 /* shortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */; };
 		A17E6C38299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */; };
 		A17E6C3A299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17E6C39299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.swift */; };
 		A19863DE2A85B6730081D90F /* ExtraData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19863DD2A85B6730081D90F /* ExtraData.swift */; };
-		A19863E02A85B75F0081D90F /* RunShortcutBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */; };
 		A1CFD91C29932A1C00D2D207 /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */; };
 		A1F29E052753653900AA43C6 /* entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F29E042753653900AA43C6 /* entry.swift */; };
 		A1F29E0D2753656E00AA43C6 /* TelemetryClient in Frameworks */ = {isa = PBXBuildFile; productRef = A1F29E0C2753656E00AA43C6 /* TelemetryClient */; };
@@ -87,7 +85,6 @@
 		A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sdsGlobalSettings.swift; sourceTree = "<group>"; };
 		A169B2952AFF1562008C3ACD /* OpenAIVoicesInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIVoicesInterface.swift; sourceTree = "<group>"; };
-		A17AD014298EA2990084D3EE /* IncrementAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementAction.swift; sourceTree = "<group>"; };
 		A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shortcuts.swift; sourceTree = "<group>"; };
 		A17E6C35299303A700BCFA72 /* StreamDeck-Shortcuts-AppIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = "StreamDeck-Shortcuts-AppIntents.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A17E6C37299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntentsExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamDeck_Shortcuts_AppIntentsExtension.swift; sourceTree = "<group>"; };
@@ -95,7 +92,6 @@
 		A17E6C3B299303A700BCFA72 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A17E6C3C299303A700BCFA72 /* StreamDeck_Shortcuts_AppIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StreamDeck_Shortcuts_AppIntents.entitlements; sourceTree = "<group>"; };
 		A19863DD2A85B6730081D90F /* ExtraData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtraData.swift; sourceTree = "<group>"; };
-		A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunShortcutBack.swift; sourceTree = "<group>"; };
 		A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
 		A1F29E012753653900AA43C6 /* StreamDeck-Shortcuts */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "StreamDeck-Shortcuts"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1F29E042753653900AA43C6 /* entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = entry.swift; sourceTree = "<group>"; };
@@ -184,14 +180,12 @@
 				A1F29E042753653900AA43C6 /* entry.swift */,
 				A1CFD91B29932A1C00D2D207 /* ShortcutAction.swift */,
 				A1F29E2D275366AC00AA43C6 /* analytics.swift */,
-				A17AD014298EA2990084D3EE /* IncrementAction.swift */,
 				A1F29E2F275366C500AA43C6 /* process-shortcuts.swift */,
 				A19863DD2A85B6730081D90F /* ExtraData.swift */,
 				A1F29E31275366E300AA43C6 /* program-working-data.swift */,
 				A162C8292A86D31C007E13AE /* sdsGlobalSettings.swift */,
 				A1F29E332753670200AA43C6 /* read-write-settings.swift */,
 				A13A2F7127A34AEF00DF5DA3 /* HelperFunctions.swift */,
-				A19863DF2A85B75F0081D90F /* RunShortcutBack.swift */,
 				A1F29E352753670F00AA43C6 /* run-shortcut.swift */,
 				A169B2952AFF1562008C3ACD /* OpenAIVoicesInterface.swift */,
 				A17E6C2F2992F1A800BCFA72 /* shortcuts.swift */,
@@ -324,8 +318,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "
-";
+			shellScript = "echo \"Formating all source codes\"\ncd $SOURCE_ROOT\n/opt/homebrew/bin/swift-format --ignore-unparsable-files -i -p -r .\necho \"Formated all source codes.\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -343,9 +336,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A17AD015298EA2990084D3EE /* IncrementAction.swift in Sources */,
 				A19863DE2A85B6730081D90F /* ExtraData.swift in Sources */,
-				A19863E02A85B75F0081D90F /* RunShortcutBack.swift in Sources */,
 				A1F29E342753670200AA43C6 /* read-write-settings.swift in Sources */,
 				A169B2962AFF1562008C3ACD /* OpenAIVoicesInterface.swift in Sources */,
 				A13A2F7227A34AEF00DF5DA3 /* HelperFunctions.swift in Sources */,
@@ -576,7 +567,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 12;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 9JJ9796LNX;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -596,7 +587,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 9JJ9796LNX;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/StreamDeck-Shortcuts/Info.plist";
@@ -663,8 +654,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.23.0;
 			};
 		};
 		A1F29E0B2753656E00AA43C6 /* XCRemoteSwiftPackageReference "SwiftClient" */ = {

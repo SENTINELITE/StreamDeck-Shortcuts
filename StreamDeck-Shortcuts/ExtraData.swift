@@ -73,7 +73,7 @@ func updateImage() {
     let randomImage = images[Int.random(in: 0...5)]
     let image = NSImage(contentsOfFile: randomImage)
     
-    NSLog("Nemesis-One-Three-Image Base64Str: \(image?.base64String)")
+    shortcutsLogger(message: "Nemesis-One-Three-Image Base64Str: \(image?.base64String)")
     
     
     //        setImage(in: context, to: image)

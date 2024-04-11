@@ -15,24 +15,24 @@ func processShortcuts() {
     
     if !isCurrentlyProcessingShortcuts {
         
-        let shortcutsLogger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
+        let shortcutsLoggerX = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
         
-        shortcutsLogger.debug("Starting processShortcuts()!")
+        shortcutsLoggerX.debug("Starting processShortcuts()!")
         
         let startTime = Date()
         
         
         //Refresh working Data.
         listOfCuts.removeAll()
-        shortcutsLogger.debug("Reset listOfCuts")
+        shortcutsLoggerX.debug("Reset listOfCuts")
         shortcutsFolder.removeAll()
-        shortcutsLogger.debug("Reset shortcutsFolder")
+        shortcutsLoggerX.debug("Reset shortcutsFolder")
         shortcutsMapped.removeAll()
-        shortcutsLogger.debug("Reset shortcutsMapped")
+        shortcutsLoggerX.debug("Reset shortcutsMapped")
         listOfFoldersWithShortcuts.removeAll()
-        shortcutsLogger.debug("Reset listOfFoldersWithShortcuts")
+        shortcutsLoggerX.debug("Reset listOfFoldersWithShortcuts")
         newData.removeAll()
-        shortcutsLogger.debug("Reset newData")
+        shortcutsLoggerX.debug("Reset newData")
         //    shortcutdUUIDRawStringArray.removeAll()
         var shortcutdUUIDRawStringArray = [String]()
         
@@ -40,7 +40,7 @@ func processShortcuts() {
         
         //MARK: Func that handles the CLI
         func shortcutsCLIProcessor(args: [String]) -> String {
-            shortcutsLogger.debug("Running CLI with: \(args)")
+            shortcutsLoggerX.debug("Running CLI with: \(args)")
             let shortcutsCLI = Process()
             let pipe = Pipe()
             shortcutsCLI.standardOutput = pipe
@@ -55,14 +55,14 @@ func processShortcuts() {
             
             guard let safeOutput = output else {
                 //                SentrySDK.capture(message: "Couldn't unwrap optinal string: output from findFolders()... Outputs: \(output)")
-                NSLog("\(output)")
-                shortcutsLogger.debug("CLI safeOutPut")
+                shortcutsLogger(message: "\(output)")
+                shortcutsLoggerX.debug("CLI safeOutPut")
                 return "nil"
             }
             
             shortcutsCLI.waitUntilExit()
-            //    NSLog("Finshed running With:  \(shortcutsCLI.arguments)")
-            shortcutsLogger.debug("Safely Exiting CLI...")
+            //    shortcutsLogger(message: "Finshed running With:  \(shortcutsCLI.arguments)")
+            shortcutsLoggerX.debug("Safely Exiting CLI...")
             return safeOutput
         }
         
@@ -73,7 +73,7 @@ func processShortcuts() {
             //Change All to "Unsorted". All should just return all Shortcuts
             shortcutsFolder.insert("Unsorted", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
             shortcutsFolder.insert("All", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
-            shortcutsLogger.debug("Shortcuts Folders Fetched: \(shortcutsFolder)")
+            shortcutsLoggerX.debug("Shortcuts Folders Fetched: \(shortcutsFolder)")
             listOfCuts = listOfAllShortcuts
             
             
@@ -143,19 +143,19 @@ func processShortcuts() {
         let diff = (finishedTime.timeIntervalSinceNow - startTime.timeIntervalSinceNow)
         let out = diff.formatted(.number.precision(.fractionLength(3))).description
         processRunShortcutTime = "Last Run: " + out
-        shortcutsLogger.debug("Finishied running processShortcuts, in \(out)")
-        NSLog("Finishied running processShortcuts, in \(out) - NSLOG")
-        shortcutsLogger.debug("Mapped Out: \(shortcutsMapped)")
+        shortcutsLoggerX.debug("Finishied running processShortcuts, in \(out)")
+        shortcutsLogger(message: "Finishied running processShortcuts, in \(out) - NSLOG")
+        shortcutsLoggerX.debug("Mapped Out: \(shortcutsMapped)")
     }
 }
 
 ///Checks & updates the key's data, based off it's previously saved UUID
 func uuidToShortcut(inputUUID: UUID) -> String {
-    NSLog("inputUUID: \(inputUUID)")
+    shortcutsLogger(message: "inputUUID: \(inputUUID)")
     
     guard let matchingShortcut = newData.first(where: {
         if let uuid = $0.shortcutUUID {
-//            NSLog("ShortcutName\t\($0.shortcutName)\tId\t\(uuid)")
+//            shortcutsLogger(message: "ShortcutName\t\($0.shortcutName)\tId\t\(uuid)")
             return uuid == inputUUID
         }
         return false
@@ -163,7 +163,7 @@ func uuidToShortcut(inputUUID: UUID) -> String {
         return "ERROR: UUID NOT FOUND"
     }
     
-    NSLog(matchingShortcut.shortcutName)
+    shortcutsLogger(message: matchingShortcut.shortcutName)
     return matchingShortcut.shortcutName
 }
 
@@ -176,7 +176,7 @@ func shortcutNameToUUID(inputShortcutName: String) -> UUID {
             fatalError("UUID is nil for shortcut: \(inputShortcutName)")
         }
         print(matchingShortcut.shortcutName)
-        NSLog("→ shortcutToRun: \(inputShortcutName) → UUID: \(id)")
+        shortcutsLogger(message: "→ shortcutToRun: \(inputShortcutName) → UUID: \(id)")
         return id
     } else {
         // Handle the error case (e.g., throw an error or return a default UUID)

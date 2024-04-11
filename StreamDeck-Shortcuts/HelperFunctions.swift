@@ -8,6 +8,9 @@
 import Foundation
 import AppKit
 import RegexBuilder
+import Sentry
+import StreamDeck
+import OSLog
 
 func preformShortcutRun() {
     
@@ -181,3 +184,50 @@ let uuidRegex = Regex {
     ")"
 }
     .anchorsMatchLineEndings()
+
+
+func setupPlugin() {
+    
+    shortcutsLogger(message: "Booting up SDS-V2.")
+
+    //MARK: Start Sentry
+//    setupSentry()
+    
+    
+    //MARK: Refresh Shortcuts
+    shortcutsLogger(message: "😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!", logLevel: .debug)
+    processShortcuts()
+    shortcutsLogger(message: "😡 Entry.swift | TD-One About to init!", logLevel: .debug)
+    
+    //MARK: Start TD
+    initializeTD()
+    shortcutsLogger(message: "Boot phase complete.")
+}
+
+func setupSentry () {
+    SentrySDK.start { options in
+        options.dsn  = "https://e5b7ab3d23b04542818cc7bbd4a9dc0a@o1114114.ingest.sentry.io/6145162"
+        options.environment = "SDS-V2-BETA"
+        options.debug = true // Enabled debug when first installing is always helpful
+        
+        /// Enable tracing to capture 100% of transactions for performance monitoring.
+        /// Use 'options.tracesSampleRate' to set the sampling rate.
+        /// We recommend setting a sample rate in production.
+        options.enableTracing = true
+        //        options.tracesSampleRate = 0.1
+        
+        options.enableSwizzling = false
+    }
+    shortcutsLogger(message: "Sentry is setup")
+}
+
+
+
+//MARK: Custom Logger Func
+///Logs a message to NSLOG, OS.Log, & StreamDeck Log*
+func shortcutsLogger (message: String, logLevel: OSLogType? = nil) {
+    
+    PluginCommunication.shared.sendEvent(.logMessage, context: nil, payload: ["message": message])
+    logger.log(level: .debug, "\(message, privacy: .public)")
+    
+}
