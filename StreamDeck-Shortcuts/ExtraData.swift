@@ -5,13 +5,13 @@
 //  Created by Kirk Land on 8/10/23.
 //
 
-import Foundation
 import AppKit
+import Foundation
 
 //Send Types
 enum SdsEventSendType: String {
     case initialPayload
-    case filteredFolder //filteredFolder from Js
+    case filteredFolder  //filteredFolder from Js
     case shortcuts
 }
 
@@ -27,20 +27,19 @@ extension SdsEventSendType: CustomStringConvertible {
 
 //JS/PI -> Swift
 enum SdsEventRecieveType: String, Codable {
-    case newShortcutSelected //A Shortcut has been selected
-    case newFolderSelected // A Folder has been selected
-    case globalSettingsUpdated // A Global setting has been changed
+    case newShortcutSelected  //A Shortcut has been selected
+    case newFolderSelected  // A Folder has been selected
+    case globalSettingsUpdated  // A Global setting has been changed
     case newVoiceSelected
 }
-
 
 struct sdsSettings: Codable {
     var shortcut: String
 }
 
 struct GlobalSettingsUpdated: Codable {
-//    let isForcedTitle: Bool
-//    let isAcces: Bool
+    //    let isForcedTitle: Bool
+    //    let isAcces: Bool
     
     let isForcedTitleLocal: Bool
     let isForcedTitleGlobal: Bool
@@ -52,10 +51,9 @@ struct GlobalSettingsUpdated: Codable {
     let isHoldTime: Bool
     let isDoubleTripleTap: Bool
     let timeBetweenTaps: Double
-//    let accessibilityVoicesGlobal: Voice
+    //    let accessibilityVoicesGlobal: Voice
     
 }
-
 
 //TODO: Change SD Key Image | Not implemented
 func updateImage() {
@@ -67,7 +65,7 @@ func updateImage() {
         "/Users/kirkland/Downloads/SDS-Tests/3.png",
         "/Users/kirkland/Downloads/SDS-Tests/4.png",
         "/Users/kirkland/Downloads/SDS-Tests/5.png",
-        "/Users/kirkland/Downloads/SDS-Tests/6.png"
+        "/Users/kirkland/Downloads/SDS-Tests/6.png",
     ]
     
     let randomImage = images[Int.random(in: 0...5)]
@@ -75,8 +73,7 @@ func updateImage() {
     
     shortcutsLogger(message: "Nemesis-One-Three-Image Base64Str: \(image?.base64String)")
     
-    
-    //        setImage(in: context, to: image)
-//    setTitle(to: randomImage)
-//    setImage(to: image)
+    //    setImage(in: context, to: image)
+    //    setTitle(to: randomImage)
+    //    setImage(to: image)
 }

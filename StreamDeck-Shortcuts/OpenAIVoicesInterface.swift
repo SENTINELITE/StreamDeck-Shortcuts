@@ -8,23 +8,29 @@
 import Foundation
 import OSLog
 
-let audioDir = NSHomeDirectory().appending("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.sds-2.sdPlugin/audio")
-//var selectedVoice: Voice = .alloy
+let audioDir = NSHomeDirectory().appending(
+    "/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.sds-2.sdPlugin/audio")
 
 enum Voice: String, CaseIterable, Identifiable, Codable {
     case system
     case alloy
     case echo
     case fable
-    case onyx
     case nova
+    case onyx
     case shimmer
+    case ash
+    case ballad
+    case coral
+    case sage
+    case verse
     
     var id: Voice { self }
 }
 
 func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) async throws -> URL {
     let loggerOpenAi = Logger(subsystem: "subsystem", category: "openAi")
+    
     // Create URL
     guard let url = URL(string: "https://api.openai.com/v1/audio/speech") else {
         throw URLError(.badURL)
@@ -41,7 +47,7 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     // Create JSON data and pass in body
     let jsonData = try JSONSerialization.data(withJSONObject: [
         "input": text,
-        "model": "tts-1",
+        "model": "gpt-4o-mini-tts",
         "voice": voice.rawValue,
         "response_format": "aac",
         "speed": "1.0",
@@ -61,19 +67,11 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     
     loggerOpenAi.log("about to save file...")
     
-    
-    
-    
-    
-//    let audioDir = NSHomeDirectory().appending("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.sds-2.sdPlugin/audio/Shortcuts")
+    //    let audioDir = NSHomeDirectory().appending("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.sds-2.sdPlugin/audio/Shortcuts")
     let fileName = "/Shortcuts/\(shortcutUUID)_\(voice.rawValue).aac"
     let heifa = audioDir.appending(fileName)
     
     let fileUrl = URL(fileURLWithPath: heifa)
-    
-    
-    
-    
     
     loggerOpenAi.log("about to write file")
     do {

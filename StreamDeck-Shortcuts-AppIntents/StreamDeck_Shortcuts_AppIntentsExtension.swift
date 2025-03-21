@@ -10,7 +10,7 @@ import Foundation
 
 @main
 struct StreamDeck_Shortcuts_AppIntentsExtension: AppIntentsExtension {
-    init () {
-        NSLog("StreamDeck-Shortcuts_Alt Message From Shortcuts V2 Extension")
-    }
+  init() {
+    NSLog("StreamDeck-Shortcuts_Alt Message From Shortcuts V2 Extension")
+  }
 }

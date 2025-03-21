@@ -9,18 +9,17 @@ import Foundation
 //import Sentry
 import OSLog
 
-
 ///Fetches all the available Shortcuts & folders. Creates an array of `ShortcutDataTwo`, which contains each Shortcut's name, folder, & UUID
 func processShortcuts() {
     
     if !isCurrentlyProcessingShortcuts {
         
-        let shortcutsLoggerX = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
+        let shortcutsLoggerX = Logger(
+            subsystem: "StreamDeckShortcuts-2-Alpha", category: "Process Shortcuts")
         
         shortcutsLoggerX.debug("Starting processShortcuts()!")
         
         let startTime = Date()
-        
         
         //Refresh working Data.
         listOfCuts.removeAll()
@@ -67,18 +66,21 @@ func processShortcuts() {
         }
         
         func fetchFolders() {
-            let listOfFolders = shortcutsCLIProcessor(args: ["list", "--folders"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
+            let listOfFolders = shortcutsCLIProcessor(args: ["list", "--folders"]).split(
+                whereSeparator: \.isNewline
+            ).map(String.init)  //Creates an array based off of the input String
             shortcutsFolder = listOfFolders
             
             //Change All to "Unsorted". All should just return all Shortcuts
-            shortcutsFolder.insert("Unsorted", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
-            shortcutsFolder.insert("All", at: shortcutsFolder.startIndex) //Helper for JS. | Swift > Java :p
+            shortcutsFolder.insert("Unsorted", at: shortcutsFolder.startIndex)  //Helper for JS. | Swift > Java :p
+            shortcutsFolder.insert("All", at: shortcutsFolder.startIndex)  //Helper for JS. | Swift > Java :p
             shortcutsLoggerX.debug("Shortcuts Folders Fetched: \(shortcutsFolder)")
             listOfCuts = listOfAllShortcuts
             
-            
             for name in listOfFolders {
-                let splitsUp = shortcutsCLIProcessor(args: ["list", "--folder-name", "\(name)"]).split(whereSeparator: \.isNewline).map(String.init) //Fetch each shortcut from every folder, & create an array.
+                let splitsUp = shortcutsCLIProcessor(args: ["list", "--folder-name", "\(name)"]).split(
+                    whereSeparator: \.isNewline
+                ).map(String.init)  //Fetch each shortcut from every folder, & create an array.
                 for shortcut in splitsUp {
                     
                     if let index = newData.firstIndex(where: { $0.shortcutName == shortcut }) {
@@ -101,18 +103,23 @@ func processShortcuts() {
             
             if #available(macOS 13, *) {
 #warning("macOS 13 Only!")
-                shortcutdUUIDRawStringArray = shortcutsCLIProcessor(args: ["list", "--show-identifiers"]).split(whereSeparator: \.isNewline).map(String.init)
+                shortcutdUUIDRawStringArray = shortcutsCLIProcessor(args: ["list", "--show-identifiers"])
+                    .split(whereSeparator: \.isNewline).map(String.init)
                 
                 for i in shortcutdUUIDRawStringArray {
                     if let match = i.wholeMatch(of: uuidRegex) {
                         let uuid = UUID(uuidString: String(match.2))!
                         print("Shortcut \(match.1) has UUID of: \(uuid)")
-                        newData.append(ShortcutDataTwo(shortcutName: String(match.1), shortcutFolder: "Unsorted", shortcutUUID: uuid))
+                        newData.append(
+                            ShortcutDataTwo(
+                                shortcutName: String(match.1), shortcutFolder: "Unsorted", shortcutUUID: uuid))
                     }
                 }
             } else {
                 //TODO: Include UUID, maybe use AppleScript here?
-                listOfAllShortcuts = shortcutsCLIProcessor(args: ["list"]).split(whereSeparator: \.isNewline).map(String.init) //Creates an array based off of the input String
+                listOfAllShortcuts = shortcutsCLIProcessor(args: ["list"]).split(
+                    whereSeparator: \.isNewline
+                ).map(String.init)  //Creates an array based off of the input String
             }
         }
         //
@@ -153,20 +160,21 @@ func processShortcuts() {
 func uuidToShortcut(inputUUID: UUID) -> String {
     shortcutsLogger(message: "inputUUID: \(inputUUID)")
     
-    guard let matchingShortcut = newData.first(where: {
-        if let uuid = $0.shortcutUUID {
-//            shortcutsLogger(message: "ShortcutName\t\($0.shortcutName)\tId\t\(uuid)")
-            return uuid == inputUUID
-        }
-        return false
-    }) else {
+    guard
+        let matchingShortcut = newData.first(where: {
+            if let uuid = $0.shortcutUUID {
+                //            shortcutsLogger(message: "ShortcutName\t\($0.shortcutName)\tId\t\(uuid)")
+                return uuid == inputUUID
+            }
+            return false
+        })
+    else {
         return "ERROR: UUID NOT FOUND"
     }
     
     shortcutsLogger(message: matchingShortcut.shortcutName)
     return matchingShortcut.shortcutName
 }
-
 
 ///Checks & updates the key's data, based off it's previously saved UUID
 func shortcutNameToUUID(inputShortcutName: String) -> UUID {
@@ -183,8 +191,6 @@ func shortcutNameToUUID(inputShortcutName: String) -> UUID {
         fatalError("No matching shortcut found for name: \(inputShortcutName)")
     }
 }
-
-
 
 func listFoldersNew() {
     

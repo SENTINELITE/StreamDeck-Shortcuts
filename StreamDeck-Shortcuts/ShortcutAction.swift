@@ -5,16 +5,15 @@
 //  Created by Kirk Land on 2/7/23.
 //
 
-import Foundation
-import StreamDeck
 import AppKit
+import Foundation
 import OSLog
+import StreamDeck
 
 class ShortcutAction: Action {
     static var controllers: [StreamDeck.ControllerType] = [.keypad]
     
     static var encoder: StreamDeck.RotaryEncoder?
-    
     
     ///The Settings we store foreach Key.
     struct Settings: Codable, Hashable {
@@ -78,7 +77,6 @@ class ShortcutAction: Action {
     @GlobalSetting(\.accessSpeechRateGlobal) var accessSpeechRateGlobal
     @GlobalSetting(\.accessibilityVoice) var accessibilityVoiceGlobal
     
-    
     ///The amount of time the user has between clicks, before registering a Double/Triple tap. Default is 200ms
     @GlobalSetting(\.timeBetweenTaps) var timeBetweenTaps
     
@@ -87,9 +85,8 @@ class ShortcutAction: Action {
     
     var currentTask: Task<Void, Never>?
     
-    
-    var isForcedTitle = false //TODO: Connect to PI
-    var isAccessibility = false //TODO: Remove this global var!
+    var isForcedTitle = false  //TODO: Connect to PI
+    var isAccessibility = false  //TODO: Remove this global var!
     
     /// Local ref to the Action's Setting
     var isHoldTime = false
@@ -103,7 +100,7 @@ class ShortcutAction: Action {
         
         if isDoubleTripleTap {
             shortcutsLogger(message: "clicked()...")
-            pressCount += 1 // Increment pressCount
+            pressCount += 1  // Increment pressCount
             
             // Cancel the previous task if it exists
             currentTask?.cancel()
@@ -138,7 +135,7 @@ class ShortcutAction: Action {
     }
     
     //TODO: Move inner switch logic to individual functions.
-    func finishTask (settings: ShortcutAction.Settings) {
+    func finishTask(settings: ShortcutAction.Settings) {
         shortcutsLogger(message: "☃️ Total times clicked: \(pressCount)")
         
         switch pressCount {
@@ -155,11 +152,17 @@ class ShortcutAction: Action {
             components.queryItems = [URLQueryItem(name: "name", value: shortcutToRun)]
             
             guard let encodedURL = components.url else {
-                shortcutsLogger(message: "🚨 Bloodhound-Two | Failed to encode shortcut. Not opening & exiting loop. Shortcut: \(shortcutToRun)")
+                shortcutsLogger(
+                    message:
+                        "🚨 Bloodhound-Two | Failed to encode shortcut. Not opening & exiting loop. Shortcut: \(shortcutToRun)"
+                )
                 return
             }
             
-            shortcutsLogger(message: "🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)")
+            shortcutsLogger(
+                message:
+                    "🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)"
+            )
             NSWorkspace.shared.open(encodedURL)
             
         case 3:
@@ -167,7 +170,10 @@ class ShortcutAction: Action {
                 NSWorkspace.shared.open(url)
             }
         default:
-            shortcutsLogger(message: "Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways...")
+            shortcutsLogger(
+                message:
+                    "Bloodhound-One: Defaulted on pressCount Switch, in the `finishTask` func. \n Attempting to run anyways..."
+            )
             Task {
                 await executeShortcut(settings: settings)
             }
@@ -175,7 +181,7 @@ class ShortcutAction: Action {
         pressCount = 0
     }
     
-    func runVoice () {
+    func runVoice() {
         
     }
     
@@ -185,16 +191,23 @@ class ShortcutAction: Action {
         let genFileLogger = Logger(subsystem: "StreamDeckShortcuts-2-Alpha", category: "Get Audio File")
         
         let manager = FileManager.default
-        let path = audioDir.appending("/Shortcuts/\(shortcutToRunUUID.uuidString)_\(accessibilityVoiceGlobal).aac")
+        let path = audioDir.appending(
+            "/Shortcuts/\(shortcutToRunUUID.uuidString)_\(accessibilityVoiceGlobal).aac")
         let fileURL = URL(fileURLWithPath: path)
         
         if !manager.fileExists(atPath: path) {
-            genFileLogger.log("Audio file for \(self.shortcutToRunUUID.uuidString) didn't exist with voice: \(self.accessibilityVoiceGlobal), creating it now...")
+            genFileLogger.log(
+                "Audio file for \(self.shortcutToRunUUID.uuidString) didn't exist with voice: \(self.accessibilityVoiceGlobal), creating it now..."
+            )
             
-            shortcutsLogger(message: "Audio file for \(shortcutToRunUUID.uuidString) didn't exist with voice: \(accessibilityVoiceGlobal), creating it now...")
+            shortcutsLogger(
+                message:
+                    "Audio file for \(shortcutToRunUUID.uuidString) didn't exist with voice: \(accessibilityVoiceGlobal), creating it now..."
+            )
             do {
                 if let inputVoice = Voice(rawValue: accessibilityVoiceGlobal) {
-                    try await getTextToSpeechAsync(text: shortcutToRun, shortcutUUID: shortcutToRunUUID.uuidString, voice: inputVoice)
+                    try await getTextToSpeechAsync(
+                        text: shortcutToRun, shortcutUUID: shortcutToRunUUID.uuidString, voice: inputVoice)
                 }
             } catch {
                 genFileLogger.error("Failed to generate file with error: \(error, privacy: .public)")
@@ -205,14 +218,16 @@ class ShortcutAction: Action {
     }
     
     ///Runs the shortcut.
-    func executeShortcut (settings: ShortcutAction.Settings) async {
+    func executeShortcut(settings: ShortcutAction.Settings) async {
         if settings.isPerKeyAccessibility || isAccessibilityGlobal {
             
             if accessibilityVoiceGlobal != Voice.system.rawValue {
                 //TODO: compare uuid to shortcut name, to ensure we're playing the right audio!
-
+                
                 let shortcutToRunAudioFile = await getShortcutAudioFile()
-                let canceledShortcutAudioFile = URL(fileURLWithPath: audioDir.appending("/Cancelled Shortcut/cancelled_shortcut_\(accessibilityVoiceGlobal).aac"))
+                let canceledShortcutAudioFile = URL(
+                    fileURLWithPath: audioDir.appending(
+                        "/Cancelled Shortcut/cancelled_shortcut_\(accessibilityVoiceGlobal).aac"))
                 
                 let initialDur = await runVoices(url: shortcutToRunAudioFile)
                 
@@ -224,7 +239,7 @@ class ShortcutAction: Action {
                 }
                 
                 if isHoldTimeGlobal || isHoldTime {
-                        
+                    
                     var funcDuration = holdTime - initialDur
                     
                     for number in stride(from: 1, to: funcDuration, by: 1.0).reversed() {
@@ -257,7 +272,9 @@ class ShortcutAction: Action {
                         return
                     }
                     
-                    let runningShortcutURL = URL(fileURLWithPath: audioDir.appending("/Running Shortcut/running_shortcut_\(accessibilityVoiceGlobal).aac"))
+                    let runningShortcutURL = URL(
+                        fileURLWithPath: audioDir.appending(
+                            "/Running Shortcut/running_shortcut_\(accessibilityVoiceGlobal).aac"))
                     let _ = await runVoices(url: runningShortcutURL)
                     
                     vTwoRunShortcut()
@@ -274,9 +291,9 @@ class ShortcutAction: Action {
                 if isHoldTimeGlobal || isHoldTime {
                     Task {
                         var hasLoopedOnce = false
-                        var curTime = holdTime //5.5 seconds
+                        var curTime = holdTime  //5.5 seconds
                         
-                        if curTime >= 0 { //if this is zero, it's disabled so we ignore
+                        if curTime >= 0 {  //if this is zero, it's disabled so we ignore
                             while curTime > 0 {
                                 if !isPressed {
                                     print("User let go early!")
@@ -285,9 +302,10 @@ class ShortcutAction: Action {
                                     return
                                 }
                                 
-                                let duration = Duration.seconds(curTime).formatted(.units(fractionalPart: .show(length: 0)))
+                                let duration = Duration.seconds(curTime).formatted(
+                                    .units(fractionalPart: .show(length: 0)))
                                 if hasLoopedOnce {
-                                    let shellText = Int(curTime).description //duration.description
+                                    let shellText = Int(curTime).description  //duration.description
                                     await sayCLI(speak: shellText, speechRate: accessSpeechRateGlobal)
                                 } else {
                                     hasLoopedOnce = true
@@ -295,8 +313,8 @@ class ShortcutAction: Action {
                                 
                                 setTitleSDSAcess(inputStr: "\(duration)")
                                 
-                                try await Task.sleep(nanoseconds: 1_000_000_000) //Sleep 1s
-                                curTime -= 1 //Subtract 1s
+                                try await Task.sleep(nanoseconds: 1_000_000_000)  //Sleep 1s
+                                curTime -= 1  //Subtract 1s
                                 //                        isFirstLoop = false
                             }
                             
@@ -322,10 +340,8 @@ class ShortcutAction: Action {
         }
     }
     
-    
     func vTwoRunShortcut() {
         shortcutsLogger(message: "MRVN-Zero SDS - SE - WillAppear V2 Action Instance - KeyDown")
-        
         
         //        Task {
         //            shortcutsLogger(message: "About to execute Shortcut V2")
@@ -341,7 +357,7 @@ class ShortcutAction: Action {
         shortcutsLogger(message: "Echo-Three | Running with DTS Fix... \(shortcutToRunUUID)")
         
         let shortcutsCLI = Process()
-        shortcutsCLI.standardInput = nil //TODO: DTS Fix. This allows us to run the Shortcut!!!
+        shortcutsCLI.standardInput = nil  //TODO: DTS Fix. This allows us to run the Shortcut!!!
         
         shortcutsCLI.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
         //    let xo = #"inputShortcut"#
@@ -354,7 +370,9 @@ class ShortcutAction: Action {
             shortcutsLogger(message: "About to run the shortcut...")
             //            let shortcutName - uuidToShortcut(inputUUID: <#T##UUID#>)
             try shortcutsCLI.run()
-            shortcutsLogger(message: "Should've ran the shortcut with UUID: \(shortcutToRunUUID) with name: \(shortcutToRun)")
+            shortcutsLogger(
+                message:
+                    "Should've ran the shortcut with UUID: \(shortcutToRunUUID) with name: \(shortcutToRun)")
             shortcutsLogger(message: "Ran? --- \(shortcutsCLI.arguments)")
         } catch {
             shortcutsLogger(message: "\(error)")
@@ -367,7 +385,6 @@ class ShortcutAction: Action {
         
         shortcutsLogger(message: "mapped Shortcuts: \(shortcutsMapped)")
     }
-    
     
     //MARK: KeyDown
     func keyDown(device: String, payload: KeyEvent<Settings>) {
@@ -390,26 +407,32 @@ class ShortcutAction: Action {
     //MARK: WillAppear
     func willAppear(device: String, payload: AppearEvent<Settings>) {
         shortcutsLogger(message: "🛡️ DomeOfProtection With: \(payload)")
-        SDVersion = PluginCommunication.shared.info.application.version //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
-        shortcutsLogger(message: "Nemesis-Zero-Init with count: \(SDVersion)")
+        //TODO: Fix this
+        //    SDVersion = PluginCommunication.shared.info.application.version  //TODO: Regex to only get the first 3 numbers/2 dot notations: 6.3.0.18948 -> 6.3.0 -> 6.3 -> 6
+        //    shortcutsLogger(message: "Nemesis-Zero-Init with count: \(SDVersion)")
         getSettings()
-        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
+        processShortcuts()  //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     //TODO: Get the settings first, loading the previous state & use that to fill the PI!
     func propertyInspectorDidAppear(device: String) {
         //        processRunShortcutTime = "0"
         logger.debug("😡 MRVN-Two PI Did Appear")
-        getSettings() //
+        getSettings()  //
         shortcutsLogger(message: "MRVN-Two PI Did Appear")
-        shortcutsLogger(message: "🤖 MRVN-Five PI Did Appear before sending init payload: \(shortcutToRun)")
+        shortcutsLogger(
+            message: "🤖 MRVN-Five PI Did Appear before sending init payload: \(shortcutToRun)")
         
-//        findFolderFromShortcut() Send the folder //TODO: Send the init selected folder with the init payload, that way we're already filtering instead of showing All.
+        //        findFolderFromShortcut() Send the folder //TODO: Send the init selected folder with the init payload, that way we're already filtering instead of showing All.
         
         //        let payloadToSend = ["type": "debugPayload", "voices": "\(listOfSayVoices)", "folders": "\(shortcutsFolder)"]
         let date = Date.now
         
-        let formattedDate = date.formatted(.iso8601.year().day().month().dateSeparator(.dash).dateTimeSeparator(.standard).timeSeparator(.colon).timeZoneSeparator(.colon).time(includingFractionalSeconds: true).locale(Locale(identifier: "us_EN")))
+        let formattedDate = date.formatted(
+            .iso8601.year().day().month().dateSeparator(.dash).dateTimeSeparator(.standard).timeSeparator(
+                .colon
+            ).timeZoneSeparator(.colon).time(includingFractionalSeconds: true).locale(
+                Locale(identifier: "us_EN")))
         
         let payload: [String: Any] = [
             "totalShortcuts": newData.count,
@@ -418,7 +441,7 @@ class ShortcutAction: Action {
             "processShortcutsSwift": processRunShortcutTime,
             "sentAt": formattedDate.description,
             "sdsEvt": SdsEventSendType.initialPayload.rawValue,
-            "folders": shortcutsFolder, //
+            "folders": shortcutsFolder,  //
             "selectedFolder": shortcutFolder,
             "isForcedTitle": isForcedTitle,
             "isAccessibility": isAccessibility,
@@ -431,36 +454,39 @@ class ShortcutAction: Action {
             "timeBetweenTaps": timeBetweenTaps,
             "isDoubleTripleTap": isDoubleTripleTap,
             "accessibilityVoices": accessibilityVoices,
-            "selectedAccessibilityVoice": accessibilityVoiceGlobal
-             
+            "selectedAccessibilityVoice": accessibilityVoiceGlobal,
+            
             //TODO: Add all shortcuts here?
         ]
         
         sendToPropertyInspector(payload: payload)
         
-        shortcutsLogger(message: "FolderSearch Being Sent 🚨 ⚠️ | Found folder \(shortcutFolder) for shortcut \(shortcutToRun)")
-        logger.debug("Sending PI Appear, 📦 Initial Payload Size: \(MemoryLayout.size(ofValue: payload))")
+        shortcutsLogger(
+            message:
+                "FolderSearch Being Sent 🚨 ⚠️ | Found folder \(shortcutFolder) for shortcut \(shortcutToRun)"
+        )
+        logger.debug(
+            "Sending PI Appear, 📦 Initial Payload Size: \(MemoryLayout.size(ofValue: payload))")
         
         //Check for folder here first!
         
-        
-        
-        
         sendNewFolderAndShortcuts(folder: "All")
-        shortcutsLogger(message: "🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
+        shortcutsLogger(
+            message: "🤖 MRVN-Six PI Did Appear After sending init payload: \(shortcutToRun)")
     }
-    
-    
     
     func propertyInspectorDidDisappear(device: String) {
         saveSettingsHelper()
-        getSettings() // Retrieve the saved settings | TODO: Do We really need this anymore?
-        processShortcuts() //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
+        getSettings()  // Retrieve the saved settings | TODO: Do We really need this anymore?
+        processShortcuts()  //TODO: We need to do this as soon as the PI appears, & mark the old data as stale, if there are changes in the dataset.
     }
     
     ///A Generalized helper function to save settings.
     func saveSettingsHelper() {
-        let xy = Settings(shortcutToRun: shortcutToRun, shortcutUUID: shortcutToRunUUID, isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility, isPerKeyHoldTime: isHoldTime, accessHoldTime: holdTime)
+        let xy = Settings(
+            shortcutToRun: shortcutToRun, shortcutUUID: shortcutToRunUUID,
+            isPerKeyForcedTextfield: isForcedTitle, isPerKeyAccessibility: isAccessibility,
+            isPerKeyHoldTime: isHoldTime, accessHoldTime: holdTime)
         //        setSettings(to: xy)
         setSettings(to: xy)
         shortcutsLogger(message: "Gibby One | New Settings saved, with: \(xy)")
@@ -468,9 +494,11 @@ class ShortcutAction: Action {
         //        setSettings(to: xy) // Save the updated settings
     }
     
-#warning("Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅")
+#warning(
+    "Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅"
+    )
     //TODO: Make an Alias called SentFromSteamDeckApp?
-    func sentToPlugin(payload: [String : String]) {
+    func sentToPlugin(payload: [String: String]) {
         shortcutsLogger(message: "MRVN-Three SendToPlugin - \(payload)")
         
         //The PI has requested X to be done. Delegate to that...
@@ -484,7 +512,8 @@ class ShortcutAction: Action {
                     switch evt {
                         
                     case .newShortcutSelected:
-                        shortcutsLogger(message: "Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
+                        shortcutsLogger(
+                            message: "Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
                         shortcutToRun = payload["data"] ?? "nil"
                         shortcutsLogger(message: "Beta-One | New Shortcut Selected... \(shortcutToRun)")
                         shortcutsLogger(message: "🤖 Shortcut UUID Debug 1: \(shortcutToRunUUID)")
@@ -503,7 +532,6 @@ class ShortcutAction: Action {
                     case .newVoiceSelected:
                         shortcutsLogger(message: "✈️ Voice from payload \(payload)")
                         
-                        
                         if let jsonDataString = payload["data"] {
                             if let decodedVoiceNew = Voice(rawValue: jsonDataString) {
                                 ///plays a new audio snipped if the voice isn't the same, & assigns it
@@ -511,9 +539,13 @@ class ShortcutAction: Action {
                                     accessibilityVoiceGlobal = decodedVoiceNew.rawValue
                                     Task {
                                         if decodedVoiceNew == .system {
-                                            await sayCLI(speak: "Hello, this is the default-system voice!", speechRate: accessSpeechRateGlobal)
+                                            await sayCLI(
+                                                speak: "Hello, this is the default-system voice!",
+                                                speechRate: accessSpeechRateGlobal)
                                         } else {
-                                            let url = URL(fileURLWithPath: audioDir.appending("/Intros/intro_\(accessibilityVoiceGlobal).aac"))
+                                            let url = URL(
+                                                fileURLWithPath: audioDir.appending(
+                                                    "/Intros/intro_\(accessibilityVoiceGlobal).aac"))
                                             let _ = await runVoices(url: url)
                                         }
                                     }
@@ -542,19 +574,21 @@ class ShortcutAction: Action {
                                     
                                     isForcedTitle = settings.isForcedTitleLocal
                                     isAccessibility = settings.isAccesLocal
-                                    holdTime = settings.accessHoldTime //If this is true then the above will equalt true & vice versa
+                                    holdTime = settings.accessHoldTime  //If this is true then the above will equalt true & vice versa
                                     isHoldTime = settings.isHoldTime
                                     
                                     isForcedTitleGlobal = settings.isForcedTitleGlobal
-                                    isAccessibilityGlobal = settings.isAccesGlobal //If this is true then the above will equalt true & vice versa
-                                    isHoldTimeGlobal = settings.isHoldTimeGlobal //If this is true then the above will equalt true & vice versa
-//                                    accessSpeechRateGlobal = settings.accessSpeechRateGlobal
-                                    
+                                    isAccessibilityGlobal = settings.isAccesGlobal  //If this is true then the above will equalt true & vice versa
+                                    isHoldTimeGlobal = settings.isHoldTimeGlobal  //If this is true then the above will equalt true & vice versa
+                                    //                                    accessSpeechRateGlobal = settings.accessSpeechRateGlobal
                                     
                                     isDoubleTripleTap = settings.isDoubleTripleTap
                                     timeBetweenTaps = settings.timeBetweenTaps
                                     
-                                    shortcutsLogger(message: "SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)")
+                                    shortcutsLogger(
+                                        message:
+                                            "SettingsDEBUG: About to save holdTime: \(holdTime) with holdTimeToggle: \(isHoldTimeGlobal)"
+                                    )
                                     saveSettingsHelper()
                                 } catch {
                                     shortcutsLogger(message: "🌐 Error: \(error) \(#file) \(#line) ")
@@ -565,13 +599,14 @@ class ShortcutAction: Action {
                         }
                     }
                 } else {
-                    shortcutsLogger(message: "SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
+                    shortcutsLogger(
+                        message: "SentFromSteamDeckApp -> This case has defaulted with: \(payload)")
                 }
             }
         }
     }
     
-    func newShortcutSelected () {
+    func newShortcutSelected() {
         
     }
     
@@ -583,7 +618,8 @@ class ShortcutAction: Action {
         shortcutsLogger(message: "🚀 Ultra-One New Folder Selected | Shortcut.first = \(shortcutToRun)")
         var isShortcutInFolder = false
         if newShortcutsPayload.contains(shortcutToRun) {
-            shortcutsLogger(message: "🧱 CastleWall-One: The folder contains our shortcuts: \(shortcutToRun)")
+            shortcutsLogger(
+                message: "🧱 CastleWall-One: The folder contains our shortcuts: \(shortcutToRun)")
             isShortcutInFolder = true
         } else {
             shortcutsLogger(message: "🧱 CastleWall-Two: Shortcut: \(shortcutToRun) is not in our folder")
@@ -595,7 +631,7 @@ class ShortcutAction: Action {
             "sdsEvt": SdsEventSendType.filteredFolder.rawValue,
             "filteredShortcuts": newShortcutsPayload,
             "isShortcutInFolder": isShortcutInFolder,
-            "shortcutToRun": shortcutToRun
+            "shortcutToRun": shortcutToRun,
         ]
         
 #warning("The `folderSelected` event is wrong! We need to send the *other* event!")
@@ -614,28 +650,29 @@ class ShortcutAction: Action {
         shortcutsLogger(message: "🤖 Shortcut UUID Debug 4: \(shortcutToRunUUID)")
         shortcutToRun = uuidToShortcut(inputUUID: shortcutToRunUUID)
         
-//        shortcutToRun = payload.settings.shortcutToRun
+        //        shortcutToRun = payload.settings.shortcutToRun
         findFolderFromShortcut()
         
         isAccessibility = payload.settings.isPerKeyAccessibility
         isForcedTitle = payload.settings.isPerKeyForcedTextfield
         isHoldTime = payload.settings.isPerKeyHoldTime
         
-        
         holdTime = payload.settings.accessHoldTime
         
-        if payload.settings.isPerKeyForcedTextfield || isForcedTitleGlobal == true  {
-//            setTitle(to: payload.settings.shortcutToRun)
+        if payload.settings.isPerKeyForcedTextfield || isForcedTitleGlobal == true {
+            //            setTitle(to: payload.settings.shortcutToRun)
             setTitleSDS()
         }
     }
     
     func didReceiveGlobalSettings() {
-        shortcutsLogger(message: "Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal), \(self.accessibilityVoiceGlobal)")
+        shortcutsLogger(
+            message:
+                "Nemesis-Zero-GlobalSettings -> \(self.isForcedTitleGlobal) \(self.isAccessibilityGlobal) \(self.isHoldTimeGlobal), \(self.accessibilityVoiceGlobal)"
+        )
         setTitleSDS()
     }
     
-
 }
 
 //MARK: Extended Functions
@@ -645,17 +682,17 @@ extension ShortcutAction {
     }
     
     func setTitleSDS() {
-//        shortcutsLogger(message: "About to set Title... \(shortcutToRun)")
-//        Task {
-//            try await Task.sleep(nanoseconds: 1_000_000_000)
-            if isForcedTitle || isForcedTitleGlobal {
-                setTitle(to: shortcutToRun)
-                shortcutsLogger(message: "set Title -> \(shortcutToRun)")
-            } else {
-                setTitle(to: "")
-                shortcutsLogger(message: "set Title -> BLANK")
-            }
-//        }
+        //        shortcutsLogger(message: "About to set Title... \(shortcutToRun)")
+        //        Task {
+        //            try await Task.sleep(nanoseconds: 1_000_000_000)
+        if isForcedTitle || isForcedTitleGlobal {
+            setTitle(to: shortcutToRun)
+            shortcutsLogger(message: "set Title -> \(shortcutToRun)")
+        } else {
+            setTitle(to: "")
+            shortcutsLogger(message: "set Title -> BLANK")
+        }
+        //        }
     }
     
     func findFolderFromShortcut() {
@@ -664,7 +701,8 @@ extension ShortcutAction {
         let matchingShortcut = newData.first { $0.shortcutName == shortcutToRun }
         if let folderName = matchingShortcut?.shortcutFolder {
             shortcutFolder = folderName
-            shortcutsLogger(message: "FolderSearch 🚨 ⚠️ | Found folder \(folderName) for shortcut \(shortcutToRun)")
+            shortcutsLogger(
+                message: "FolderSearch 🚨 ⚠️ | Found folder \(folderName) for shortcut \(shortcutToRun)")
             let filteredShortcuts = filterMappedFolder(folderName: folderName)
             // Use the filteredShortcuts as needed
         }
@@ -673,7 +711,6 @@ extension ShortcutAction {
     //MARK: Access Speach
     
 }
-
 
 //MARK: Misc Functions
 ///Retutrns an array of shortcuts, that match the passed in folder String.

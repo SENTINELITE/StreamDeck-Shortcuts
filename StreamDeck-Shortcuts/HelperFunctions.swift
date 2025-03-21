@@ -5,12 +5,12 @@
 //  Created by Kirk Land on 1/27/22.
 //
 
-import Foundation
 import AppKit
+import Foundation
+import OSLog
 import RegexBuilder
 import Sentry
 import StreamDeck
-import OSLog
 
 func preformShortcutRun() {
     
@@ -27,7 +27,7 @@ func preformShortcutRun() {
 //    get the name of every shortcut
 //end tell
 //"""
-//    
+//
 //    let script2 = """
 //tell application "Shortcuts Events"
 //    get the id of every shortcut
@@ -40,12 +40,12 @@ func preformShortcutRun() {
 //    else {
 //        args = ["-e", script]
 //    }
-//    
+//
 //    let task = Process()
 //    let pipe = Pipe()
 //    task.standardOutput = pipe
 //    task.standardError = pipe
-//    
+//
 //    task.launchPath = "/usr/bin/osascript"
 //    task.arguments = args
 //    task.launch()
@@ -102,8 +102,6 @@ func preformShortcutRun() {
 ////Because we want to track the UUID, we have to create our own map, as AppleScript is the only way to retrieve a Shortcuts UUID.
 //
 
-
-
 ///A new Struct for the core back-end data, for version 2.
 struct ShortcutDataTwo {
     let shortcutName: String
@@ -112,13 +110,12 @@ struct ShortcutDataTwo {
     
     /// The UUID of the Shortcut.
     /// - Important: This property is only available on macOS 13.0 or later.
-    var shortcutUUID: UUID?// = UUID(uuidString: "nil")
+    var shortcutUUID: UUID?  // = UUID(uuidString: "nil")
     
     /// The UUID of the Folder.
     /// - Important: This property is only available on macOS 13.0 or later.
     let shortcutFolderUUID: UUID? = UUID(uuidString: "nil")
 }
-
 
 //  `shortcuts list --show-identifiers` prints: `Restart Marker Timer (64B1D7F6-CBE4-445A-8715-6E1255A06857)`
 //  `shortcuts list --folders --show-identifiers` -> `Marker-Dev (F42D664E-9750-446B-BD61-D5B6E2CCC58B)`
@@ -127,12 +124,11 @@ struct ShortcutDataTwo {
  On start/PI open, refresh list of:
  • Fetch All Shortcuts
  • Find Their Folder & assign an "Unsorted" faux folder to shortcuts without folders
-    • The User could've moved the Shortcut to another folder, so the Shortcut's UUID is the source of truth.
+ • The User could've moved the Shortcut to another folder, so the Shortcut's UUID is the source of truth.
  • Find each Shortcut & each Folder's UUID's (If applicable (macOS 13.0+) if not, then assign some *other* tag to identify that we don't have UUIDs!
  
  When The user opens The PI, we should have a func that looks up the Shortcut's UUID &/or name, & looks for it's parent folder, before sending the intial payload to the PI
  */
-
 
 let uuidRegex = Regex {
     /^/
@@ -185,17 +181,16 @@ let uuidRegex = Regex {
 }
     .anchorsMatchLineEndings()
 
-
 func setupPlugin() {
     
     shortcutsLogger(message: "Booting up SDS-V2.")
-
-    //MARK: Start Sentry
-//    setupSentry()
     
+    //MARK: Start Sentry
+    //    setupSentry()
     
     //MARK: Refresh Shortcuts
-    shortcutsLogger(message: "😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!", logLevel: .debug)
+    shortcutsLogger(
+        message: "😡 Entry.swift | Nemesis-One Shortcuts Plugin initiated!", logLevel: .debug)
     processShortcuts()
     shortcutsLogger(message: "😡 Entry.swift | TD-One About to init!", logLevel: .debug)
     
@@ -204,11 +199,12 @@ func setupPlugin() {
     shortcutsLogger(message: "Boot phase complete.")
 }
 
-func setupSentry () {
+//MARK: setupSentry()
+func setupSentry() {
     SentrySDK.start { options in
-        options.dsn  = "https://e5b7ab3d23b04542818cc7bbd4a9dc0a@o1114114.ingest.sentry.io/6145162"
+        options.dsn = "https://e5b7ab3d23b04542818cc7bbd4a9dc0a@o1114114.ingest.sentry.io/6145162"
         options.environment = "SDS-V2-BETA"
-        options.debug = true // Enabled debug when first installing is always helpful
+        options.debug = true  // Enabled debug when first installing is always helpful
         
         /// Enable tracing to capture 100% of transactions for performance monitoring.
         /// Use 'options.tracesSampleRate' to set the sampling rate.
@@ -221,13 +217,16 @@ func setupSentry () {
     shortcutsLogger(message: "Sentry is setup")
 }
 
-
-
 //MARK: Custom Logger Func
 ///Logs a message to NSLOG, OS.Log, & StreamDeck Log*
-func shortcutsLogger (message: String, logLevel: OSLogType? = nil) {
-    
-    PluginCommunication.shared.sendEvent(.logMessage, context: nil, payload: ["message": message])
+func shortcutsLogger(message: String, logLevel: OSLogType? = nil) {
+    Task {
+        shortcutsLoggerAsync
+    }
+}
+
+func shortcutsLoggerAsync(message: String, logLevel: OSLogType? = nil) async {
+    await PluginCommunication.shared.sendEvent(
+        .logMessage, context: nil, payload: ["message": message])
     logger.log(level: .debug, "\(message, privacy: .public)")
-    
 }

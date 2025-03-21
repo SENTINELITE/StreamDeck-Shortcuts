@@ -1,8 +1,7 @@
-
 var deviceName = "N/A"
 //
-var devicesX = [String : String]()
-var devices = [String : String]()
+var devicesX = [String: String]()
+var devices = [String: String]()
 
 //⚠️MARK: Dashed Out Whole Document
 
@@ -40,12 +39,12 @@ var devices = [String : String]()
 //
 //// SelectedFolder -> Func SendNewShortcuts() -> SendToPI!
 //class ShortcutsPlugin: StreamDeckPlugin {
-//    
-//    
+//
+//
 //    //  🔷----------------------------------------------------- -----------------
 //    //  | deviceDidConnect: Load the user's settings, create helper deviceName. |
 //    //  ----------------------------------------------------- -------------------
-//    
+//
 //    //TODO: This is currently performing this 1 x the connected amount of devices!
 //    //TODO: Try to get settings for each known context, if we get an error, this context no longer exists, remove it from the file!
 //    override func deviceDidConnect(_ device: String, deviceInfo: DeviceInfo) {
@@ -56,11 +55,11 @@ var devices = [String : String]()
 //        NSLog("DeviceInfo.type: \(deviceInfo.type.rawValue)")
 //        deviceName = deviceInfo.name
 //        //Log each device that connected.
-//        
+//
 //        //Add the connected device to the list of known devices
 //        devicesX.updateValue(deviceInfo.name, forKey: device)
 //        devices.updateValue("\(deviceInfo.type)", forKey: device)
-//        
+//
 //        if (!loadedPrefs) {
 //            Task {
 //                NSLog("📂 About to load files")
@@ -69,21 +68,21 @@ var devices = [String : String]()
 //                loadedPrefs = true
 //            }
 //            //            sleep(2)
-//            
+//
 //            //MARK: Force MATest
 //            //            let toPush = ["refType": "dropdownRefs", "isForcedTitle": "false", "isSayvoice": "false", "type": "updateSettings", "sayHoldTime": "0.0", "shortcutName": "Create Twitch Sub Badges", "sayvoice": "Samantha"]
 //            //            NSLog("Pushed our custom Settings, to force MA fix!")
 //            //            setSettings(in: "C39D498FFE6743E3506F9C436BC025CC", to: toPush)
-//            
+//
 //            //            NSLog("Pushed our custom Settings, to force MA fix! 2 -> Finish, \(toPush)")
 //        }
 //    }
-//    
-//    
+//
+//
 //    //  🔷----------------------------------------------------- ---------------
 //    //  | accessKeyProcess: The main logic behind the Accessbility feature... |
 //    //  ----------------------------------------------------- -----------------
-//    
+//
 //    func accessKeyProcess (context: String, action: String) {
 //#warning("Allow for floating Numbers!     |     We also need to check/mark extra calls of the same context as stale!")
 //        var curTime = Int(userPrefs.accessibilityHoldDownTime)
@@ -117,7 +116,7 @@ var devices = [String : String]()
 //                return
 //            }
 //        }
-//        
+//
 //        if (accessKeysToProcess.keys.contains(context)) {
 //            for key in newKeyIds {
 //                if (key.key == context) {
@@ -125,7 +124,7 @@ var devices = [String : String]()
 //                        async let shelled = shellTest("-v\(userPrefs.accessibilityVoice)", "Running Shortcut!") //Bugs out & causes the program to crash, after the 2nd action?
 //                        //                        async let xxvd =  RunShortcut(shortcutName: key.value)
 //                        async let dtsRunner = runShortcutDTS(inputShortcut: key.value)
-//                        
+//
 //                        //TODO: Say when shortcut has been ran. We want this to be on a toggle, as we don't want to overlap a Shortcuts audio, if the user has such a thing.
 //                        //                                                async let iea =  runFromNewPackage(shortcutToRun: key.value)
 //                        Task {
@@ -140,9 +139,9 @@ var devices = [String : String]()
 //            setTitle(in: context, to: "")
 //            showAlert(in: context)
 //        }
-//        
+//
 //    }
-//    
+//
 //    //    var timeLeft = 0
 //    //    func accessDelayHelper(timeLeft: Int) async -> Int{
 //    //        await Task.sleep(1_000_000_000)
@@ -151,7 +150,7 @@ var devices = [String : String]()
 //    //        x -= 1
 //    //        return x
 //    //    }
-//    
+//
 //    func delayedStartup(context: String, action: String) async throws {
 //        try await Task.sleep(nanoseconds: 1_250_000_000)
 //        if (userPrefs.isForcedTitle) {
@@ -175,11 +174,11 @@ var devices = [String : String]()
 //            setTitle(in: context, to: "")
 //        }
 //    }
-//    
+//
 //    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
 //    //  | OnKey Appears: Check if we need to display the ForcedTitle. TODO: We need to add line breaks, if the text is too big, but I don't think the API allows for that? |
 //    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --
-//    
+//
 //    override func willAppear(action: String, context: String, device: String, payload: AppearEvent) {
 //        //        getSettings(in: context)
 //        //        if (userPrefs.isForcedTitle) {
@@ -192,8 +191,8 @@ var devices = [String : String]()
 //        //        else {
 //        //            setTitle(in: context, to: "")
 //        //        }
-//        
-//        
+//
+//
 //        if payload.isInMultiAction {
 //            NSLog("🐻 This is inside a MA! | Will Appear Event")
 //        }
@@ -202,30 +201,30 @@ var devices = [String : String]()
 //                let delay = try await delayedStartup(context: context, action: action)
 //            }
 //        }
-//        
-//        
-//        
+//
+//
+//
 //        //        if (!newKeyIds.keys.contains(context)) {
 //        //            NSLog("🔥 ❄️ 🔥 ❄️ 🔥 ❄️ Context Doens't exist, fetching settings from the backend...")
 //        ////            newKeyIds.updateValue(<#T##value: String##String#>, forKey: <#T##String#>)
 //        //            getSettings(in: context)
 //        //        }
 //    }
-//    
+//
 //    //  🔷---------------------------------------------------- ----------------------------------------------------- ---------------------------
 //    //  | OnKeyDown: Check if Accessbility is on, if not just run the Shortcut, if it is, then handle some of that logic. We also sendSignal() |
 //    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------
-//    
+//
 //    override func keyDown(action: String, context: String, device: String, payload: KeyEvent) {
 //        let x = instanceManager.instances(with: "shortcut.run")
 //        NSLog("This is all the Contexts: \(x.count)")
 //        NSLog("DEBUG: keyDown() was pressed down!")
 //        sendSignal()
-//        
+//
 //        //        sendToPropertyInspector(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
 //        //        NSLog("About to send PI data in a loop! :)")
 //        //        sendToPlugin(context: context, action: action, payload: ["type": "updateSettings", "shortcutName": "This_is_from_the_Backend!"])
-//        
+//
 //        if(newKeyIds.keys.contains(context)) {
 //            for key in newKeyIds {
 //                if (key.key == context) {
@@ -250,50 +249,50 @@ var devices = [String : String]()
 //            showAlert(in: context)
 //            NSLog("This is an injected point #Zebra-Lion")
 //        }
-//        
-//        
+//
+//
 //        //        showOk(in: context)
 //        //Data that's being pushed to the WS.
 //        //["event": "showOk", "context": "F4C0705EB6078CBFF14F46088C0FB726"]
-//        
+//
 //        //        setTitle(in: context, to: "TestNewTitle")
 //        //Data that's being pushed to the WS.
 //        //["context": "F4C0705EB6078CBFF14F46088C0FB726", "event": "setTitle", "payload": ["title": "TestNewTitle"]]
 //        NSLog("DEBUG: keyDown() finshed being running!")
 //    }
-//    
-//    
+//
+//
 //    //  🔷---------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- ----------------------
 //    //  | OnKeyUp: Check if Accesilbity list has anything in it, if it does, remove it. TODO: Better handling of exiting the loop, if the shortcut has been cancled/the button has been let up. |
 //    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- -----------------------
-//    
+//
 //    override func keyUp(action: String, context: String, device: String, payload: KeyEvent) {
 //        accessKeysToProcess.removeValue(forKey: context) //if SayVoice == false, don't remove?
 //    }
-//    
-//    
+//
+//
 //    //  🔷---------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- --------------------------------
 //    //  | didReceiveSettings: Fetch all the shortcuts & their hiearchy. See if the Key's (Elgato) saved settings match that of our custom file .json file. If not correct our file. This was a workaround |
 //    //  | /fix for copy/pasting & moving keys around. Maybe rework our method more? We want to keep around the .json file for easy access to the accessbility's needed shortcut namee & TD.               |
 //    //  ----------------------------------------------------- ----------------------------------------------------- ----------------------------------------------------- ---------------------------------
-//    
+//
 //    override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
 //        NSLog("❔❗❔❗❔❗ //#0003")
-//        
+//
 //        NSLog("DEBUG: Starting didRecieveSettings()!")
 //        NSLog("DEBUG: Settings fetched, Data: \(payload)")
-//        
+//
 //        if payload.isInMultiAction {
 //            NSLog("❄️ This is inside of a Multi-Action! Can we do logic here!?")
 //        }
-//        
-//        
+//
+//
 //        var isExist = true
 //        //Send initial settings!
 //        //Get all of the shortcuts & their hiearchy.
 //        processShortcuts()
 //        listOfCuts = listOfCuts.sorted() //Sort From A-Z | Are we still using this? TODO: We should filter more of the search stuff over on the swift side.
-//        
+//
 //        for key in newKeyIds {
 //            if (key.key == context) {
 //                //Check if the user still has this shortcut in their library! | TODO: We should move this to another function & check everywhere. For instance, we're not checking when the key appears, resulting in the old key's name being displayed to the user!
@@ -309,7 +308,7 @@ var devices = [String : String]()
 //                }
 //            }
 //        }
-//        
+//
 //        if(newKeyIds.keys.contains(context)) {
 //            NSLog("We already have this key")
 //        }
@@ -320,7 +319,7 @@ var devices = [String : String]()
 //                async let x =  saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
 //            }
 //        }
-//        
+//
 //        //
 //        var toPass = ""
 //        for i in payload.settings {
@@ -330,7 +329,7 @@ var devices = [String : String]()
 //                toPass = i.value
 //            }
 //        }
-//        
+//
 //        var jsToSend = ""
 //        do {
 //            let r = try JSONEncoder().encode(shortcutsMapped)
@@ -343,8 +342,8 @@ var devices = [String : String]()
 //            SentrySDK.capture(message: "Failed to encode shortcutsMapped as json, on line 321 of streamdeck-backend.swift")
 //            NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
 //        }
-//        
-//        
+//
+//
 //        //Older payload
 //        //        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "shortcuts": "\(listOfCuts)",
 //        //                            "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
@@ -352,7 +351,7 @@ var devices = [String : String]()
 //        //                            "isSayvoice": "\(userPrefs.isAccessibility)", "sayHoldTime": "\(userPrefs.accessibilityHoldDownTime)",
 //        //                            "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
 //        //                           ]
-//        
+//
 //        //        initalShortcutsMapped
 //        //        var jsToSend_initial = ""
 //        //        do {
@@ -364,8 +363,8 @@ var devices = [String : String]()
 //        //        } catch {
 //        //            NSLog("JSON Structure isn't vald! Error: \(error.localizedDescription)")
 //        //        }
-//        
-//        
+//
+//
 //        //            NSLog(" XO XO About to send init payload")
 //        //        var payloadToSend = ["type": "updateSettings", "shortcutName": "\(toPass)", "isInitPayload": "true",
 //        //                                "shortcutsFolder": "\(shortcutsFolder)", "voices": "\(listOfSayVoices)",
@@ -384,13 +383,13 @@ var devices = [String : String]()
 //                             "sayvoice": "\(userPrefs.accessibilityVoice)", "isForcedTitle": "\(userPrefs.isForcedTitle)"
 //        ]
 //        NSLog(" XO XO Sent Whole payload")
-//        
+//
 //        //Send Key's Data to the PI
 //        sendToPropertyInspector(in: context, action: action, payload: payloadToSend)
-//        
+//
 //        //Helper Title for Debuggindg
 //        //        setTitle(in: context, to: "❄️ \(toPass)")
-//        
+//
 //        //IF the .json key's value poperty doesn't match, correct that.
 //        //        if (listOfCuts.contains(<#T##element: String##String#>)) {
 //        if (toPass != savedShortcut) {
@@ -426,10 +425,10 @@ var devices = [String : String]()
 //        //        }
 //        NSLog("DEBUG: Finished running didRecieveSettings()!")
 //    }
-//    
+//
 //    override func propertyInspectorDidAppear(action: String, context: String, device: String) {
 //        NSLog("DEBUG: Starting propertyInspectorDidAppear()!")
-//        
+//
 //        //        // Simulate the hard crash/Slow loading...
 //        //        if (firstLaunch == true) {
 //        //            sleep(20)
@@ -438,8 +437,8 @@ var devices = [String : String]()
 //        //MARK: We need to check for MA
 //        WebSocketDelayForcePIEvent = true
 //        //TODO: We don't need this anymore???
-//        
-//        
+//
+//
 //        NSLog("❔❗❔❗❔❗ //#0001")
 //        getSettings(in: context)
 //        NSLog("❔❗❔❗❔❗ //#0002")
@@ -458,7 +457,7 @@ var devices = [String : String]()
 //        //        }
 //        NSLog("DEBUG: Finished Running propertyInspectorDidAppear()!")
 //    }
-//    
+//
 //    //    override func didReceiveSettings(action: String, context: String, device: String, payload: SettingsEvent.Payload) {
 //    //        NSLog("🔥 ❄️ 🔥 ❄️ 🔥 ❄️ EMERGENCT \(payload.settings)")
 //    //
@@ -474,16 +473,16 @@ var devices = [String : String]()
 //    //        newKeyIds.updateValue(savedShortcut, forKey: context)
 //    //        savePrefrences(filePath: keySettingsFilePath)
 //    //    }
-//    
+//
 //    //    override func sendToPlugin(context: String, action: String, payload: [String : String]) {
 //    //        NSLog("New Payload: \(payload)")
 //    //    }
-//    
-//    
+//
+//
 //    //  🔷---------------------------------------------------- ----------------------------------------------------- -------------------------------
 //    //  | handleForcedTitle: If ForcedTitle is on, then turn on the title for all visble contexts, if not or it get's turned off, remove all text. |
 //    //  ----------------------------------------------------- ----------------------------------------------------- --------------------------------
-//    
+//
 //    func handleForcedTitle() {
 //        if(userPrefs.isForcedTitle) {
 //            instanceManager.instances.forEach {
@@ -499,23 +498,23 @@ var devices = [String : String]()
 //                setTitle(in: $0.context, to: "")
 //            }
 //        }
-//        
+//
 //        instanceManager.instances.forEach {
 //            NSLog("Known Contexts: \($0.context), Count: \(instanceManager.instances.count)")
 //        }
 //    }
-//    
-//    
+//
+//
 //    //  🔷---------------------------------------------------- ---------------------
 //    //  | sentToPlugin: This is where we recieve stuff from the PropertyInspector. |
 //    //  ----------------------------------------------------- ----------------------
-//    
+//
 //    override func sentToPlugin(context: String, action: String, payload: [String : String]) {
 //        NSLog("DEBUG: Starting sentToPlugin()!")
-//        
+//
 //        processShortcuts()
 //        listOfCuts = listOfCuts.sorted() //Sort From A-Z | Are we still using this? TODO: We should filter more of the search stuff over on the swift side.
-//        
+//
 //        NSLog("We got sent something from the PI!")
 //        NSLog("""
 //                We got sent something from the PI,
@@ -524,10 +523,10 @@ var devices = [String : String]()
 //                payload: \(payload)
 //"""
 //        )
-//        
+//
 //        //        var payloadMapped = [String:Any]()
-//        
-//        
+//
+//
 //        //Are we using these???? TODO: Check if this are needed!
 //        let decodedPayload = payload.map { $0.value} //["TestCut_New1", "Samantha", "updateSettings"]
 //        let decodedPayloadKey = payload.map { $0.key} //["shortcutName", "sayvoice", "type"]
@@ -536,8 +535,8 @@ var devices = [String : String]()
 //        //        NSLog("⚠️ DPayload Key: \(decodedPayloadKey)")
 //        //
 //        //        NSLog("⚠️ DPayload 2 [0]: \(decodedPayload[0])")
-//        
-//        
+//
+//
 //        for i in payload {
 //            if (i.key == "type") {
 //                switch i.value {
@@ -555,13 +554,13 @@ var devices = [String : String]()
 //                        updateSettings(context: context, action: action, payload: payload)
 //                        NSLog("DEBUG: sentToPlugin() Check #3!")
 //                    }
-//                    
+//
 //                    //If the WebSocket is still loading, we need to force-the propertyInspectorDidAppear event.
 //                    if(WebSocketDelayForcePIEvent == false) {
 //                        NSLog("  ⚠️ 🚨 150 : delayed Startup. Checking for X")
 //                        propertyInspectorDidAppear(action: action, context: context, device: "")
 //                    }
-//                    
+//
 //                case "shortcutsOfFolder":
 //                    shortcutsFolder
 //                case "updateSettings":
@@ -592,17 +591,17 @@ var devices = [String : String]()
 //            //                }
 //            //            }
 //        }
-//        
+//
 //        //        for value in decodedPayload {
 //        //            payloadMapped.updateValue(decodedPayload[], forKey: <#T##String#>)
 //        //        }
 //        //        payloadMapped = [decodedPayloadKey : decodedPayload]
 //        //
 //        NSLog("payload stuff \(decodedPayload)")
-//        
+//
 //#warning("this line was causing a hard crash, with decodedPayload[[1] being out of bounds.")
 //        //        NSLog("payload stuff \(decodedPayload[0]) \(decodedPayload[1])")
-//        
+//
 //        //        theValueToTrade = decodedPayload[0]
 //        //        if (decodedPayload[0] == "requestSettings") {
 //        //            requestSettings()
@@ -629,7 +628,7 @@ var devices = [String : String]()
 //        }
 //        NSLog("DEBUG: Finished Running sentToPlugin()!")
 //    }
-//    
+//
 //}
 //
 ////  🔷---------------------------------------------------- -----------------
@@ -648,7 +647,7 @@ var devices = [String : String]()
 //    NSLog("❄️ Updating the settings with \(payload)")
 //    let decodedPayload = payload.map { $0.value} //["TestCut_New1", "Samantha", "updateSettings"]
 //    let decodedPayloadKey = payload.map { $0.key} //["shortcutName", "sayvoice", "type"]
-//    
+//
 //    for i in payload {
 //        switch i.key {
 //        case "shortcutName":
@@ -657,7 +656,7 @@ var devices = [String : String]()
 //            Task {
 //                async let x = saveFile(fileName: settingsFile) //(filePath: keySettingsFilePath)
 //            }
-//            
+//
 //            //            for key in newKeyIds {
 //            //                if (key.key == context) {
 //            //                    newKeyIds.updateValue(i.value, forKey: context)
@@ -696,7 +695,7 @@ var devices = [String : String]()
 //                SentrySDK.capture(message: "Error recieving & updating the ForcedTitle bool... \(i.value)")
 //                NSLog("Error recieving & updating the Accessibility bool... \(i.value)")
 //            }
-//            
+//
 //            Task {
 //                async let x =  saveFile(fileName: settingsFile) //(filePath: userSettingsFilePath)
 //            }
@@ -726,7 +725,7 @@ var devices = [String : String]()
 //            NSLog("Nothing to save! The Value: \(i.value) With Key: \(i.key)")
 //        }
 //    }
-//    
+//
 //    NSLog("DEBUG: Finished Running updateSettings()!")
 //}
 //
@@ -738,7 +737,7 @@ var devices = [String : String]()
 //// Func inside of PI
 //func requestSettings() {
 //    NSLog("☃️ -> ❄️ Fetching the Requested settings  | Not Implemented")
-//    
+//
 //}
 //
 ////TODO: Do We need these functions? Leftover Skeleton code? setSettings/sendSettings... & sendEventTest...
