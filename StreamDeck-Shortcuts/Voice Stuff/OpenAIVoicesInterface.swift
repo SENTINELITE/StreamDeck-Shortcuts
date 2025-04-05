@@ -29,7 +29,7 @@ enum Voice: String, CaseIterable, Identifiable, Codable {
 }
 
 func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) async throws -> URL {
-    let loggerOpenAi = Logger(subsystem: "subsystem", category: "openAi")
+    let loggerOpenAI = Logger(subsystem: "subsystem", category: "openAI")
     
     // Create URL
     guard let url = URL(string: "https://api.openai.com/v1/audio/speech") else {
@@ -42,7 +42,7 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     
     // Set headers
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue("Bearer \(openAiToken)", forHTTPHeaderField: "Authorization")
+    request.setValue("Bearer \(openAIToken)", forHTTPHeaderField: "Authorization")
     
     // Create JSON data and pass in body
     let jsonData = try JSONSerialization.data(withJSONObject: [
@@ -59,32 +59,27 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     
     // Check response
     guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-        loggerOpenAi.error("Bad Server Response")
+        loggerOpenAI.error("Bad Server Response")
         throw URLError(.badServerResponse)
     }
     
-    loggerOpenAi.log("Response: \(response)")
-    
-    loggerOpenAi.log("about to save file...")
+    loggerOpenAI.log("Response: \(response)")
+    loggerOpenAI.log("About to save file...")
     
     //    let audioDir = NSHomeDirectory().appending("/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.sds-2.sdPlugin/audio/Shortcuts")
     let fileName = "/Shortcuts/\(shortcutUUID)_\(voice.rawValue).aac"
-    let heifa = audioDir.appending(fileName)
+    let audioFilePath = audioDir.appending(fileName)
     
-    let fileUrl = URL(fileURLWithPath: heifa)
+    let fileUrl = URL(fileURLWithPath: audioFilePath)
     
-    loggerOpenAi.log("about to write file")
+    loggerOpenAI.log("about to write file to \(fileUrl.absoluteString)")
     do {
         try data.write(to: fileUrl)
-        loggerOpenAi.log("File saved successfully to: \(fileUrl.path)")
+        loggerOpenAI.log("File saved successfully to: \(fileUrl.path)")
     } catch {
-        loggerOpenAi.error("File saving failed with error: \(error)")
+        loggerOpenAI.error("File saving failed with error: \(error)")
         throw error
     }
-    
-    loggerOpenAi.log("about to saved file")
-    
-    print(fileUrl.description)
     
     return fileUrl
 }

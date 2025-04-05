@@ -26,8 +26,7 @@ class StreamDeckShortcuts: Plugin {
     // MARK: Manifest
     static var name: String = "StreamDeck Shortcuts BETA"
     
-    static var description: String =
-    "Shortcuts allows you to run your Apple Shortcuts within the Elgato StreamDeck ecosystem. This is the beta version, that's under active development."
+    static var description: String = "Shortcuts allows you to run your Apple Shortcuts within the Elgato StreamDeck ecosystem. This is the beta version, that's under active development."
     
     static var category: String? = "SDS"
     

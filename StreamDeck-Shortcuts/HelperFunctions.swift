@@ -126,7 +126,7 @@ struct ShortcutDataTwo {
  • Find Their Folder & assign an "Unsorted" faux folder to shortcuts without folders
  • The User could've moved the Shortcut to another folder, so the Shortcut's UUID is the source of truth.
  • Find each Shortcut & each Folder's UUID's (If applicable (macOS 13.0+) if not, then assign some *other* tag to identify that we don't have UUIDs!
- 
+
  When The user opens The PI, we should have a func that looks up the Shortcut's UUID &/or name, & looks for it's parent folder, before sending the intial payload to the PI
  */
 
@@ -179,7 +179,7 @@ let uuidRegex = Regex {
     }
     ")"
 }
-    .anchorsMatchLineEndings()
+.anchorsMatchLineEndings()
 
 func setupPlugin() {
     

@@ -102,7 +102,7 @@ func processShortcuts() {
         func fetchShortcuts() {
             
             if #available(macOS 13, *) {
-#warning("macOS 13 Only!")
+                #warning("macOS 13 Only!")
                 shortcutdUUIDRawStringArray = shortcutsCLIProcessor(args: ["list", "--show-identifiers"])
                     .split(whereSeparator: \.isNewline).map(String.init)
                 

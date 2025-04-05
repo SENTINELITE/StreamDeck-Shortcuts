@@ -164,7 +164,7 @@ class ShortcutAction: Action {
                     "🚨 Bloodhound-Three | Attempting to run with URL-Encoded Shortcut: \(encodedURL.absoluteString)"
             )
             NSWorkspace.shared.open(encodedURL)
-            
+
         case 3:
             if let url = URL(string: "shortcuts://create-shortcut") {
                 NSWorkspace.shared.open(url)
@@ -456,7 +456,7 @@ class ShortcutAction: Action {
             "accessibilityVoices": accessibilityVoices,
             "selectedAccessibilityVoice": accessibilityVoiceGlobal,
             
-            //TODO: Add all shortcuts here?
+                //TODO: Add all shortcuts here?
         ]
         
         sendToPropertyInspector(payload: payload)
@@ -494,8 +494,8 @@ class ShortcutAction: Action {
         //        setSettings(to: xy) // Save the updated settings
     }
     
-#warning(
-    "Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅"
+    #warning(
+        "Currently not getting this. It's being re-routed to the PluginDelegate. Probably because the manifest.json action type (shortcuts.action) isn't correct 😅"
     )
     //TODO: Make an Alias called SentFromSteamDeckApp?
     func sentToPlugin(payload: [String: String]) {
@@ -558,7 +558,7 @@ class ShortcutAction: Action {
                         } else {
                             shortcutsLogger(message: "newFolderSelected Failed with: \(payload)")
                         }
-                        
+
                     case .globalSettingsUpdated:
                         
                         if let jsonDataString = payload["data"] {
@@ -634,7 +634,7 @@ class ShortcutAction: Action {
             "shortcutToRun": shortcutToRun,
         ]
         
-#warning("The `folderSelected` event is wrong! We need to send the *other* event!")
+        #warning("The `folderSelected` event is wrong! We need to send the *other* event!")
         
         sendToPropertyInspector(payload: finalPayload)
         shortcutsLogger(message: "MRVN-Five-One \(newShortcutsPayload)")

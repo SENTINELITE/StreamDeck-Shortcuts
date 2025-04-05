@@ -14,7 +14,7 @@ import StreamDeck
  extension EnvironmentValues {
  #environmentKey("count", defaultValue: 0, ofType: Int.self)
  }
- 
+
  extension GlobalSettings {
  #globalSetting("count", defaultValue: 0, ofType: Int.self)
  }
