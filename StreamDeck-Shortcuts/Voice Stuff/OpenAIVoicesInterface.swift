@@ -9,7 +9,32 @@ import Foundation
 import OSLog
 
 let audioDir = NSHomeDirectory().appending(
-    "/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.sds-2.sdPlugin/audio")
+    "/Library/Application Support/com.elgato.StreamDeck/Plugins/com.sentinelite.streamdeckshortcuts.sdPlugin/audio")
+
+private let audioBaseURL = URL(fileURLWithPath: audioDir, isDirectory: true)
+private let audioSubdirectories = [
+    "Shortcuts",
+    "Cancelled Shortcut",
+    "Countdown",
+    "Running Shortcut",
+]
+
+@discardableResult
+private func ensureAudioDirectoryStructure() throws -> URL {
+    let manager = FileManager.default
+    if !manager.fileExists(atPath: audioBaseURL.path) {
+        try manager.createDirectory(at: audioBaseURL, withIntermediateDirectories: true)
+    }
+
+    for subdirectory in audioSubdirectories {
+        let subdirectoryURL = audioBaseURL.appendingPathComponent(subdirectory, isDirectory: true)
+        if !manager.fileExists(atPath: subdirectoryURL.path) {
+            try manager.createDirectory(at: subdirectoryURL, withIntermediateDirectories: true)
+        }
+    }
+
+    return audioBaseURL
+}
 
 enum Voice: String, CaseIterable, Identifiable, Codable {
     case system
@@ -44,14 +69,16 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue("Bearer \(openAIToken)", forHTTPHeaderField: "Authorization")
     
-    // Create JSON data and pass in body
-    let jsonData = try JSONSerialization.data(withJSONObject: [
+    // Create JSON payload
+    let payload: [String: Any] = [
         "input": text,
         "model": "gpt-4o-mini-tts",
         "voice": voice.rawValue,
         "response_format": "aac",
-        "speed": "1.0",
-    ])
+        "speed": 1.0,
+    ]
+
+    let jsonData = try JSONSerialization.data(withJSONObject: payload)
     request.httpBody = jsonData
     
     // Make the request
@@ -59,7 +86,14 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     
     // Check response
     guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-        loggerOpenAI.error("Bad Server Response")
+        if let httpResponse = response as? HTTPURLResponse {
+            let body = String(data: data, encoding: .utf8) ?? "<non-text response>"
+            loggerOpenAI.error(
+                "Bad Server Response. Status: \(httpResponse.statusCode, privacy: .public). Body: \(body, privacy: .public)"
+            )
+        } else {
+            loggerOpenAI.error("Bad Server Response")
+        }
         throw URLError(.badServerResponse)
     }
     
@@ -74,6 +108,7 @@ func getTextToSpeechAsync(text: String, shortcutUUID: String, voice: Voice) asyn
     
     loggerOpenAI.log("about to write file to \(fileUrl.absoluteString)")
     do {
+        try ensureAudioDirectoryStructure()
         try data.write(to: fileUrl)
         loggerOpenAI.log("File saved successfully to: \(fileUrl.path)")
     } catch {
