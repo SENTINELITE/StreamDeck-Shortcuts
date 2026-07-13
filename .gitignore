@@ -3,6 +3,7 @@
 /Packages
 xcuserdata/
 DerivedData/
+/dist/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 /StreamDeck-Shortcuts/analytics.swift
 /PropertyInspectorViews/Preview/*.local.js
