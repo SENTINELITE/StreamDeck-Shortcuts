@@ -4,7 +4,7 @@
 
 //import { greet, message } from './newFile.js';
 
-var RELEASE = '2.0.0';
+var RELEASE = '2.1.0.0';
 var hasResent = false;
 let isInitializing = false; // Flag to check if in initialization mode
 
@@ -20,6 +20,54 @@ filteredFolder: Symbol("filteredFolder")
 
 listOfCuts = ['Placeholder', '2'];
 var listOfShortcutsVersionTwo = {};
+let shortcutCatalog = [];
+let visibleSearchResults = [];
+let activeSearchResultIndex = -1;
+const maximumSearchResults = 25;
+let pendingPreviewFixture = null;
+
+function isPreviewMode() {
+    return new URLSearchParams(window.location.search).get('preview') === '1';
+}
+
+function showSonomaShortcutNotice() {
+    const notice = document.getElementById('sonoma_shortcuts_notice');
+    const isSonoma = /Mac OS X 14(?:[._]\d+)?/.test(navigator.userAgent);
+
+    notice.hidden = !isSonoma;
+}
+
+function applyPreviewFixture(fixture) {
+    if (!fixture || !Array.isArray(fixture.shortcutCatalog)) {
+        return;
+    }
+
+    shortcutCatalog = fixture.shortcutCatalog;
+    shortcutsFolder = Array.isArray(fixture.folders) ? fixture.folders : ['All'];
+    listOfShortcutsVersionTwo = shortcutCatalog.map(function(item) { return item.name; });
+
+    refreshListOfShortcutsFolders('All');
+
+    const shortcutsSelect = document.getElementById('shortcuts_list');
+    shortcutsSelect.replaceChildren();
+    listOfShortcutsVersionTwo.forEach(function(name, index) {
+        shortcutsSelect.appendChild(genOption(name, index));
+    });
+    shortcutsSelect.value = 0;
+
+    clearShortcutSearchResults();
+}
+
+window.addEventListener('message', function(event) {
+    if (!isPreviewMode() || event.data?.type !== 'streamdeck-shortcuts-preview') {
+        return;
+    }
+
+    pendingPreviewFixture = event.data.fixture;
+    if (document.readyState !== 'loading') {
+        applyPreviewFixture(pendingPreviewFixture);
+    }
+});
 
 function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, inActionInfo) {
     uuid = inUUID;
@@ -82,6 +130,8 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
                     console.log("📦 folders #", totalFolders)
                     console.log("📦 initialPayload")
                     shortcutsFolder = payload.folders //Globally accessible
+                    shortcutCatalog = Array.isArray(payload.shortcutCatalog) ? payload.shortcutCatalog : [];
+                    clearShortcutSearchResults();
                     console.log("XYZ: ", shortcutsFolder)
                     initPayload(sentAt, processShortcutsSwift, payloadSize, totalShortcuts, totalFolders)
                     refreshListOfShortcutsFolders(payload.selectedFolder)
@@ -152,8 +202,13 @@ function connectElgatoStreamDeckSocket(inPort, inUUID, inRegisterEvent, inInfo, 
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
+    showSonomaShortcutNotice();
+
     const shortcutsFolderList = document.querySelector("#shortcuts_folder_list");
     const shortcutsList = document.querySelector("#shortcuts_list");
+    const shortcutSearchInput = document.getElementById("shortcut_search_input");
+    const shortcutSearchToggle = document.getElementById("shortcut_search_toggle");
+    const shortcutSearchBackdrop = document.getElementById("shortcut_search_backdrop");
     
     const accessbilityVoicesList = document.querySelector("#access_voice_list");
     
@@ -178,6 +233,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
     shortcutsList.addEventListener('valuechange', function(ev) {
         selectedNewIndex(ev.target.value, 'shortcutSelected');
+    });
+
+    shortcutSearchToggle.addEventListener('click', openShortcutSearch);
+    shortcutSearchBackdrop.addEventListener('click', closeShortcutSearch);
+
+    shortcutSearchInput.addEventListener('input', function(ev) {
+        renderShortcutSearchResults(ev.target.value);
+    });
+
+    shortcutSearchInput.addEventListener('keydown', function(ev) {
+        if (ev.key === 'ArrowDown' && visibleSearchResults.length > 0) {
+            ev.preventDefault();
+            activeSearchResultIndex = Math.min(activeSearchResultIndex + 1, visibleSearchResults.length - 1);
+            updateSearchResultSelection();
+        } else if (ev.key === 'ArrowUp' && visibleSearchResults.length > 0) {
+            ev.preventDefault();
+            activeSearchResultIndex = Math.max(activeSearchResultIndex - 1, 0);
+            updateSearchResultSelection();
+        } else if (ev.key === 'Enter' && activeSearchResultIndex >= 0) {
+            ev.preventDefault();
+            selectShortcutFromSearch(visibleSearchResults[activeSearchResultIndex]);
+        } else if (ev.key === 'Escape') {
+            closeShortcutSearch();
+        }
     });
     
     accessbilityVoicesList.addEventListener('valuechange', function(ev) {
@@ -250,6 +329,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             toggleSetting(ev.target.value);
         }
     });
+
+    if (isPreviewMode() && pendingPreviewFixture) {
+        applyPreviewFixture(pendingPreviewFixture);
+    }
     
 });
 
@@ -685,6 +768,13 @@ newVoiceSelected: "newVoiceSelected"
 
 
 function sendNewPayload(event, data) {
+    if (!websocket) {
+        if (isPreviewMode()) {
+            return;
+        }
+        console.warn('Cannot send a Property Inspector event before the Stream Deck socket connects.');
+        return;
+    }
     
     let payload = {};
     payload.type = event; //Enum Type
@@ -751,6 +841,170 @@ function selectedNewIndex(selected_id, selected_type, selectedNew) {
         //TODO: Send message about ref type 🟥
     }
     //    updateSettings();
+}
+
+function normalizedSearchText(value) {
+    return String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase();
+}
+
+function shortcutSearchScore(item, normalizedQuery, queryTokens) {
+    const name = normalizedSearchText(item.name);
+    const folder = normalizedSearchText(item.folder);
+    const searchableText = name + ' ' + folder;
+
+    if (!queryTokens.every(function(token) { return searchableText.includes(token); })) {
+        return null;
+    }
+
+    let score = 0;
+    if (name.includes(normalizedQuery)) {
+        score += 1000;
+    } else if (folder.includes(normalizedQuery)) {
+        score += 500;
+    }
+
+    queryTokens.forEach(function(token) {
+        score += name.includes(token) ? 50 : 10;
+    });
+
+    if (name.startsWith(normalizedQuery)) {
+        score += 100;
+    }
+
+    return score;
+}
+
+function renderShortcutSearchResults(query) {
+    const normalizedQuery = normalizedSearchText(query).trim();
+    const resultsContainer = document.getElementById('shortcut_search_results');
+    const searchInput = document.getElementById('shortcut_search_input');
+
+    resultsContainer.replaceChildren();
+    activeSearchResultIndex = -1;
+
+    if (normalizedQuery.length === 0) {
+        clearShortcutSearchResults();
+        return;
+    }
+
+    const queryTokens = normalizedQuery.split(/\s+/);
+    visibleSearchResults = shortcutCatalog
+        .map(function(item) {
+            return {
+                item: item,
+                score: shortcutSearchScore(item, normalizedQuery, queryTokens)
+            };
+        })
+        .filter(function(candidate) { return candidate.score !== null; })
+        .sort(function(lhs, rhs) {
+            return rhs.score - lhs.score
+                || String(lhs.item.name).localeCompare(String(rhs.item.name));
+        })
+        .slice(0, maximumSearchResults)
+        .map(function(candidate) { return candidate.item; });
+
+    if (visibleSearchResults.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'shortcut-search-empty';
+        emptyState.textContent = 'No shortcuts found.';
+        resultsContainer.appendChild(emptyState);
+        resultsContainer.hidden = false;
+        searchInput.setAttribute('aria-expanded', 'false');
+        return;
+    }
+
+    visibleSearchResults.forEach(function(item, index) {
+        const result = document.createElement('button');
+        const name = document.createElement('span');
+        const folder = document.createElement('span');
+
+        result.type = 'button';
+        result.className = 'shortcut-search-result';
+        result.id = 'shortcut_search_result_' + index;
+        result.setAttribute('role', 'option');
+        result.setAttribute('aria-selected', 'false');
+        result.addEventListener('click', function() {
+            selectShortcutFromSearch(item);
+        });
+
+        name.className = 'shortcut-search-result-name';
+        name.textContent = item.name;
+        folder.className = 'shortcut-search-result-folder';
+        folder.textContent = item.folder || 'Unsorted';
+
+        result.append(name, folder);
+        resultsContainer.appendChild(result);
+    });
+
+    resultsContainer.hidden = false;
+    searchInput.setAttribute('aria-expanded', 'true');
+}
+
+function updateSearchResultSelection() {
+    const results = document.querySelectorAll('.shortcut-search-result');
+    results.forEach(function(result, index) {
+        const isActive = index === activeSearchResultIndex;
+        result.setAttribute('aria-selected', String(isActive));
+        if (isActive) {
+            result.scrollIntoView({ block: 'nearest' });
+        }
+    });
+}
+
+function clearShortcutSearchResults() {
+    const resultsContainer = document.getElementById('shortcut_search_results');
+    const searchInput = document.getElementById('shortcut_search_input');
+
+    visibleSearchResults = [];
+    activeSearchResultIndex = -1;
+    resultsContainer.replaceChildren();
+    resultsContainer.hidden = true;
+    searchInput.setAttribute('aria-expanded', 'false');
+}
+
+function openShortcutSearch() {
+    const drawer = document.getElementById('shortcut_search_drawer');
+    const backdrop = document.getElementById('shortcut_search_backdrop');
+    const toggle = document.getElementById('shortcut_search_toggle');
+    const input = document.getElementById('shortcut_search_input');
+
+    drawer.hidden = false;
+    backdrop.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    input.focus();
+}
+
+function closeShortcutSearch() {
+    const drawer = document.getElementById('shortcut_search_drawer');
+    const backdrop = document.getElementById('shortcut_search_backdrop');
+    const toggle = document.getElementById('shortcut_search_toggle');
+    const input = document.getElementById('shortcut_search_input');
+
+    input.value = '';
+    clearShortcutSearchResults();
+    drawer.hidden = true;
+    backdrop.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.focus();
+}
+
+function selectShortcutFromSearch(item) {
+    if (!item || !item.name) {
+        return;
+    }
+
+    const shortcutsFolderList = document.getElementById('shortcuts_folder_list');
+    const folderIndex = shortcutsFolder.indexOf(item.folder);
+
+    if (folderIndex >= 0) {
+        shortcutsFolderList.value = folderIndex;
+    }
+
+    sendNewPayload(SdsEventSend.newShortcutSelected, item.name);
+    closeShortcutSearch();
 }
 
 function openPage(site) {

@@ -22,10 +22,17 @@
     
     <body>
         
-        <details class="message info">
-            <summary>The accessibility features are powered by AI services, & *are not* real voices. </summary>
+        <sdpi-item>
+            <div class="property-inspector-note" role="note">
+                The accessibility features are powered by AI services, &amp; <strong>are not</strong> real voices.
+            </div>
+        </sdpi-item>
+
+        <details class="message sonoma-shortcuts-notice" id="sonoma_shortcuts_notice" hidden>
+            <summary>macOS 14 Sonoma</summary>
+            <p>macOS Sonoma has a known Shortcuts issue that can prevent Stream Deck from working with shortcuts. No fix is currently available or planned from Apple.</p>
         </details>
-        
+
         <sdpi-item label="📁 Folder">
             <div id="isFolder">
                 <sdpi-select  placeholder="Placeholder..." id="shortcuts_folder_list">
@@ -35,12 +42,25 @@
         
         <!-- Old Code -->
         <sdpi-item label="⚡ Shortcut">
-            <div id="isShortcuts">
+            <div id="isShortcuts" class="shortcut-picker-row">
                 <sdpi-select placeholder="All shortcuts_list" id="shortcuts_list">
                     <!-- <sdpi-select onfocus="refreshListOfShortcuts();" placeholder="All shortcuts_list" id="shortcuts_list"> -->
                 </sdpi-select>
+                <button id="shortcut_search_toggle" class="shortcut-search-toggle" type="button"
+                    aria-label="Search all shortcuts" title="Search all shortcuts"
+                    aria-controls="shortcut_search_drawer" aria-expanded="false"></button>
             </div>
         </sdpi-item>
+
+        <div id="shortcut_search_backdrop" class="shortcut-search-backdrop" aria-hidden="true" hidden></div>
+        <section id="shortcut_search_drawer" class="shortcut-search-drawer" aria-label="Search all shortcuts" hidden>
+            <div class="shortcut-search-input-row">
+                <input class="sdpi-item-value" id="shortcut_search_input" type="text"
+                    placeholder="Search all shortcuts…" autocomplete="off"
+                    aria-controls="shortcut_search_results" aria-expanded="false">
+            </div>
+            <div id="shortcut_search_results" class="shortcut-search-results" role="listbox" hidden></div>
+        </section>
         
         <sdpi-item label="🔊 Voice">
             <div id="accessVoice">

@@ -38,7 +38,7 @@ class StreamDeckShortcuts: Plugin {
     
     static var url: URL? = URL(string: "https://sentinelite.com")
     
-    static var version: String = "2.0.0-beta.12"
+    static var version: String = "2.1.0.0"
     
     static var os: [PluginOS] = [PluginOS.macOS("12.0")]
     

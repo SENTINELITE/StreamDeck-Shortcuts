@@ -39,7 +39,7 @@ class ShortcutAction: Action {
     //MARK: Default Action Stuff
     static var name: String = "Launch Shortcut V2"
     
-    static var uuid: String = "com.sentinelite.sds.launcher"
+    static var uuid: String = "com.sentinelite.streamdeckshortcuts.launcher"
     
     static var icon: String = "Icons/test"
     
@@ -455,8 +455,11 @@ class ShortcutAction: Action {
             "isDoubleTripleTap": isDoubleTripleTap,
             "accessibilityVoices": accessibilityVoices,
             "selectedAccessibilityVoice": accessibilityVoiceGlobal,
-            
-                //TODO: Add all shortcuts here?
+            "shortcutCatalog": newData
+                .map { ["name": $0.shortcutName, "folder": $0.shortcutFolder] }
+                .sorted { lhs, rhs in
+                    lhs["name", default: ""].localizedCaseInsensitiveCompare(rhs["name", default: ""]) == .orderedAscending
+                },
         ]
         
         sendToPropertyInspector(payload: payload)
@@ -514,13 +517,22 @@ class ShortcutAction: Action {
                     case .newShortcutSelected:
                         shortcutsLogger(
                             message: "Beta-One | New Shortcut Selected As Event String... \(payload["data"])")
-                        shortcutToRun = payload["data"] ?? "nil"
+                        let requestedShortcutName = payload["data"] ?? "nil"
+                        guard let selectedShortcutName = payload["data"],
+                              let selectedShortcut = newData.first(where: { $0.shortcutName == selectedShortcutName }),
+                              let selectedShortcutUUID = selectedShortcut.shortcutUUID
+                        else {
+                            shortcutsLogger(message: "Selected shortcut is unavailable or has no UUID: \(requestedShortcutName)")
+                            return
+                        }
+
+                        shortcutToRun = selectedShortcut.shortcutName
+                        shortcutToRunUUID = selectedShortcutUUID
+                        shortcutFolder = selectedShortcut.shortcutFolder
                         shortcutsLogger(message: "Beta-One | New Shortcut Selected... \(shortcutToRun)")
-                        shortcutsLogger(message: "🤖 Shortcut UUID Debug 1: \(shortcutToRunUUID)")
-                        shortcutToRunUUID = shortcutNameToUUID(inputShortcutName: shortcutToRun)
-                        shortcutsLogger(message: "🤖 Shortcut UUID Debug 2: \(shortcutToRunUUID)")
-                        let customJSON = sdsSettings(shortcut: shortcutToRun)
                         saveSettingsHelper()
+                        // Do not emit a folder update here: the PI's programmatic select update
+                        // sends a new selection event and creates a feedback loop.
                         
                     case .newFolderSelected:
                         if let folder = payload["data"] {
