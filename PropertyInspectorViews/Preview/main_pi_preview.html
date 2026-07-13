@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stream Deck Shortcuts — Local Preview</title>
+    <style>
+      html, body, iframe { height: 100%; margin: 0; width: 100%; }
+      body { background: #1f1f1f; color: #ddd; font: 13px -apple-system, BlinkMacSystemFont, sans-serif; }
+      .preview-note { background: #3c3215; border-bottom: 1px solid #8f772a; box-sizing: border-box; color: #f1df9c; padding: 8px 12px; }
+      iframe { border: 0; display: block; height: calc(100% - 34px); }
+    </style>
+    <script src="preview-shortcuts.example.js"></script>
+  </head>
+  <body>
+    <div class="preview-note">Local preview only — generic fixture data is never loaded by the production Property Inspector.</div>
+    <iframe id="property-inspector-preview" title="Property Inspector preview"></iframe>
+    <script>
+      const preview = document.getElementById('property-inspector-preview');
+
+      function startPreview() {
+        preview.addEventListener('load', function() {
+          preview.contentWindow.postMessage({
+            type: 'streamdeck-shortcuts-preview',
+            fixture: window.StreamDeckShortcutsPreviewFixture,
+          }, '*');
+        }, { once: true });
+        preview.src = '../main_pi_two.html?preview=1';
+      }
+
+      const localFixture = document.createElement('script');
+      localFixture.src = 'preview-shortcuts.local.js';
+      localFixture.addEventListener('load', startPreview, { once: true });
+      localFixture.addEventListener('error', startPreview, { once: true });
+      document.head.appendChild(localFixture);
+    </script>
+  </body>
+</html>

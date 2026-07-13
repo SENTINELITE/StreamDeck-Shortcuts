@@ -1,53 +1,51 @@
 ![GH_Banner](https://user-images.githubusercontent.com/44782976/144744255-caae0988-d019-40dd-8264-3b544b97d733.png)
 
-### About StreamDeck Shortcuts
-Welcome in! This Repo is for all things Shortcuts/StreamDeck!
+# Stream Deck Shortcuts
 
-We’re all about making sure the software is Fast, Reliable, & Performant, all while offering excellent accessibility support!
+Run the Shortcuts you already rely on from your Stream Deck—quickly, clearly, and with accessibility controls that meet you where you are.
 
-The StreamDeck's been unleashed. Infinite possibilities at the speed of light. All within touch.
+The Stream Deck's been unleashed. Infinite possibilities at the speed of light. All within touch.
 
-If you want to learn more about how & why this was made, take a look at [this Twitter thread!](https://twitter.com/sentinelite/status/1477716577533325312?s=21)
+This is the Version Two codebase, including the Stream Deck plugin and its integrated Property Inspector.
 
----
+## What it does
 
-### Backstory
-I wanted to run my Shortcuts on my StreamDeck, but the go-to solution bricked on me, on the first day. Whatever I did, I couldn’t get it working again. That was the start of this project…
+- Choose a Shortcuts folder, then select the shortcut you want on a key.
+- Search your entire shortcut library from the Property Inspector. Search understands both shortcut names and folder names, so a query such as `utilities copy` finds a Copy shortcut in Utilities.
+- Keep shortcut selection fast even when your library is organized across many folders.
+- Set display-title, accessibility, and hold-time behavior per key or globally.
+- Choose an accessibility voice and adjust speech rate when spoken feedback is enabled.
 
-Of course, I wasn’t going to make a simple thing. No, I had to do it the justice it so rightly deserved. 😝
+## Using the Property Inspector
 
----
+1. Add **Launch Shortcut V2** to a Stream Deck key.
+2. Pick a folder and shortcut, or use the magnifying glass beside the shortcut picker to search everything.
+3. Search by shortcut title, folder, or both. Select a result to assign it to the key.
+4. Optionally configure the display title, accessibility feedback, and hold behavior for that key or across your setup.
 
-### Repo Structure
-- The backend (this one)
-- & the [Property Inspector’s](https://github.com/SENTINELITE/StreamDeck-Shortcuts-PropertyInspector)
+## A little backstory
 
----
+I wanted to run my Shortcuts on my Stream Deck, but the go-to solution bricked on me on the first day. Whatever I did, I couldn’t get it working again. That was the start of this project.
 
-### Lost, But Not Forgotten Features:
-- Set Discord/GitHub image/logo beside their description text?
-- isPrivateAnalytics Bool, to allow user’s to toggle Analytics.
-- Move settings into a popup window? See Elgato PI Demo.
-- Don’t send a payload, if settings haven’t changed. Only send what *has* changed. Show if settings changed by showing an “X” on the save box, instead of the green box.
-- We shouldn’t send all the shortcuts, only a limited few. The payload is probably too big, for larger libraries.
-- Allow user to switch Accessibility speed. Only some voices support this…
-- Allow for accessibility toggle. Ie, some people may not/want to hold down for x amount of time. Create an option to tap, starting the timer, then another tap confirm or cancel, when the timer finishes.
-- 🚀 Create Shortcut from Button Press?
-- 🚀 Open/Edit Shortcut in the Shortcuts.app
+Of course, I wasn’t going to make a simple thing. No—I had to do it the justice it so rightly deserved. 😝
 
----
+If you want to learn more about how and why this was made, take a look at [this Twitter thread](https://twitter.com/sentinelite/status/1477716577533325312?s=21).
 
-### ⚠️ Known Issues & Bugs
-- 🐞Rare: Kilo-One | Sometimes the app fails to startup correctly. Need to dig into this. | v 1.0.1 includes a new "Debug:" console.app logging message.
-- 🐞Potential: App becomes unresponsive after computer wakes up from sleep???
-- Some user's may experience issues with certain special characters. We've done our best to handle most of these, but other languages may vary! **This should be mostly fixed now. Let us know if you have any issues!**
-- We’re only fetching/getting the first discovered StreamDeck. We need to get all the user’s connected StreamDeck Devices
-	- We’re getting the connected count, but we still need to fetch the unique IDs.
-- ~~If the shortcut name is long, the search field gets small. We fixed the former, but now we’re Popping out of PI’s regular dimensions…~~ should be fixed.
+## Sponsor the project
 
----
+Stream Deck Shortcuts is independently built and maintained. Sponsorship helps fund continued Shortcuts compatibility, accessibility improvements, thoughtful Stream Deck workflows, documentation, and long-term maintenance.
 
-### 🐞 New Issue or 💬 Comments?
-- [Open an Issue](https://github.com/SENTINELITE/StreamDeck-Shortcuts/issues/new)
-- [Tweet Me](http://sentinelite.com/twitter)
-- [Join the Discord Community](https://sentinelite.com/discord)
+If this plugin is useful to you, [sponsor the project on GitHub](https://github.com/sponsors/SENTINELITE).
+
+## Repository layout
+
+- `StreamDeck-Shortcuts/` — Swift plugin source.
+- `PropertyInspectorViews/` — the integrated Stream Deck Property Inspector.
+- `PropertyInspectorViews/Preview/` — generic local preview fixtures for Property Inspector development.
+- `Scripts/verify-streamdeck-plugin-bundle.sh` — release check that prevents preview-only assets from being included in a plugin bundle.
+
+## Support
+
+- [Open an issue](https://github.com/SENTINELITE/StreamDeck-Shortcuts/issues/new)
+- [Reach me on Twitter](http://sentinelite.com/twitter)
+- [Join the Discord community](https://sentinelite.com/discord)

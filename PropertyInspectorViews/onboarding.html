@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+   <head lang="en-gb">
+      <meta charset="utf-8" />
+      <script src="https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v2/dist/sdpi-components.js"></script>
+      <style>
+         .page {
+            display: none;
+         }
+
+         .page.current {
+            display: block;
+         }
+
+         .pager {
+            margin-top: 20px;
+            text-align: center;
+         }
+
+         .hstack {
+            display: flex;
+            justify-content: center;
+         }
+
+         .hstack sdpi-item {
+            margin: 0 5px;
+         }
+      </style>
+   </head>
+
+   <body>
+      <div class="page" id="page1">
+         <sdpi-item label="Name">
+            <sdpi-textfield setting="name"></sdpi-textfield>
+         </sdpi-item>
+      </div>
+      <div class="page" id="page2">
+         <sdpi-item label="Show Name">
+            <sdpi-checkbox setting="show_name"></sdpi-checkbox>
+         </sdpi-item>
+      </div>
+      <div class="page" id="page3">
+         <sdpi-item label="Favorite Color">
+            <sdpi-select setting="fav_color" placeholder="Please choose a color">
+               <option value="red">Red</option>
+               <option value="green">Green</option>
+               <option value="blue">Blue</option>
+            </sdpi-select>
+         </sdpi-item>
+      </div>
+
+      <div class="pager">
+         <div class="hstack">
+            <sdpi-item>
+               <sdpi-button onclick="prevPage()">Prev</sdpi-button>
+            </sdpi-item>
+            <sdpi-item>
+               <sdpi-button onclick="nextPage()">Next</sdpi-button>
+            </sdpi-item>
+         </div>
+      </div>
+
+      <script>
+         // Get the pages and buttons
+         var pages = Array.from(document.getElementsByClassName("page"));
+
+         // Initialize the current page index
+         var currentPageIndex = 0;
+
+         // Function to show a specific page
+         function showPage(pageIndex) {
+            // Hide all pages
+            pages.forEach(function(page) {
+               page.classList.remove("current");
+            });
+
+            // Show the current page
+            pages[pageIndex].classList.add("current");
+         }
+
+         // Function to navigate to the previous page
+         function prevPage() {
+            if (currentPageIndex > 0) {
+               currentPageIndex--;
+               showPage(currentPageIndex);
+            }
+         }
+
+         // Function to navigate to the next page
+         function nextPage() {
+            if (currentPageIndex < pages.length - 1) {
+               currentPageIndex++;
+               showPage(currentPageIndex);
+            }
+         }
+      </script>
+   </body>
+</html>
